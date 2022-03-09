@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from .models import Post, User
+from .models import FriendRequest, Post, User, UserProfile
 
 # Create your views here.
 def index(request):
@@ -12,10 +12,39 @@ def index(request):
 
 
 def load_posts(request):
-    posts = Post.objects.order_by('-timestamp')
+    profile = request.GET.get("profile")
+    if (profile):
+        posts = Post.objects.filter(author=profile).order_by('-timestamp')
+    else:        
+        posts = Post.objects.order_by('-timestamp')
     return JsonResponse({
         "posts": [post.serialize() for post in posts]
     })
+
+
+def send_friend_request(request, profile_id):
+    from_user = request.user
+    to_user = User.objects.get(pk=profile_id)
+    friend_request, created = FriendRequest.objects.get_or_create(from_user=from_user, to_user=to_user)
+    if created:
+        newStatus = True
+    else:
+        newStatus = False
+    return JsonResponse({"newRequest": newStatus})
+
+
+def accept_friend_request(request, requestID):
+    friend_request = FriendRequest.objects.get(pk=requestID)
+    if friend_request.to_user == request.user:
+        friend_request.to_user.profile.friends.add(friend_request.from_user)
+        friend_request.from_user.profile.friends.add(friend_request.to_user)
+        friend_request.delete()
+    return JsonResponse({"newFriend": True})
+
+
+def show_profile(request, profile_id):
+    profile = UserProfile.objects.get(pk=profile_id)
+    return JsonResponse(profile.serialize(), safe=False)
 
 
 def create_post(request):

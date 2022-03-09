@@ -11,6 +11,17 @@ class User(AbstractUser):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True, related_name="profile", on_delete=models.CASCADE)
+    friends = models.ManyToManyField(User, blank=True)
+
+    def serialize(self):
+        return {
+            "profile_username": self.user.username
+        }
+
+
+class FriendRequest(models.Model):
+    from_user = models.ForeignKey(User, related_name="from_user", on_delete=models.CASCADE)
+    to_user = models.ForeignKey(User, related_name="to_user", on_delete=models.CASCADE)
 
 
 class Post(models.Model):
@@ -21,6 +32,7 @@ class Post(models.Model):
     def serialize(self):
         return {
             "author_username": self.author.user.username,
+            "author_id": self.author.user.id,
             "description": self.description,
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p")
         }

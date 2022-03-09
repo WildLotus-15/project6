@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 function load_posts(addon) {
+    if (addon.includes("?")) {
+        addon += ""
+    } else {
+        document.getElementById('profile').style.display = 'none'
+    }
     fetch(`/load_posts${addon}`)
     .then(response => response.json())
     .then(response => {
@@ -29,6 +34,8 @@ function build_post(post) {
     header.innerHTML = post.author_username
     post_body.append(header)
 
+    header.addEventListener('click', () => show_profile(post.author_id))
+
     const description = document.createElement('p')
     description.className = 'card-text'
     description.id = `post_description_${post.id}`
@@ -42,6 +49,19 @@ function build_post(post) {
     post_body.append(timestamp)
 
     document.getElementById('posts').append(post_card)
+}
+
+function show_profile(author_id) {
+    load_posts(`?profile=${author_id}`)
+    document.getElementById('profile').style.display = 'unset'
+    document.getElementById('newPost').style.display = 'none'
+    fetch(`/profile/${author_id}`)
+    .then(response => response.json())
+    .then(profile => {
+        document.getElementById('profile_username').innerHTML = profile.profile_username
+
+        console.log(profile)
+    })
 }
 
 function create_post() {
