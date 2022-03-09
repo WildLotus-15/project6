@@ -1,0 +1,27 @@
+{% extends "network/layout.html" %} {% load static %} 
+
+{% block title %}Network{% endblock %}
+
+{% block body %}
+
+    <div id="newPost">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">New Post</h5>
+                <form>
+                    <input type="text" id="description" class="form-control col-20 input-lg">
+                    <input type="submit" class="btn btn-primary" value="Post">
+                </form>            
+            </div>
+        </div>
+    </div>
+
+    <div id="posts">
+
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/js/index.js' %}"></script>
+{% endblock %}
