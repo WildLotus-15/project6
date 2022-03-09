@@ -10,6 +10,7 @@ urlpatterns = [
     path("load_posts", views.load_posts, name="load_posts"),
     path("create_post", views.create_post, name="create_post"),
     path("profile/<int:profile_id>", views.show_profile, name="show_profile"),
-    path("update_friend_request/<int:profile_id>", views.send_friend_request, name="update_friend_request"),
-    path("accept_friend_request/<int:requestID>", views.accept_friend_request, name="accept_friend_request")
+    path("send_friend_request/<int:profile_id>", views.send_friend_request, name="send_friend_request"),
+    path("accept_friend_request/<int:requestID>", views.accept_friend_request, name="accept_friend_request"),
+    path("decline_friend_request/<int:requestID>", views.decline_friend_request, name="decline_friend_request")
 ]

@@ -55,12 +55,31 @@ function show_profile(author_id) {
     load_posts(`?profile=${author_id}`)
     document.getElementById('profile').style.display = 'unset'
     document.getElementById('newPost').style.display = 'none'
+    friend_request_button = document.getElementById('friend_request_button') 
+    friend_request_button.style.display = 'none'
     fetch(`/profile/${author_id}`)
     .then(response => response.json())
     .then(profile => {
         document.getElementById('profile_username').innerHTML = profile.profile_username
 
+        if (profile.friend_request_available) {
+            friend_request_button.style.display = 'unset'
+            if (profile.currently_friended) {
+                friend_request_button.innerHTML = 'Unfriend'
+            } else {
+                friend_request_button.innerHTML = 'Friend'
+            }
+        }
+
         console.log(profile)
+    })
+}
+
+function send_friend_request(author_id) {
+    fetch(`/send_friend_request/${author_id}`)
+    .then(response => response.json())
+    .then(response => {
+        console.log(response)
     })
 }
 

@@ -11,17 +11,31 @@ class User(AbstractUser):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True, related_name="profile", on_delete=models.CASCADE)
-    friends = models.ManyToManyField(User, blank=True)
+    friends = models.ManyToManyField(User, blank=True, related_name="friends")
 
-    def serialize(self):
+    def serialize(self, user):
         return {
-            "profile_username": self.user.username
+            "profile_username": self.user.username,
+            "friend_request_available": not user.is_anonymous and self.user != user,
+            "currently_friended": not user.is_anonymous and self in user.friends.all()
         }
 
 
 class FriendRequest(models.Model):
     from_user = models.ForeignKey(User, related_name="from_user", on_delete=models.CASCADE)
     to_user = models.ForeignKey(User, related_name="to_user", on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name="%(app_label)s_%(class)s_unique_relationships",
+                fields=["from_user", "to_user"]
+            ),
+            models.CheckConstraint(
+                name="%(app_label)s_%(class)s_prevent_self_friending",
+                check=~models.Q(from_user=models.F("to_user")),
+            ),
+        ]
 
 
 class Post(models.Model):

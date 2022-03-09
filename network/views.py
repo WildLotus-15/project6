@@ -1,7 +1,7 @@
 import json
 from django.db import IntegrityError
 from django.urls import reverse
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from .models import FriendRequest, Post, User, UserProfile
@@ -19,7 +19,7 @@ def load_posts(request):
         posts = Post.objects.order_by('-timestamp')
     return JsonResponse({
         "posts": [post.serialize() for post in posts]
-    })
+    }, safe=False)
 
 
 def send_friend_request(request, profile_id):
@@ -27,24 +27,44 @@ def send_friend_request(request, profile_id):
     to_user = User.objects.get(pk=profile_id)
     friend_request, created = FriendRequest.objects.get_or_create(from_user=from_user, to_user=to_user)
     if created:
-        newStatus = True
+        return JsonResponse({"message": "Friend request was sent successfully."}, status=201)
     else:
-        newStatus = False
-    return JsonResponse({"newRequest": newStatus})
+        return JsonResponse({"message": "Friend request has been already sent."}, status=201)
 
 
 def accept_friend_request(request, requestID):
-    friend_request = FriendRequest.objects.get(pk=requestID)
-    if friend_request.to_user == request.user:
-        friend_request.to_user.profile.friends.add(friend_request.from_user)
-        friend_request.from_user.profile.friends.add(friend_request.to_user)
-        friend_request.delete()
-    return JsonResponse({"newFriend": True})
+    try:
+        friend_request = FriendRequest.objects.get(pk=requestID)
+        if friend_request.to_user == request.user:
+            friend_request.to_user.profile.friends.add(friend_request.from_user)
+            friend_request.from_user.profile.friends.add(friend_request.to_user)
+            friend_request.delete()
+        else:
+            return JsonResponse({"error": "You do not have the right to perform this action!"}, status=403)
+
+    except FriendRequest.DoesNotExist:
+        return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
+
+    return JsonResponse({"message": "New friend has been added successfully."}, status=201)
+
+
+def decline_friend_request(request, requestID):
+    try:
+        friend_request = FriendRequest.objects.get(pk=requestID)
+        if request.user == friend_request.to_user:
+            friend_request.delete()
+        else:
+            return JsonResponse({"error": "You do not have the right to perform this action!"}, status=403)
+
+    except FriendRequest.DoesNotExist:
+        return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
+
+    return JsonResponse({"message": "Friend request has been declined successfully."}, status=201)        
 
 
 def show_profile(request, profile_id):
     profile = UserProfile.objects.get(pk=profile_id)
-    return JsonResponse(profile.serialize(), safe=False)
+    return JsonResponse(profile.serialize(request.user), safe=False)
 
 
 def create_post(request):
