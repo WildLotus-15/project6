@@ -22,10 +22,10 @@ function load_requests() {
     fetch('/requests')
     .then(response => response.json())
     .then(response => {
-        data = JSON.parse(response)
-        data.forEach(request => build_request(request))
+        document.getElementById('request_cards').innerHTML = ''
+        response.requests.forEach(request => build_request(request))
 
-        console.log(data)
+        console.log(response)
     })
 }
 
@@ -39,15 +39,11 @@ function build_request(request) {
     header.id = `friend_request_header_${request.id}`
     request_card.append(header)
 
-    const id = document.createElement('div')
-    id.innerHTML = request.id
-    id.style.flex = '1'
-    header.append(id)
-
     const from_user = document.createElement('div')
-    from_user.innerHTML = request.from_user
-    id.style.flex = '1'
+    from_user.innerHTML = `Pending friend request from ${request.from_user}`
     header.append(from_user)
+
+    from_user.addEventListener('click', () => show_profile(request.from_user_id))
 
     const accept_button = document.createElement('button')
     accept_button.type = 'button'
@@ -143,6 +139,7 @@ function show_profile(author_id) {
     load_posts(`?profile=${author_id}`)
     document.getElementById('profile').style.display = 'unset'
     document.getElementById('newPost').style.display = 'none'
+    document.getElementById('request_cards').style.display = 'none'
     friend_request_button = document.getElementById('friend_request_button') 
     friend_request_button.style.display = 'none'
     fetch(`/profile/${author_id}`)

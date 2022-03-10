@@ -25,6 +25,15 @@ class FriendRequest(models.Model):
     from_user = models.ForeignKey(User, related_name="from_user", on_delete=models.CASCADE)
     to_user = models.ForeignKey(User, related_name="to_user", on_delete=models.CASCADE)
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "from_user": self.from_user.username,
+            "to_user": self.to_user.username,
+            "from_user_id": self.from_user.id,
+            "to_user_id": self.to_user.id
+        }
+
     class Meta:
         constraints = [
             models.UniqueConstraint(

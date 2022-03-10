@@ -49,8 +49,18 @@ def accept_friend_request(request, requestID):
 
 
 def friend_requests(request):
-    requests = FriendRequest.objects.filter(to_user=request.user).values('id', 'to_user', 'from_user')
-    return JsonResponse(json.dumps(list(requests)), safe=False)
+    requests = FriendRequest.objects.filter(to_user=request.user)
+    return JsonResponse({
+        "requests": [request.serialize() for request in requests]
+    }, safe=False)
+
+
+def friends(request, profile_id):
+    profile = UserProfile.objects.get(pk=profile_id)
+    friends = profile.friends.all()
+    return JsonResponse({
+        "friends": [friend.serialize() for friend in friends]
+    }, safe=False)
 
 
 def decline_friend_request(request, requestID):

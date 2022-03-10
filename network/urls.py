@@ -13,5 +13,6 @@ urlpatterns = [
     path("send_friend_request/<int:profile_id>", views.send_friend_request, name="send_friend_request"),
     path("accept_friend_request/<int:requestID>", views.accept_friend_request, name="accept_friend_request"),
     path("decline_friend_request/<int:requestID>", views.decline_friend_request, name="decline_friend_request"),
-    path("requests", views.friend_requests, name="requests")
+    path("requests", views.friend_requests, name="requests"),
+    path("friends/<int:profile_id>", views.friends, name="friends")
 ]
