@@ -25,11 +25,12 @@ def load_posts(request):
 def send_friend_request(request, profile_id):
     from_user = request.user
     to_user = User.objects.get(pk=profile_id)
+
     friend_request, created = FriendRequest.objects.get_or_create(from_user=from_user, to_user=to_user)
     if created:
         return JsonResponse({"message": "Friend request was sent successfully."}, status=201)
     else:
-        return JsonResponse({"message": "Friend request has been already sent."}, status=201)
+        return JsonResponse({"message": "Friend request has been already sent or you are actually friends."}, status=201)
 
 
 def accept_friend_request(request, requestID):
@@ -38,7 +39,6 @@ def accept_friend_request(request, requestID):
         if friend_request.to_user == request.user:
             friend_request.to_user.profile.friends.add(friend_request.from_user)
             friend_request.from_user.profile.friends.add(friend_request.to_user)
-            friend_request.delete()
         else:
             return JsonResponse({"error": "You do not have the right to perform this action!"}, status=403)
 
@@ -46,6 +46,11 @@ def accept_friend_request(request, requestID):
         return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
 
     return JsonResponse({"message": "New friend has been added successfully."}, status=201)
+
+
+def friend_requests(request):
+    requests = FriendRequest.objects.filter(to_user=request.user).values('id', 'to_user', 'from_user')
+    return JsonResponse(json.dumps(list(requests)), safe=False)
 
 
 def decline_friend_request(request, requestID):
