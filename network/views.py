@@ -1,7 +1,7 @@
 import json
 from django.db import IntegrityError
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from .models import FriendRequest, Post, User, UserProfile
@@ -38,7 +38,7 @@ def send_friend_request(request, profile_id):
             return JsonResponse({"message": "Friend request has been already sent."}, status=201)
 
     else:
-        return JsonResponse({"error": "You are already friends!"}, status=200)
+        return JsonResponse({"error": "You are already friends."}, status=200)
 
 
 def accept_friend_request(request, requestID):
@@ -52,7 +52,7 @@ def accept_friend_request(request, requestID):
             friend_request.active = False
             friend_request.save()
         else:
-            return JsonResponse({"error": "You do not have the right to perform this action!"}, status=403)
+            return JsonResponse({"error": "You do not have the right to perform this action."}, status=403)
 
     except FriendRequest.DoesNotExist:
         return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
@@ -116,7 +116,7 @@ def decline_friend_request(request, requestID):
         if request.user == friend_request.to_user:
             friend_request.delete()
         else:
-            return JsonResponse({"error": "You do not have the right to perform this action!"}, status=403)
+            return JsonResponse({"error": "You do not have the right to perform this action."}, status=403)
 
     except FriendRequest.DoesNotExist:
         return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
@@ -136,7 +136,7 @@ def remove_from_friends(request, requestID):
             to_user.friends.remove(from_user.profile)
             friend_request.delete()
         else:
-            return JsonResponse({"error": "You do not have the right to perform this action!"}, status=403)
+            return JsonResponse({"error": "You do not have the right to perform this action."}, status=403)
 
     except FriendRequest.DoesNotExist:
         return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
