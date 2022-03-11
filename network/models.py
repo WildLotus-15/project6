@@ -18,7 +18,8 @@ class UserProfile(models.Model):
             "profile_username": self.user.username,
             "friend_request_available": not user.is_anonymous and not self in user.friends.all() and self.user != user,
             "currently_friended": not user.is_anonymous and self in user.friends.all(),
-            "self_in_friend_request": self_in_friend_request(self.user, user)  
+            "self_in_friend_request": self_in_friend_request(self.user, user),
+            "friends_amount": self.friends.count()  
         }
 
 

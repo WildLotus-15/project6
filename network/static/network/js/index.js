@@ -18,7 +18,7 @@ function load_friends(user_id) {
     document.getElementById('request_cards').innerHTML = ''
     document.getElementById('request_cards').style.display = 'block'
     document.getElementById('newPost').style.display = 'none'
-    document.getElementById('posts').style.display = 'none'
+    document.getElementById('posts').innerHTML = ''
     document.getElementById('profile').style.display = 'none'
     fetch(`/friends/${user_id}`)
     .then(response => response.json())
@@ -80,7 +80,7 @@ function load_requests() {
     document.getElementById('request_cards').innerHTML = ''
     document.getElementById('request_cards').style.display = 'block'
     document.getElementById('newPost').style.display = 'none'
-    document.getElementById('posts').style.display = 'none'
+    document.getElementById('posts').innerHTML = ''
     document.getElementById('profile').style.display = 'none'
     fetch('/requests')
     .then(response => response.json())
@@ -215,6 +215,7 @@ function show_profile(author_id) {
     .then(response => response.json())
     .then(profile => {
         document.getElementById('profile_username').innerHTML = profile.profile_username
+        document.getElementById('friends_amount').innerHTML = profile.friends_amount
 
         if (profile.friend_request_available || profile.self_in_friend_request || profile.currently_friended) {
             friend_request_button.style.display = 'unset'

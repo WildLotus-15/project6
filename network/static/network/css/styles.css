@@ -1,0 +1,7 @@
+.card-header {
+    display: flex;
+}
+
+.card-header > div {
+    flex: 1;
+}
