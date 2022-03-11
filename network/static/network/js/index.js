@@ -1,16 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('form').onsubmit = create_post
 
-    const user_id = document.getElementById('userID').value
-
     if (document.getElementById("logged_profile")) {
+        const user_id = document.getElementById('userID').value
+
         document.getElementById("requests").addEventListener('click', () => load_requests())
         document.getElementById("logged_profile").addEventListener('click', () => show_profile(user_id))
+        document.getElementById('friends').addEventListener('click', () => load_friends(user_id))
     } else {
         document.getElementById('newPost').addEventListener('click', () => force_login())
     }
-
-    document.getElementById('friends').addEventListener('click', () => load_friends(user_id))
 
     load_posts("")
 })
@@ -217,14 +216,18 @@ function show_profile(author_id) {
     .then(profile => {
         document.getElementById('profile_username').innerHTML = profile.profile_username
 
-        if (profile.friend_request_available) {
+        if (profile.friend_request_available || profile.self_in_friend_request || profile.currently_friended) {
             friend_request_button.style.display = 'unset'
             if (profile.currently_friended) {
                 friend_request_button.innerHTML = 'Friend'
+            } else if (profile.self_in_friend_request) {
+                friend_request_button.innerHTML = 'Friend request has been sent.'
             } else {
-                friend_request_button.innerHTML = 'Remove from friends'
-            }        
+                friend_request_button.innerHTML = 'Send friend request'
+                friend_request_button.addEventListener('click', () => send_friend_request(author_id))
+            }       
         }
+        window.scrollTo(0, 0)
 
         console.log(profile)
     })
@@ -235,6 +238,9 @@ function send_friend_request(author_id) {
     .then(response => response.json())
     .then(response => {
         console.log(response)
+
+        friend_request_button = document.getElementById('friend_request_button')
+        friend_request_button.innerHTML = 'Friend request has been sent'
     })
 }
 

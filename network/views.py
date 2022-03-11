@@ -26,11 +26,16 @@ def send_friend_request(request, profile_id):
     from_user = request.user
     to_user = User.objects.get(pk=profile_id)
 
-    friend_request, created = FriendRequest.objects.get_or_create(from_user=from_user, to_user=to_user)
-    if created:
-        return JsonResponse({"message": "Friend request was sent successfully."}, status=201)
+    if not to_user in from_user.profile.friends.all() or not from_user in to_user.profile.friends.all():
+        friend_request, created = FriendRequest.objects.get_or_create(from_user=from_user, to_user=to_user)
+        if created:
+            return JsonResponse({"message": "Friend request was sent successfully."}, status=201)
+        else:
+            return JsonResponse({"message": "Friend request has been already sent."}, status=201)
+    
     else:
-        return JsonResponse({"message": "Friend request has been already sent or you are actually friends."}, status=201)
+        return JsonResponse({"error": "You are already friends!"}, status=200)
+
 
 
 def accept_friend_request(request, requestID):

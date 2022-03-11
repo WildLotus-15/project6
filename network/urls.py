@@ -15,5 +15,5 @@ urlpatterns = [
     path("decline_friend_request/<int:requestID>", views.decline_friend_request, name="decline_friend_request"),
     path("requests", views.friend_requests, name="requests"),
     path("friends/<int:profile_id>", views.friends, name="friends"),
-    path("remove_from_friends/<int:requestID>", views.remove_from_friends, name="remove_from_friends")
+    path("remove_from_friends/<int:requestID>", views.remove_from_friends, name="remove_from_friends"),
 ]

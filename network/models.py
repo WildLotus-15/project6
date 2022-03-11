@@ -16,9 +16,18 @@ class UserProfile(models.Model):
     def serialize(self, user):
         return {
             "profile_username": self.user.username,
-            "friend_request_available": not user.is_anonymous and self.user != user,
-            "currently_friended": not user.is_anonymous and self in user.friends.all()
+            "friend_request_available": not user.is_anonymous and not self in user.friends.all() and self.user != user,
+            "currently_friended": not user.is_anonymous and self in user.friends.all(),
+            "self_in_friend_request": self_in_friend_request(self.user, user)  
         }
+
+
+def self_in_friend_request(to_user, from_user):
+    try:
+        FriendRequest.objects.get(to_user=to_user, from_user=from_user)
+        return True
+    except FriendRequest.DoesNotExist:
+        return False
 
 
 class FriendRequest(models.Model):
