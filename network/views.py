@@ -49,6 +49,8 @@ def accept_friend_request(request, requestID):
                 friend_request.from_user)
             friend_request.from_user.profile.friends.add(
                 friend_request.to_user)
+            friend_request.active = False
+            friend_request.save()
         else:
             return JsonResponse({"error": "You do not have the right to perform this action!"}, status=403)
 
@@ -59,7 +61,7 @@ def accept_friend_request(request, requestID):
 
 
 def friend_requests(request):
-    requests = FriendRequest.objects.filter(to_user=request.user)
+    requests = FriendRequest.objects.filter(to_user=request.user, active=True)
     return JsonResponse({
         "requests": [request.serialize() for request in requests]
     }, safe=False)
