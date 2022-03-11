@@ -50,7 +50,7 @@ class FriendRequest(models.Model):
 class Post(models.Model):
     author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     description = models.CharField(max_length=64)
-    timestamp = models.DateField(default=timezone.now)
+    timestamp = models.DateTimeField(default=timezone.now)
 
     def serialize(self):
         return {

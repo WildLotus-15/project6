@@ -14,9 +14,9 @@ def index(request):
 def load_posts(request):
     profile = request.GET.get("profile")
     if (profile):
-        posts = Post.objects.filter(author=profile).order_by('-timestamp')
+        posts = Post.objects.filter(author=profile).order_by('-timestamp').all()
     else:        
-        posts = Post.objects.order_by('-timestamp')
+        posts = Post.objects.order_by('-timestamp').all()
     return JsonResponse({
         "posts": [post.serialize() for post in posts]
     }, safe=False)
@@ -56,10 +56,10 @@ def friend_requests(request):
 
 
 def friends(request, profile_id):
-    profile = UserProfile.objects.get(pk=profile_id)
-    friends = profile.friends.all()
+    friends = UserProfile.objects.get(pk=profile_id).friends.all()
+    friend_requests = FriendRequest.objects.filter(from_user__in=friends)
     return JsonResponse({
-        "friends": [friend.serialize() for friend in friends]
+        "friends": [friend_request.serialize() for friend_request in friend_requests]
     }, safe=False)
 
 
@@ -74,7 +74,27 @@ def decline_friend_request(request, requestID):
     except FriendRequest.DoesNotExist:
         return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
 
-    return JsonResponse({"message": "Friend request has been declined successfully."}, status=201)        
+    return JsonResponse({"message": "Friend request has been declined successfully."}, status=201)
+
+
+def remove_from_friends(request, requestID):
+    try:
+        friend_request = FriendRequest.objects.get(pk=requestID)
+
+        to_user = friend_request.to_user
+        from_user = friend_request.from_user
+
+        if request.user == to_user or request.user == from_user:
+            from_user.friends.remove(to_user.profile)
+            to_user.friends.remove(from_user.profile)
+            friend_request.delete()
+        else:
+            return JsonResponse({"error": "You do not have the right to perform this action!"}, status=403)
+
+    except FriendRequest.DoesNotExist:
+        return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
+
+    return JsonResponse({"message": "Friend has been successfully removed."}, status=201)
 
 
 def show_profile(request, profile_id):
