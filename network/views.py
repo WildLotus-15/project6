@@ -7,6 +7,8 @@ from django.contrib.auth import authenticate, login, logout
 from .models import FriendRequest, Post, User, UserProfile
 
 # Create your views here.
+
+
 def index(request):
     return render(request, "network/index.html")
 
@@ -14,8 +16,9 @@ def index(request):
 def load_posts(request):
     profile = request.GET.get("profile")
     if (profile):
-        posts = Post.objects.filter(author=profile).order_by('-timestamp').all()
-    else:        
+        posts = Post.objects.filter(
+            author=profile).order_by('-timestamp').all()
+    else:
         posts = Post.objects.order_by('-timestamp').all()
     return JsonResponse({
         "posts": [post.serialize() for post in posts]
@@ -27,23 +30,25 @@ def send_friend_request(request, profile_id):
     to_user = User.objects.get(pk=profile_id)
 
     if not to_user in from_user.profile.friends.all() or not from_user in to_user.profile.friends.all():
-        friend_request, created = FriendRequest.objects.get_or_create(from_user=from_user, to_user=to_user)
+        friend_request, created = FriendRequest.objects.get_or_create(
+            from_user=from_user, to_user=to_user)
         if created:
             return JsonResponse({"message": "Friend request was sent successfully."}, status=201)
         else:
             return JsonResponse({"message": "Friend request has been already sent."}, status=201)
-    
+
     else:
         return JsonResponse({"error": "You are already friends!"}, status=200)
-
 
 
 def accept_friend_request(request, requestID):
     try:
         friend_request = FriendRequest.objects.get(pk=requestID)
         if friend_request.to_user == request.user:
-            friend_request.to_user.profile.friends.add(friend_request.from_user)
-            friend_request.from_user.profile.friends.add(friend_request.to_user)
+            friend_request.to_user.profile.friends.add(
+                friend_request.from_user)
+            friend_request.from_user.profile.friends.add(
+                friend_request.to_user)
         else:
             return JsonResponse({"error": "You do not have the right to perform this action!"}, status=403)
 
@@ -58,6 +63,41 @@ def friend_requests(request):
     return JsonResponse({
         "requests": [request.serialize() for request in requests]
     }, safe=False)
+
+
+def remove_profile_friend(request, profile_id):
+    try:
+        to_user = User.objects.get(pk=profile_id)
+        from_user = request.user
+
+        to_user.friends.remove(from_user.profile)
+        from_user.friends.remove(to_user.profile)
+
+        friend_request = FriendRequest.objects.get(
+            from_user=from_user, to_user=to_user)
+        friend_request.delete()
+
+    except (User.DoesNotExist, FriendRequest.DoesNotExist) as e:
+        return JsonResponse({"error": "User or Friend Request matching query does not exist."}, status=400)
+
+    return JsonResponse({"message": "Friend has been successfully removed."}, status=201)
+
+
+def unsend_friend_request(request, profile_id):
+    try:
+        to_user = User.objects.get(pk=profile_id)
+        from_user = request.user
+
+        friend_request = FriendRequest.objects.get(
+            from_user=from_user, to_user=to_user)
+
+        if friend_request.from_user == from_user:
+            friend_request.delete()
+
+    except (User.DoesNotExist, FriendRequest.DoesNotExist) as e:
+        return JsonResponse({"error": "User or Friend Request matching query does not exist."}, status=400)
+
+    return JsonResponse({"message": "Friend request has been successfully unsent."}, status=201)
 
 
 def friends(request, profile_id):
@@ -112,7 +152,7 @@ def create_post(request):
         data = json.loads(request.body)
         description = data.get("description")
         post = Post(author=request.user.profile, description=description)
-        post.save() 
+        post.save()
         return JsonResponse({"message": "Post was created successfully."}, status=200)
 
 
@@ -149,7 +189,7 @@ def register(request):
             return render(request, "network/register.html", {
                 "message": "Passwords must match."
             })
-        
+
         try:
             user = User.objects.create_user(username, email, password)
             user.save()

@@ -220,8 +220,10 @@ function show_profile(author_id) {
             friend_request_button.style.display = 'unset'
             if (profile.currently_friended) {
                 friend_request_button.innerHTML = 'Friend'
+                friend_request_button.addEventListener('click', () => remove_profile_friend(author_id))
             } else if (profile.self_in_friend_request) {
-                friend_request_button.innerHTML = 'Friend request has been sent.'
+                friend_request_button.innerHTML = 'Friend request has been sent'
+                friend_request_button.addEventListener('click', () => unsend_friend_request(author_id))
             } else {
                 friend_request_button.innerHTML = 'Send friend request'
                 friend_request_button.addEventListener('click', () => send_friend_request(author_id))
@@ -233,14 +235,33 @@ function show_profile(author_id) {
     })
 }
 
+function unsend_friend_request(author_id) {
+    fetch(`/unsend_friend_request/${author_id}`)
+    .then(response => response.json())
+    .then(response => {
+        console.log(response.message)
+
+        window.location.reload()
+    })
+}
+
+function remove_profile_friend(author_id) {
+    fetch(`/remove_profile_friend/${author_id}`)
+    .then(response => response.json())
+    .then(response => {
+        console.log(response.message)
+
+        window.location.reload()
+    })
+}
+
 function send_friend_request(author_id) {
     fetch(`/send_friend_request/${author_id}`)
     .then(response => response.json())
     .then(response => {
-        console.log(response)
+        console.log(response.message)
 
-        friend_request_button = document.getElementById('friend_request_button')
-        friend_request_button.innerHTML = 'Friend request has been sent'
+        window.location.reload()
     })
 }
 
