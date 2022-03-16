@@ -1,28 +1,18 @@
-import json
 from django.db import IntegrityError
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from .models import FriendRequest, Post, User, UserProfile
+from .forms import NewPostForm
 
 # Create your views here.
-
-
 def index(request):
-    return render(request, "network/index.html")
-
-
-def load_posts(request):
-    profile = request.GET.get("profile")
-    if (profile):
-        posts = Post.objects.filter(
-            author=profile).order_by('-timestamp').all()
-    else:
-        posts = Post.objects.order_by('-timestamp').all()
-    return JsonResponse({
-        "posts": [post.serialize() for post in posts]
-    }, safe=False)
+    posts = Post.objects.order_by('-timestamp')
+    return render(request, "network/index.html", {
+        "posts": posts,
+        "form": NewPostForm()
+    })
 
 
 def send_friend_request(request, profile_id):
@@ -75,8 +65,7 @@ def remove_profile_friend(request, profile_id):
         to_user.friends.remove(from_user.profile)
         from_user.friends.remove(to_user.profile)
 
-        friend_request = FriendRequest.objects.get(
-            from_user=from_user, to_user=to_user)
+        friend_request = FriendRequest.objects.get(from_user=from_user, to_user=to_user)
         friend_request.delete()
 
     except (User.DoesNotExist, FriendRequest.DoesNotExist) as e:
@@ -145,17 +134,38 @@ def remove_from_friends(request, requestID):
 
 
 def show_profile(request, profile_id):
-    profile = UserProfile.objects.get(pk=profile_id)
-    return JsonResponse(profile.serialize(request.user), safe=False)
+    try:
+        profile = UserProfile.objects.get(pk=profile_id)
+
+    except UserProfile.DoesNotExist:
+        return JsonResponse({"error": "User matching query does not exist."})
+        
+    return render(request, "network/profile.html", {
+        "profile": profile,
+        "posts": Post.objects.filter(author=profile).order_by('-timestamp'),
+        "currently_friended": not request.user.is_anonymous and profile.user in request.user.profile.friends.all(),
+        "friend_request_available": not request.user.is_anonymous and not profile.user in request.user.profile.friends.all(),
+        "self_in_friend_request": self_in_friend_request(profile.user, request.user)
+    })
+
+
+def self_in_friend_request(to_user, from_user):
+    try:
+        FriendRequest.objects.get(to_user=to_user, from_user=from_user)
+        return True
+
+    except FriendRequest.DoesNotExist:
+        return False
 
 
 def create_post(request):
     if request.method == "POST":
-        data = json.loads(request.body)
-        description = data.get("description")
-        post = Post(author=request.user.profile, description=description)
-        post.save()
-        return JsonResponse({"message": "Post was created successfully."}, status=200)
+        form = NewPostForm(request.POST)
+        if form.is_valid():
+            newPost = form.save(commit=False)
+            newPost.author = request.user.profile
+            newPost.save()
+            return HttpResponseRedirect(reverse("index"))
 
 
 def login_view(request):

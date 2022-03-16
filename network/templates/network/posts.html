@@ -1,0 +1,10 @@
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">
+            <a href="{% url 'profile' post.author.user.id %}">{{ post.author.user.username }}</a>
+        </h5>
+        <p class="card-text">{{ post.description }}</p>
+        <p class="card-text text-muted">{{ post.timestamp }}</p>
+        <a href="#" class="card-link">TODO</a>
+    </div>
+</div>

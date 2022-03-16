@@ -8,32 +8,20 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">New Post</h5>
-                <form>
-                    <input type="text" id="description" class="form-control col-20 input-lg">
+                <form action="{% url 'create_post' %}" method="post">
+                    {% csrf_token %}
+                    {{ form }}
                     <input type="submit" class="btn btn-primary" value="Post">
                 </form>            
             </div>
         </div>
     </div>
 
-    <div id="profile">
-        <div class="card">
-            <div class="card-header">
-                <div>
-                    <span id="profile_username"></span>
-                    <button id="friend_request_button" type="button" class="btn btn-primary"></button>
-                </div>
-                <div>
-                    <span id="friends_amount"></span>
-                    <span>friends</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="posts">
-
-    </div>
+    {% for post in posts %}
+        {% include "network/posts.html" %}
+    {% empty %}
+        <div>No posts.</div>
+    {% endfor %}
 
     <div id="request_cards">
         

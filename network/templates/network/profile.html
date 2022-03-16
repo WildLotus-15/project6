@@ -1,0 +1,38 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+
+    <div id="profile">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    {{ profile.user.username }}
+                        {% if currently_friended %}
+                        <form action="{% url 'remove_profile_friend' profile.user.id %}">
+                            <button class="btn btn-primary" type="submit">Friend</button>
+                        </form>
+                        {% elif self_in_friend_request %}
+                            Friend request has been sent
+                        {% else %}
+                            Send friend request
+                        {% endif %}
+                    </button>
+                </div>
+                <div>
+                    <span id="friends_amount">{{ profile.friends.count }}</span>
+                    <span>friends</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% for post in posts %}
+        {% include "network/posts.html" %}
+    {% empty %}
+        <div>No posts.</div>
+    {% endfor %}
+
+
+{% endblock body %}
