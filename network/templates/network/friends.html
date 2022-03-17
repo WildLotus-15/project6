@@ -1,0 +1,24 @@
+{% extends "network/layout.html" %} {% load static %} {% block title %}
+    {{ user.username }} | Friends
+{% endblock %}
+
+{% block body %}
+
+    {% for friend_request in friends %}
+        <div class="card">
+            <div class="card-header" id="friend_request_header_{{friend_request.id}}">
+                <div>
+                    {{ friend_request.from_user }}
+                    <button type="button" class="btn btn-danger text-right" id="remove_friend_button" data-friend_request_id="{{ friend_request.id }}">Unfriend</button>    
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <div>No friends</div>
+    {% endfor %}
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/js/remove_friend.js' %}"></script>
+{% endblock %}

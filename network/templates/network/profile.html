@@ -1,23 +1,23 @@
-{% extends "network/layout.html" %}
+{% extends "network/layout.html" %} {% load static %} {% block title %}
+    {{ profile.user.username }} | Profile
+{% endblock %}
 
 {% block body %}
-
 
     <div id="profile">
         <div class="card">
             <div class="card-header">
                 <div>
                     {{ profile.user.username }}
+                    {% if friend_request_available or self_in_friend_request or currently_friended %}
                         {% if currently_friended %}
-                        <form action="{% url 'remove_profile_friend' profile.user.id %}">
-                            <button class="btn btn-primary" type="submit">Friend</button>
-                        </form>
+                            <button type="button" class="btn btn-primary" id="remove_friend_button" data-profile_id="{{ profile.user.id }}">Friends</button>
                         {% elif self_in_friend_request %}
-                            Friend request has been sent
+                            <button type="button" class="btn btn-primary" id="cancel_friend_request_button" data-profile_id="{{ profile.user.id }}">Cancel Request</button>
                         {% else %}
-                            Send friend request
+                            <button type="button" class="btn btn-primary" id="send_friend_request_button" data-profile_id="{{ profile.user.id }}">Add Friend</button>
                         {% endif %}
-                    </button>
+                    {% endif %}
                 </div>
                 <div>
                     <span id="friends_amount">{{ profile.friends.count }}</span>
@@ -27,12 +27,16 @@
         </div>
     </div>
 
-
     {% for post in posts %}
         {% include "network/posts.html" %}
     {% empty %}
         <div>No posts.</div>
     {% endfor %}
 
-
 {% endblock body %}
+
+{% block script %}
+    <script src="{% static 'network/js/remove_profile_friend.js' %}"></script>
+    <script src="{% static 'network/js/send_friend_request.js' %}"></script>
+    <script src="{% static 'network/js/cancel_friend_request.js' %}"></script>
+{% endblock %}

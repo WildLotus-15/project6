@@ -51,11 +51,10 @@ def accept_friend_request(request, requestID):
 
 
 def friend_requests(request):
-    requests = FriendRequest.objects.filter(to_user=request.user, active=True)
-    return JsonResponse({
-        "requests": [request.serialize() for request in requests]
-    }, safe=False)
-
+    friend_requests = FriendRequest.objects.filter(to_user=request.user, active=True)
+    return render(request, "network/friend_requests.html", {
+        "friend_requests": friend_requests
+    })
 
 def remove_profile_friend(request, profile_id):
     try:
@@ -74,13 +73,12 @@ def remove_profile_friend(request, profile_id):
     return JsonResponse({"message": "Friend has been successfully removed."}, status=201)
 
 
-def unsend_friend_request(request, profile_id):
+def cancel_friend_request(request, profile_id):
     try:
         to_user = User.objects.get(pk=profile_id)
         from_user = request.user
 
-        friend_request = FriendRequest.objects.get(
-            from_user=from_user, to_user=to_user)
+        friend_request = FriendRequest.objects.get(from_user=from_user, to_user=to_user)
 
         if friend_request.from_user == from_user:
             friend_request.delete()
@@ -94,10 +92,9 @@ def unsend_friend_request(request, profile_id):
 def friends(request, profile_id):
     friends = UserProfile.objects.get(pk=profile_id).friends.all()
     friend_requests = FriendRequest.objects.filter(from_user__in=friends)
-    return JsonResponse({
-        "friends": [friend_request.serialize() for friend_request in friend_requests]
-    }, safe=False)
-
+    return render(request, "network/friends.html", {
+        "friends": friend_requests
+    })
 
 def decline_friend_request(request, requestID):
     try:
@@ -136,15 +133,16 @@ def remove_from_friends(request, requestID):
 def show_profile(request, profile_id):
     try:
         profile = UserProfile.objects.get(pk=profile_id)
-
+    
     except UserProfile.DoesNotExist:
         return JsonResponse({"error": "User matching query does not exist."})
         
     return render(request, "network/profile.html", {
         "profile": profile,
         "posts": Post.objects.filter(author=profile).order_by('-timestamp'),
+        "friend_request_available": not request.user.is_anonymous and not profile.user in request.user.profile.friends.all() and profile.user != request.user,
         "currently_friended": not request.user.is_anonymous and profile.user in request.user.profile.friends.all(),
-        "friend_request_available": not request.user.is_anonymous and not profile.user in request.user.profile.friends.all(),
+        "friend_request_available": not request.user.is_anonymous and profile.user != request.user and not profile.user in request.user.profile.friends.all(),
         "self_in_friend_request": self_in_friend_request(profile.user, request.user)
     })
 

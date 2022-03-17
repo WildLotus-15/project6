@@ -1,0 +1,26 @@
+{% extends "network/layout.html" %} {% load static %} {% block title %}
+    {{ user.username }} | Friend Requests
+{% endblock %}
+
+{% block body %}
+
+    {% for friend_request in friend_requests %}
+        <div class="card">
+            <div class="card-header" id="friend_request_header_{{friend_request.id}}">
+                <div>
+                    Pending friend request from <a href="{% url 'profile' friend_request.from_user.id %}">{{ friend_request.from_user }}</a>
+                    <button type="button" class="btn btn-danger text-right" id="decline_friend_request_button" data-friend_request_id="{{ friend_request.id }}">Decline</button>    
+                    <button type="button" class="btn btn-primary text-right" id="accept_friend_request_button" data-friend_request_id="{{ friend_request.id }}">Accept</button>    
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <div>No Friend Requests</div>
+    {% endfor %}
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/js/decline_friend_request.js' %}"></script>
+    <script src="{% static 'network/js/accept_friend_request.js' %}"></script>
+{% endblock %}
