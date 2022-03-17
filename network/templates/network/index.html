@@ -8,9 +8,8 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">New Post</h5>
-                <form action="{% url 'create_post' %}" method="post">
-                    {% csrf_token %}
-                    {{ form }}
+                <form>
+                    <textarea id="post_content" class="form-control" placeholder="What's on your mind {{ request.user.username }}?"></textarea>
                     <input type="submit" class="btn btn-primary" value="Post">
                 </form>            
             </div>
@@ -23,11 +22,8 @@
         <div>No posts.</div>
     {% endfor %}
 
-    <div id="request_cards">
-        
-    </div>
-
 {% endblock %}
 
 {% block script %}
+    <script src="{% static 'network/js/create_post.js' %}"></script>
 {% endblock %}

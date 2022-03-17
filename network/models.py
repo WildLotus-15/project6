@@ -39,6 +39,15 @@ class Post(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
 
 
+class Message(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="messages_sent")
+    recipients = models.ManyToManyField(User, related_name="messages_recieved")
+    body = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
+
+
 @receiver(post_save, sender=User)
 def create_user_profile(created, sender, instance, **kwargs):
     if created:

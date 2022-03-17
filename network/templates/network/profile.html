@@ -27,7 +27,7 @@
                 <div>
                     {% if request.user == profile.user %}
                         <a href="{% url 'edit_profile' profile.user.id %}">
-                            <img src="{% static 'network/images/pen.svg' %}" alt="Profile Edit Button" id="edit_profile_icon" data-profile_id="{{ profile.user.id }}">
+                            <img src="{% static 'network/images/pen.svg' %}" alt="Profile Edit Button">
                         </a>
                     {% endif %}
                 </div>

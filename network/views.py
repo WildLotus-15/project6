@@ -1,17 +1,17 @@
+import json
 from django.db import IntegrityError
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from .models import FriendRequest, Post, User, UserProfile
-from .forms import NewPostForm, EditProfileForm
+from .models import FriendRequest, Message, Post, User, UserProfile
+from .forms import EditProfileForm
 
 # Create your views here.
 def index(request):
     posts = Post.objects.order_by('-timestamp')
     return render(request, "network/index.html", {
         "posts": posts,
-        "form": NewPostForm()
     })
 
 
@@ -177,12 +177,11 @@ def self_in_friend_request(to_user, from_user):
 
 def create_post(request):
     if request.method == "POST":
-        form = NewPostForm(request.POST)
-        if form.is_valid():
-            newPost = form.save(commit=False)
-            newPost.author = request.user.profile
-            newPost.save()
-            return HttpResponseRedirect(reverse("index"))
+        data = json.loads(request.body)
+        description = data.get("description")
+        post = Post(author=request.user.profile, description=description)
+        post.save()
+        return JsonResponse({"message": "Post was created successfully."}, status=201)
 
 
 def login_view(request):
