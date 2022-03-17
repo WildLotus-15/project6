@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from .models import FriendRequest, Message, Post, User, UserProfile
+from .models import FriendRequest, Post, User, UserProfile
 from .forms import EditProfileForm
 
 # Create your views here.
@@ -60,7 +60,7 @@ def friend_requests(request):
 def edit_profile(request, profile_id):
     if request.method == "POST":
         profile = UserProfile.objects.get(pk=profile_id)
-        form = EditProfileForm(request.POST, instance=profile)
+        form = EditProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("edit_profile", args=(profile.user.id,)))
@@ -177,11 +177,14 @@ def self_in_friend_request(to_user, from_user):
 
 def create_post(request):
     if request.method == "POST":
-        data = json.loads(request.body)
-        description = data.get("description")
-        post = Post(author=request.user.profile, description=description)
-        post.save()
-        return JsonResponse({"message": "Post was created successfully."}, status=201)
+        if request.user.is_authenticated:
+            data = json.loads(request.body)
+            description = data.get("description")
+            post = Post(author=request.user.profile, description=description)
+            post.save()
+            return JsonResponse({"message": "Post was created successfully."}, status=201)
+        else:
+            return JsonResponse({"error": "You must log in first."}, status=403)
 
 
 def login_view(request):

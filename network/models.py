@@ -12,6 +12,7 @@ class User(AbstractUser):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True, related_name="profile", on_delete=models.CASCADE)
     bio = models.CharField(blank=True, default="No bio...", max_length=64)
+    picture = models.ImageField(default="default_icon_2.png")
     friends = models.ManyToManyField(User, blank=True, related_name="friends")
 
 
@@ -37,15 +38,6 @@ class Post(models.Model):
     author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     description = models.CharField(max_length=64)
     timestamp = models.DateTimeField(default=timezone.now)
-
-
-class Message(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="messages")
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="messages_sent")
-    recipients = models.ManyToManyField(User, related_name="messages_recieved")
-    body = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-    read = models.BooleanField(default=False)
 
 
 @receiver(post_save, sender=User)

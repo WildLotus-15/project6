@@ -9,8 +9,12 @@
             <div class="card-body">
                 <h5 class="card-title">New Post</h5>
                 <form>
-                    <textarea id="post_content" class="form-control" placeholder="What's on your mind {{ request.user.username }}?"></textarea>
-                    <input type="submit" class="btn btn-primary" value="Post">
+                    {% if request.user.is_authenticated %}
+                        <textarea id="post_content" class="form-control" placeholder="What's on your mind, {{ request.user.username }}?"></textarea>
+                    {% else %}
+                        <textarea id="post_content" class="form-control" placeholder="What's on your mind?"></textarea>
+                    {% endif %}
+                    <input id="post_submit" type="submit" class="btn btn-primary" value="Post">
                 </form>            
             </div>
         </div>

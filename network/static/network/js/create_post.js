@@ -1,6 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
+    if (!document.querySelector('#profile')) {
+        document.querySelector('#newPost').addEventListener('click', () => force_login())
+    }
+
     document.querySelector('form').onsubmit = create_post 
 })
+
+function force_login() {
+    document.querySelector('#login').click()
+}
 
 function create_post() {
     const description = document.querySelector('#post_content').value
@@ -19,8 +27,8 @@ function create_post() {
         console.log(response.message)
 
         window.location.reload()
-        
-        return false;
+    
+        return false;    
     })
 }
 
