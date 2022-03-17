@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Post
+from .models import Post, UserProfile
 
 
 class NewPostForm(ModelForm):
@@ -11,3 +11,10 @@ class NewPostForm(ModelForm):
     class Meta:
         model = Post
         fields = ["description"]
+
+
+class EditProfileForm(ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ["bio"]
+        

@@ -1,3 +1,4 @@
+from unicodedata import name
 from django.urls import path
 
 from . import views
@@ -16,5 +17,6 @@ urlpatterns = [
     path("friends/<int:profile_id>", views.friends, name="friends"),
     path("remove_from_friends/<int:requestID>", views.remove_from_friends, name="remove_from_friends"),
     path("remove_profile_friend/<int:profile_id>", views.remove_profile_friend, name="remove_profile_friend"),
-    path("cancel_friend_request/<int:profile_id>", views.cancel_friend_request, name="cancel_friend_request")
+    path("cancel_friend_request/<int:profile_id>", views.cancel_friend_request, name="cancel_friend_request"),
+    path("edit_profile/<int:profile_id>", views.edit_profile, name="edit_profile")
 ]

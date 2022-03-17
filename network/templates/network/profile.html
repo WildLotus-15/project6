@@ -9,6 +9,7 @@
             <div class="card-header">
                 <div>
                     {{ profile.user.username }}
+                    Bio: {{ profile.bio }}
                     {% if friend_request_available or self_in_friend_request or currently_friended %}
                         {% if currently_friended %}
                             <button type="button" class="btn btn-primary" id="remove_friend_button" data-profile_id="{{ profile.user.id }}">Friends</button>
@@ -22,6 +23,13 @@
                 <div>
                     <span id="friends_amount">{{ profile.friends.count }}</span>
                     <span>friends</span>
+                </div>
+                <div>
+                    {% if request.user == profile.user %}
+                        <a href="{% url 'edit_profile' profile.user.id %}">
+                            <img src="{% static 'network/images/pen.svg' %}" alt="Profile Edit Button" id="edit_profile_icon" data-profile_id="{{ profile.user.id }}">
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from .models import FriendRequest, Post, User, UserProfile
-from .forms import NewPostForm
+from .forms import NewPostForm, EditProfileForm
 
 # Create your views here.
 def index(request):
@@ -55,6 +55,25 @@ def friend_requests(request):
     return render(request, "network/friend_requests.html", {
         "friend_requests": friend_requests
     })
+
+
+def edit_profile(request, profile_id):
+    if request.method == "POST":
+        profile = UserProfile.objects.get(pk=profile_id)
+        form = EditProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("edit_profile", args=(profile.user.id,)))
+
+    else:
+        profile = UserProfile.objects.get(pk=profile_id)
+        form = EditProfileForm(instance=profile)
+
+    return render(request, "network/edit_profile.html", {
+        "profile": profile,
+        "form": form
+    })
+
 
 def remove_profile_friend(request, profile_id):
     try:

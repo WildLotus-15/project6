@@ -5,3 +5,7 @@
 .card-header > div {
     flex: 1;
 }
+
+#edit_profile_icon:hover {
+    cursor: pointer;
+}
