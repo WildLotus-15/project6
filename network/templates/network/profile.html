@@ -13,16 +13,21 @@
                         {{ profile.user.username }}
                     </div>
                     <div class="profile-name">
-                        {{ profile.name }}
+                        {% if profile.name %}
+                            {{ profile.name }}
+                        {% endif %}
                     </div>
                     <div class="profile-bio">
                         Bio: {{ profile.bio }}
                     </div>
-                    {% if friend_request_available or self_in_friend_request or currently_friended %}
+                    {% if friend_request_available or self_in_friend_request or currently_friended or self_in_profile_friend_request %}
                         {% if currently_friended %}
                             <button type="button" class="btn btn-primary" id="remove_friend_button" data-profile_id="{{ profile.user.id }}">Friends</button>
                         {% elif self_in_friend_request %}
                             <button type="button" class="btn btn-primary" id="cancel_friend_request_button" data-profile_id="{{ profile.user.id }}">Cancel Request</button>
+                        {% elif self_in_profile_friend_request %}
+                            <button type="button" class="btn btn-primary" id="accept_friend_request_button" data-friend_request_id="{{ friend_request_id }}">Confirm</button>
+                            <button type="button" class="btn btn-danger" id="decline_friend_request_button" data-friend_request_id="{{ friend_request_id }}">Delete</button>
                         {% else %}
                             <button type="button" class="btn btn-primary" id="send_friend_request_button" data-profile_id="{{ profile.user.id }}">Add Friend</button>
                         {% endif %}
@@ -55,4 +60,6 @@
     <script src="{% static 'network/js/remove_profile_friend.js' %}"></script>
     <script src="{% static 'network/js/send_friend_request.js' %}"></script>
     <script src="{% static 'network/js/cancel_friend_request.js' %}"></script>
+    <script src="{% static 'network/js/decline_friend_request.js' %}"></script>
+    <script src="{% static 'network/js/accept_friend_request.js' %}"></script>
 {% endblock %}

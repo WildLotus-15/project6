@@ -1,4 +1,5 @@
 import json
+from tkinter import TRUE
 from django.db import IntegrityError
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
@@ -155,18 +156,28 @@ def remove_from_friends(request, requestID):
 def show_profile(request, profile_id):
     try:
         profile = UserProfile.objects.get(pk=profile_id)
-    
+
+        context = {
+            "profile": profile,
+            "posts": Post.objects.filter(author=profile).order_by('-timestamp'),
+            "friend_request_available": not request.user.is_anonymous and not profile.user in request.user.profile.friends.all() and profile.user != request.user,
+            "currently_friended": not request.user.is_anonymous and profile.user in request.user.profile.friends.all(),
+            "friend_request_available": not request.user.is_anonymous and profile.user != request.user and not profile.user in request.user.profile.friends.all(),
+        }
+        
+        if request.user.is_authenticated:
+            context["self_in_friend_request"] = self_in_friend_request(profile.user, request.user)
+
+            context["self_in_profile_friend_request"] = self_in_profile_friend_request(request.user, profile.user)
+
+            if self_in_profile_friend_request(request.user, profile.user):
+                friend_request = FriendRequest.objects.get(to_user=request.user, from_user=profile.user)
+                context["friend_request_id"] = friend_request.id
+
     except UserProfile.DoesNotExist:
         return JsonResponse({"error": "User matching query does not exist."})
-        
-    return render(request, "network/profile.html", {
-        "profile": profile,
-        "posts": Post.objects.filter(author=profile).order_by('-timestamp'),
-        "friend_request_available": not request.user.is_anonymous and not profile.user in request.user.profile.friends.all() and profile.user != request.user,
-        "currently_friended": not request.user.is_anonymous and profile.user in request.user.profile.friends.all(),
-        "friend_request_available": not request.user.is_anonymous and profile.user != request.user and not profile.user in request.user.profile.friends.all(),
-        "self_in_friend_request": self_in_friend_request(profile.user, request.user)
-    })
+
+    return render(request, "network/profile.html", context)
 
 
 def self_in_friend_request(to_user, from_user):
@@ -177,6 +188,14 @@ def self_in_friend_request(to_user, from_user):
     except FriendRequest.DoesNotExist:
         return False
 
+
+def self_in_profile_friend_request(to_user, from_user):
+    try:
+        FriendRequest.objects.get(to_user=to_user, from_user=from_user)
+        return True
+
+    except FriendRequest.DoesNotExist:
+        return False
 
 def create_post(request):
     if request.method == "POST":

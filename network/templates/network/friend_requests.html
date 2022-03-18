@@ -1,5 +1,5 @@
 {% extends "network/layout.html" %} {% load static %} {% block title %}
-    {{ user.username }} | Friend Requests
+{{ user.username }} | Friend Requests
 {% endblock %}
 
 {% block body %}
@@ -7,15 +7,21 @@
     {% for friend_request in friend_requests %}
         <div class="card">
             <div class="card-header" id="friend_request_header_{{friend_request.id}}">
-                <div>
-                    <a href="{% url 'profile' friend_request.from_user.id %}">{{ friend_request.from_user }}</a> sent you a friend request
-                    <button type="button" class="btn btn-primary text-right" id="accept_friend_request_button" data-friend_request_id="{{ friend_request.id }}">Confirm request</button>    
-                    <button type="button" class="btn btn-danger text-right" id="decline_friend_request_button" data-friend_request_id="{{ friend_request.id }}">Delete request</button>    
+                <a href="{% url 'profile' friend_request.from_user.id %}">{{ friend_request.from_user }}</a> sent you a friend request
+                <div class="btn-group text-right">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Respond
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'friend_requests' %}" id="accept_friend_request_button" data-friend_request_id="{{ friend_request.id }}">Confirm </a>
+                        <a class="dropdown-item" href="{% url 'friend_requests' %}" id="decline_friend_request_button" data-friend_request_id="{{ friend_request.id }}">Delete request</a>
+                    </div>
                 </div>
             </div>
         </div>
-        {% empty %}
-            <div>No Friend Requests</div>
+
+    {% empty %}
+        <div>No Friend Requests</div>
     {% endfor %}
 
 {% endblock %}
