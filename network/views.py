@@ -60,10 +60,13 @@ def friend_requests(request):
 def edit_profile(request, profile_id):
     if request.method == "POST":
         profile = UserProfile.objects.get(pk=profile_id)
-        form = EditProfileForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("edit_profile", args=(profile.user.id,)))
+        if profile.user == request.user:
+            form = EditProfileForm(request.POST, request.FILES, instance=profile)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse("edit_profile", args=(profile.user.id,)))
+        else:
+            return JsonResponse({"error": "You do not have the permisson to perform this action"}, status=403)
 
     else:
         profile = UserProfile.objects.get(pk=profile_id)

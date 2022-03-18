@@ -9,8 +9,15 @@
             <div class="card-header">
                 <div>
                     <img class="profile_picture" src="{{ profile.picture.url }}" alt="Profile Picture">
-                    {{ profile.user.username }}
-                    Bio: {{ profile.bio }}
+                    <div class="profile-username">
+                        {{ profile.user.username }}
+                    </div>
+                    <div class="profile-name">
+                        {{ profile.name }}
+                    </div>
+                    <div class="profile-bio">
+                        Bio: {{ profile.bio }}
+                    </div>
                     {% if friend_request_available or self_in_friend_request or currently_friended %}
                         {% if currently_friended %}
                             <button type="button" class="btn btn-primary" id="remove_friend_button" data-profile_id="{{ profile.user.id }}">Friends</button>
