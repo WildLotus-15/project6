@@ -1,5 +1,4 @@
 import json
-from tkinter import TRUE
 from django.db import IntegrityError
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
@@ -18,28 +17,30 @@ def index(request):
 
 def send_friend_request(request, profile_id):
     from_user = request.user
-    to_user = User.objects.get(pk=profile_id)
 
-    if not to_user in from_user.profile.friends.all() or not from_user in to_user.profile.friends.all():
-        friend_request, created = FriendRequest.objects.get_or_create(
-            from_user=from_user, to_user=to_user)
-        if created:
-            return JsonResponse({"message": "Friend request was sent successfully."}, status=201)
+    try:
+        to_user = User.objects.get(pk=profile_id)
+
+        if not to_user in from_user.profile.friends.all() or not from_user in to_user.profile.friends.all():
+            friend_request, created = FriendRequest.objects.get_or_create(from_user=from_user, to_user=to_user)
+            if created:
+                return JsonResponse({"message": "Friend request was sent successfully."}, status=201)
+            else:
+                return JsonResponse({"message": "Friend request has been already sent."}, status=201)
+
         else:
-            return JsonResponse({"message": "Friend request has been already sent."}, status=201)
-
-    else:
-        return JsonResponse({"error": "You are already friends."}, status=200)
+            return JsonResponse({"error": "You are already friends."}, status=200)
+    
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User matching query does not exist."}, status=400)
 
 
 def accept_friend_request(request, requestID):
     try:
         friend_request = FriendRequest.objects.get(pk=requestID)
         if friend_request.to_user == request.user:
-            friend_request.to_user.profile.friends.add(
-                friend_request.from_user)
-            friend_request.from_user.profile.friends.add(
-                friend_request.to_user)
+            friend_request.to_user.profile.friends.add(friend_request.from_user)
+            friend_request.from_user.profile.friends.add(friend_request.to_user)
             friend_request.active = False
             friend_request.save()
         else:
@@ -113,8 +114,13 @@ def cancel_friend_request(request, profile_id):
 
 
 def friends(request, profile_id):
-    friends = UserProfile.objects.get(pk=profile_id).friends.all()
-    friend_requests = FriendRequest.objects.filter(from_user__in=friends)
+    try:
+        friends = UserProfile.objects.get(pk=profile_id).friends.all()
+        friend_requests = FriendRequest.objects.filter(from_user__in=friends)
+    
+    except UserProfile.DoesNotExist:
+        return JsonResponse({"error": "User profile matching query does not exist."}, status=400)
+
     return render(request, "network/friends.html", {
         "friends": friend_requests
     })
