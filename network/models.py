@@ -11,9 +11,9 @@ class User(AbstractUser):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, primary_key=True, related_name="profile", on_delete=models.CASCADE)
-    name = models.CharField(blank=True, null=True, max_length=64)
+    name = models.CharField(max_length=64, blank=True, null=True)
     bio = models.TextField(blank=True, default="No bio...")
-    picture = models.ImageField(default="default_icon_2.png", blank=True, null=True)
+    picture = models.ImageField(blank=True, default="default_icon_2.png", )
     friends = models.ManyToManyField(User, blank=True, related_name="friends")
 
 

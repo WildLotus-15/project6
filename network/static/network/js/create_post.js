@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#newPost').addEventListener('click', () => force_login())
     }
 
-    document.querySelector('form').onsubmit = create_post 
+    document.querySelector('#newPost').onsubmit = create_post 
 })
 
 function force_login() {

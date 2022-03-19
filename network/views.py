@@ -1,4 +1,5 @@
 import json
+from django.db.models import Q
 from django.db import IntegrityError
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
@@ -117,6 +118,8 @@ def friends(request, profile_id):
     try:
         friends = UserProfile.objects.get(pk=profile_id).friends.all()
         friend_requests = FriendRequest.objects.filter(from_user__in=friends)
+        print(friends)
+        print(friend_requests)
     
     except UserProfile.DoesNotExist:
         return JsonResponse({"error": "User profile matching query does not exist."}, status=400)
@@ -124,6 +127,7 @@ def friends(request, profile_id):
     return render(request, "network/friends.html", {
         "friends": friend_requests
     })
+
 
 def decline_friend_request(request, requestID):
     try:
@@ -223,6 +227,16 @@ def create_post(request):
             return JsonResponse({"message": "Post was created successfully."}, status=201)
         else:
             return JsonResponse({"error": "You must log in first."}, status=403)
+
+
+def search(request):
+    query = request.GET.get('q')
+    query_list = Post.objects.filter(
+        Q(description__icontains=query) | Q(author__user__username__icontains=query)
+    )
+    return render(request, "network/index.html", {
+        "posts": query_list,
+    })
 
 
 def login_view(request):
