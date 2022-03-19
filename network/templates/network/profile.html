@@ -17,6 +17,12 @@
                             {{ profile.name }}
                         {% endif %}
                     </div>
+                    <div class="profile-mutual-friends">
+                        {% for mutual_friend in mutual_friends %}
+                            Mutual friends ({{ mutual_friends_amount }}):
+                            <a href="{% url 'profile' mutual_friend.id %}">{{ mutual_friend }}</a>
+                        {% endfor %}
+                    </div>
                     <div class="profile-bio">
                         Bio: {{ profile.bio }}
                     </div>
@@ -26,8 +32,9 @@
                         {% elif self_in_friend_request %}
                             <button type="button" class="btn btn-primary" id="cancel_friend_request_button" data-profile_id="{{ profile.user.id }}">Cancel Request</button>
                         {% elif self_in_profile_friend_request %}
-                            <button type="button" class="btn btn-primary" id="accept_friend_request_button" data-friend_request_id="{{ friend_request_id }}">Confirm</button>
-                            <button type="button" class="btn btn-danger" id="decline_friend_request_button" data-friend_request_id="{{ friend_request_id }}">Delete</button>
+                            {{ profile.user.username }} sent you a friend request
+                            <button type="button" class="btn btn-primary" id="accept_friend_request_button" data-friend_request_id="{{ friend_request_id }}">Confirm Request</button>
+                            <button type="button" class="btn btn-danger" id="decline_friend_request_button" data-friend_request_id="{{ friend_request_id }}">Delete Request</button>
                         {% else %}
                             <button type="button" class="btn btn-primary" id="send_friend_request_button" data-profile_id="{{ profile.user.id }}">Add Friend</button>
                         {% endif %}

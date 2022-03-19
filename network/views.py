@@ -26,10 +26,10 @@ def send_friend_request(request, profile_id):
             if created:
                 return JsonResponse({"message": "Friend request was sent successfully."}, status=201)
             else:
-                return JsonResponse({"message": "Friend request has been already sent."}, status=201)
+                return JsonResponse({"message": "Friend request has been already sent."}, status=409)
 
         else:
-            return JsonResponse({"error": "You are already friends."}, status=200)
+            return JsonResponse({"error": "You are already friends."}, status=409)
     
     except User.DoesNotExist:
         return JsonResponse({"error": "User matching query does not exist."}, status=400)
@@ -68,7 +68,7 @@ def edit_profile(request, profile_id):
                 form.save()
                 return HttpResponseRedirect(reverse("edit_profile", args=(profile.user.id,)))
         else:
-            return JsonResponse({"error": "You do not have the permisson to perform this action"}, status=403)
+            return JsonResponse({"error": "You do not have the permisson to perform this action."}, status=403)
 
     else:
         profile = UserProfile.objects.get(pk=profile_id)
@@ -159,6 +159,13 @@ def remove_from_friends(request, requestID):
     return JsonResponse({"message": "Friend has been successfully removed."}, status=201)
 
 
+def mutual_friends(request_user, profile):
+    profile_friends = profile.friends.all()
+    friends_with_profile = profile_friends.values_list('pk', flat=True)
+    mutual_friends_of_request_user = request_user.friends.filter(pk__in=friends_with_profile)
+    return mutual_friends_of_request_user
+
+
 def show_profile(request, profile_id):
     try:
         profile = UserProfile.objects.get(pk=profile_id)
@@ -176,6 +183,9 @@ def show_profile(request, profile_id):
 
             context["self_in_profile_friend_request"] = self_in_profile_friend_request(request.user, profile.user)
 
+            context["mutual_friends"] = mutual_friends(request.user.profile, profile)
+            context["mutual_friends_amount"] = mutual_friends(request.user.profile, profile).count()
+            
             if self_in_profile_friend_request(request.user, profile.user):
                 friend_request = FriendRequest.objects.get(to_user=request.user, from_user=profile.user)
                 context["friend_request_id"] = friend_request.id
