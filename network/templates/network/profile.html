@@ -18,10 +18,10 @@
                         {% endif %}
                     </div>
                     <div>
-                        <span id="friends_amount">{{ profile.friends.count }} friends &middot;</span>
+                        <span id="friends_amount">{{ profile.friends.count }} friends</span>
                         <span class="profile-mutual-friends">
                             {% for mutual_friend in mutual_friends %}
-                                {{ mutual_friends_amount }} Mutual
+                                &middot; {{ mutual_friends_amount }} Mutual
                                 <a href="{% url 'profile' mutual_friend.id %}">
                                     <img src="{{ mutual_friend.profile.picture.url }}" alt="Mutual Friend Profile Picture" class="profile_picture">
                                 </a>

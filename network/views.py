@@ -186,13 +186,14 @@ def show_profile(request, profile_id):
             context["self_in_friend_request"] = self_in_friend_request(profile.user, request.user)
 
             context["self_in_profile_friend_request"] = self_in_profile_friend_request(request.user, profile.user)
-
-            context["mutual_friends"] = mutual_friends(request.user.profile, profile)
-            context["mutual_friends_amount"] = mutual_friends(request.user.profile, profile).count()
             
             if self_in_profile_friend_request(request.user, profile.user):
                 friend_request = FriendRequest.objects.get(to_user=request.user, from_user=profile.user)
                 context["friend_request_id"] = friend_request.id
+
+        if request.user != profile.user:
+            context["mutual_friends"] = mutual_friends(request.user.profile, profile)
+            context["mutual_friends_amount"] = mutual_friends(request.user.profile, profile).count()
 
     except UserProfile.DoesNotExist:
         return JsonResponse({"error": "User matching query does not exist."})
