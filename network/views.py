@@ -114,21 +114,6 @@ def cancel_friend_request(request, profile_id):
     return JsonResponse({"message": "Friend request has been successfully unsent."}, status=201)
 
 
-def friends(request, profile_id):
-    try:
-        friends = UserProfile.objects.get(pk=profile_id).friends.all()
-        friend_requests = FriendRequest.objects.filter(from_user__in=friends)
-        print(friends)
-        print(friend_requests)
-    
-    except UserProfile.DoesNotExist:
-        return JsonResponse({"error": "User profile matching query does not exist."}, status=400)
-
-    return render(request, "network/friends.html", {
-        "friends": friend_requests
-    })
-
-
 def decline_friend_request(request, requestID):
     try:
         friend_request = FriendRequest.objects.get(pk=requestID)
@@ -161,6 +146,21 @@ def remove_from_friends(request, requestID):
         return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
 
     return JsonResponse({"message": "Friend has been successfully removed."}, status=201)
+
+
+def friends(request, profile_id):
+    try:
+        friends = UserProfile.objects.get(pk=profile_id).friends.all()
+        friend_requests = FriendRequest.objects.filter(
+            Q(from_user__in=friends) | Q(to_user__in=friends)
+        )
+    
+    except UserProfile.DoesNotExist:
+        return JsonResponse({"error": "User profile matching query does not exist."}, status=400)
+
+    return render(request, "network/friends.html", {
+        "friends": friend_requests
+    })
 
 
 def mutual_friends(request_user, profile):

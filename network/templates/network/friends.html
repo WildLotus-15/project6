@@ -7,16 +7,18 @@
     {% for friend_request in friends %}
         <div class="card">
             <div class="card-header" id="friend_request_header_{{friend_request.id}}">
-                <div>
+                {% if friend_request.to_user == request.user %}
                     {{ friend_request.from_user }}
-                    <button type="button" class="btn btn-danger text-right" id="remove_friend_button" data-friend_request_id="{{ friend_request.id }}">Unfriend</button>    
-                </div>
+                {% else %}
+                    {{ friend_request.to_user }}
+                {% endif %}
+                <button type="button" class="btn btn-secondary text-right" id="remove_friend_button" data-friend_request_id="{{ friend_request.id }}">Unfriend</button>
             </div>
         </div>
-        {% empty %}
-            <div>No friends</div>
+    {% empty %}
+        <div>No friends</div>
     {% endfor %}
-        
+
 {% endblock %}
 
 {% block script %}
