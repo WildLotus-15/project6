@@ -2,7 +2,7 @@
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">
-            <img class="profile_picture" src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture">
+            <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture">
             <a href="{% url 'profile' post.author.user.id %}">{{ post.author.user.username }}</a>
         </h5>
         <p class="card-text">{{ post.description }}</p>

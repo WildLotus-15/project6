@@ -4,27 +4,31 @@
 
 {% block body %}
 
-    <div id="newPost">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">New Post</h5>
-                <form id="newPost">
-                    {% if request.user.is_authenticated %}
-                        <textarea id="post_content" class="form-control" placeholder="What's on your mind, {{ request.user.username }}?"></textarea>
-                    {% else %}
-                        <textarea id="post_content" class="form-control" placeholder="What's on your mind?"></textarea>
-                    {% endif %}
-                    <input id="post_submit" type="submit" class="btn btn-primary" value="Post">
-                </form>            
+    {% if not search %}
+        <div id="newPost">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">New Post</h5>
+                    <form id="newPost">
+                        {% if request.user.is_authenticated %}
+                            <textarea id="post_content" class="form-control" placeholder="What's on your mind, {{ request.user.username }}?"></textarea>
+                        {% else %}
+                            <textarea id="post_content" class="form-control" placeholder="What's on your mind?"></textarea>
+                        {% endif %}
+                        <input id="post_submit" type="submit" class="btn btn-primary" value="Post">
+                    </form>            
+                </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 
     {% for post in posts %}
         {% include "network/posts.html" %}
     {% empty %}
-        <div>No posts.</div>
-    {% endfor %}
+    <div class="d-flex justify-content-center text-muted">
+        <h4>No posts available</h4>
+    </div>
+    :{% endfor %}
 
 {% endblock %}
 

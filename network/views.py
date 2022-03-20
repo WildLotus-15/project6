@@ -191,9 +191,9 @@ def show_profile(request, profile_id):
                 friend_request = FriendRequest.objects.get(to_user=request.user, from_user=profile.user)
                 context["friend_request_id"] = friend_request.id
 
-        if request.user != profile.user:
-            context["mutual_friends"] = mutual_friends(request.user.profile, profile)
-            context["mutual_friends_amount"] = mutual_friends(request.user.profile, profile).count()
+            if request.user != profile.user:
+                context["mutual_friends"] = mutual_friends(request.user.profile, profile)
+                context["mutual_friends_amount"] = mutual_friends(request.user.profile, profile).count()
 
     except UserProfile.DoesNotExist:
         return JsonResponse({"error": "User matching query does not exist."})
@@ -220,14 +220,11 @@ def self_in_profile_friend_request(to_user, from_user):
 
 def create_post(request):
     if request.method == "POST":
-        if request.user.is_authenticated:
-            data = json.loads(request.body)
-            description = data.get("description")
-            post = Post(author=request.user.profile, description=description)
-            post.save()
-            return JsonResponse({"message": "Post was created successfully."}, status=201)
-        else:
-            return JsonResponse({"error": "You must log in first."}, status=403)
+        data = json.loads(request.body)
+        description = data.get("description")
+        post = Post(author=request.user.profile, description=description)
+        post.save()
+        return JsonResponse({"message": "Post was created successfully."}, status=201)
 
 
 def search(request):
@@ -237,6 +234,7 @@ def search(request):
     )
     return render(request, "network/index.html", {
         "posts": query_list,
+        "search": True
     })
 
 

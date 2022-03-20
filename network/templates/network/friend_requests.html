@@ -21,7 +21,10 @@
         </div>
 
     {% empty %}
-        <div>No Friend Requests</div>
+        <div class="d-flex justify-content-center">
+            <img src="{% static 'network/images/friend_requests_icon.svg' %}" width="50" height="50" alt="">
+            When you have friend requests, you'll see them here.
+        </div>
     {% endfor %}
 
 {% endblock %}
