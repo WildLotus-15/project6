@@ -21,10 +21,10 @@
         </div>
 
     {% empty %}
-        <div class="d-flex justify-content-center">
-            <img src="{% static 'network/images/friend_requests_icon.svg' %}" width="50" height="50" alt="">
-            When you have friend requests, you'll see them here.
-        </div>
+    <div class="d-flex justify-content-center align-items-center text-muted" style="min-height: 600px">
+        <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
+        <h5>When you have friend requests, you'll see them here.</h5>
+    </div>
     {% endfor %}
 
 {% endblock %}

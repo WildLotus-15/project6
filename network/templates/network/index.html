@@ -8,15 +8,16 @@
         <div id="newPost">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">New Post</h5>
-                    <form id="newPost">
+                    <h5 class="card-title">Create Post</h5>
+                    <form id="newPost" class="form-inline">
                         {% if request.user.is_authenticated %}
-                            <textarea id="post_content" class="form-control" placeholder="What's on your mind, {{ request.user.username }}?"></textarea>
+                            <img src="{{ request.user.profile.picture.url }}" class="d-inline" alt="Logged in Profile Picture" width="40px" height="40px" style="border-radius: 50%">
+                            <input id="post_content" type="text" placeholder="What's on your mind, {{ request.user.username }}?" class="form-control w-75">
                         {% else %}
-                            <textarea id="post_content" class="form-control" placeholder="What's on your mind?"></textarea>
+                            <input id="post_content" class="form-control" type="text" placeholder="What's on your mind?">
                         {% endif %}
                         <input id="post_submit" type="submit" class="btn btn-primary" value="Post">
-                    </form>            
+                    </form>
                 </div>
             </div>
         </div>
@@ -26,7 +27,7 @@
         {% include "network/posts.html" %}
     {% empty %}
     <div class="d-flex justify-content-center text-muted">
-        <h4>No posts available</h4>
+        <h4 class="mt-4">No posts available</h4>
     </div>
     :{% endfor %}
 
