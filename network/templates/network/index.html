@@ -67,11 +67,17 @@
 {% endif %}
 
 {% for post in posts %}
-{% include "network/posts.html" %}
+    {% include "network/posts.html" %}
 {% empty %}
-<div class="d-flex justify-content-center text-muted">
-    <h4 class="mt-4">No posts available</h4>
-</div>
+    {% if search %}
+        <div class="d-flex justify-content-center text-muted">
+            <h4 class="mt-4">No posts or users available</h4>
+        </div>
+    {% else %}
+    <div class="d-flex justify-content-center text-muted">
+        <h4 class="mt-4">No posts available</h4>
+    </div>
+    {% endif %}
 {% endfor %}
 
 {% endblock %}
