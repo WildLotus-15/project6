@@ -225,7 +225,8 @@ def create_post(request):
         data = json.loads(request.body)
         description = data.get("description")
         only_friends = data.get("only_friends")
-        post = Post(author=request.user.profile, description=description, only_friends=only_friends)
+        only_me = data.get("only_me")
+        post = Post(author=request.user.profile, description=description, only_friends=only_friends, only_me=only_me)
         post.save()
         return JsonResponse({"message": "Post was created successfully."}, status=201)
 

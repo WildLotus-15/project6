@@ -22,7 +22,8 @@ function force_login() {
 
 function create_post() {
     const description = document.querySelector('#post_content').value
-    const only_friends = document.querySelector('.form-check-input').checked
+    const only_friends = document.querySelector('#only_friends').checked
+    const only_me = document.querySelector('#only_me').checked
 
     fetch('/create_post', {
         method: 'POST',
@@ -31,7 +32,8 @@ function create_post() {
         },
         body: JSON.stringify({
             "description": description,
-            "only_friends": only_friends
+            "only_friends": only_friends,
+            "only_me": only_me
         })
     })
     .then(response => response.json())
