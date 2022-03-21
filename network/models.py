@@ -38,6 +38,7 @@ class FriendRequest(models.Model):
 class Post(models.Model):
     author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     description = models.CharField(max_length=64)
+    only_friends = models.BooleanField(default=False)
     timestamp = models.DateTimeField(default=timezone.now)
 
 

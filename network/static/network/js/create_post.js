@@ -22,6 +22,7 @@ function force_login() {
 
 function create_post() {
     const description = document.querySelector('#post_content').value
+    const only_friends = document.querySelector('.form-check-input').checked
 
     fetch('/create_post', {
         method: 'POST',
@@ -29,15 +30,16 @@ function create_post() {
             'X-CSRFToken': getCookie("csrftoken")
         },
         body: JSON.stringify({
-            "description": description
+            "description": description,
+            "only_friends": only_friends
         })
     })
     .then(response => response.json())
     .then(response => {
         console.log(response.message)
-
-        window.location.reload()
     
+        window.location.reload()
+
         return false;    
     })
 }

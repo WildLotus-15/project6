@@ -89,7 +89,9 @@ def remove_profile_friend(request, profile_id):
         to_user.friends.remove(from_user.profile)
         from_user.friends.remove(to_user.profile)
 
-        friend_request = FriendRequest.objects.get(from_user=from_user, to_user=to_user)
+        friend_request = FriendRequest.objects.get(
+            Q(from_user=from_user, to_user=to_user) | Q(from_user=to_user, to_user=from_user)
+        )
         friend_request.delete()
 
     except (User.DoesNotExist, FriendRequest.DoesNotExist) as e:
@@ -222,7 +224,8 @@ def create_post(request):
     if request.method == "POST":
         data = json.loads(request.body)
         description = data.get("description")
-        post = Post(author=request.user.profile, description=description)
+        only_friends = data.get("only_friends")
+        post = Post(author=request.user.profile, description=description, only_friends=only_friends)
         post.save()
         return JsonResponse({"message": "Post was created successfully."}, status=201)
 

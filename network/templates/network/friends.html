@@ -6,9 +6,9 @@
 
     {% for friend_request in friends %}
         {% if friend_request.to_user == request.user %}
-            <div class="container card">
-                <div class="row card-header">
-                    <div class="col-xs-6 col-md-11">
+            <div class="card">
+                <div class="card-header d-flex justify-content-around">
+                    <div>
                         <a href="{% url 'profile' friend_request.from_user.id %}">
                             <div id="friend_request_header_{{friend_request.id}}">
                                 <img src="{{ friend_request.from_user.profile.picture.url }}" alt="" width="40px" height="40px"
@@ -17,16 +17,16 @@
                             </div>
                         </a>
                     </div>
-                    <div class="col-xs-6 col-md-1">
+                    <div>
                         <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-secondary"
                             style="float: right">Unfriend</button>
                     </div>
                 </div>
             </div>
         {% else %}
-            <div class="container card">
-                <div class="row card-header">
-                    <div class="col-xs-6 col-md-11">
+            <div class="card">
+                <div class="card-header d-flex justify-content-around">
+                    <div>
                         <a href="{% url 'profile' friend_request.to_user.id %}">
                             <div id="friend_request_header_{{friend_request.id}}">
                                 <img src="{{ friend_request.to_user.profile.picture.url }}" alt="" width="40px" height="40px"
@@ -35,7 +35,7 @@
                             </div>
                         </a>
                     </div>
-                    <div class="col-xs-6 col-md-1">
+                    <div>
                         <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-secondary"
                             style="float: right">Unfriend</button>
                     </div>

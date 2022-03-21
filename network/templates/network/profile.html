@@ -33,7 +33,7 @@
                     </div>
                     {% if friend_request_available or self_in_friend_request or currently_friended or self_in_profile_friend_request %}
                         {% if currently_friended %}
-                            <button type="button" class="btn btn-primary" id="remove_friend_button" data-profile_id="{{ profile.user.id }}">Friends</button>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Friends</button>
                         {% elif self_in_friend_request %}
                             <button type="button" class="btn btn-primary" id="cancel_friend_request_button" data-profile_id="{{ profile.user.id }}">Cancel Request</button>
                         {% elif self_in_profile_friend_request %}
@@ -51,6 +51,31 @@
                             <img src="{% static 'network/images/pen.svg' %}" alt="Profile Edit Button">
                         </a>
                     {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+    
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Unfriend {{ profile.user.username }}</h4>
+    
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+    
+                <!-- Modal body -->
+                <div class="modal-body">
+                    Are you sure you want to remove {{ profile.user.username }} as your friend?
+                </div>
+    
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="remove_friend_button" data-profile_id="{{ profile.user.id }}">Confirm</button>
                 </div>
             </div>
         </div>
