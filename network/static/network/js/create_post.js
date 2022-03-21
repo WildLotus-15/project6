@@ -3,7 +3,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#newPost').addEventListener('click', () => force_login())
     }
 
-    document.querySelector('#newPost').onsubmit = create_post 
+    document.querySelector('#post_submit').addEventListener('click', () => create_post())
+
+    document.querySelector('#post_submit').disabled = true
+    
+    document.querySelector('#post_content').onkeyup = function() {
+        if (document.querySelector('#post_content').value.length > 0) {
+            document.querySelector('#post_submit').disabled = false
+        } else {
+            document.querySelector('#post_submit').disabled = true
+        }
+    }
 })
 
 function force_login() {

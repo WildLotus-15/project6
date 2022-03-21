@@ -5,21 +5,85 @@
 {% block body %}
 
     {% for friend_request in friends %}
-        <div class="card">
-            <div class="card-header" id="friend_request_header_{{friend_request.id}}">
-                {% if friend_request.to_user == request.user %}
-                    {{ friend_request.from_user }}
-                {% else %}
-                    {{ friend_request.to_user }}
-                {% endif %}
-                <button type="button" class="btn btn-secondary text-right" id="remove_friend_button" data-friend_request_id="{{ friend_request.id }}">Unfriend</button>
+        {% if friend_request.to_user == request.user %}
+            <div class="container card">
+                <div class="row card-header">
+                    <div class="col-xs-6 col-md-11">
+                        <a href="{% url 'profile' friend_request.from_user.id %}">
+                            <div id="friend_request_header_{{friend_request.id}}">
+                                <img src="{{ friend_request.from_user.profile.picture.url }}" alt="" width="40px" height="40px"
+                                    style="border-radius: 50%">
+                                {{ friend_request.from_user }}
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-xs-6 col-md-1">
+                        <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-secondary"
+                            style="float: right">Unfriend</button>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="container card">
+                <div class="row card-header">
+                    <div class="col-xs-6 col-md-11">
+                        <a href="{% url 'profile' friend_request.to_user.id %}">
+                            <div id="friend_request_header_{{friend_request.id}}">
+                                <img src="{{ friend_request.to_user.profile.picture.url }}" alt="" width="40px" height="40px"
+                                    style="border-radius: 50%">
+                                {{ friend_request.to_user }}
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-xs-6 col-md-1">
+                        <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-secondary"
+                            style="float: right">Unfriend</button>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        {% if friend_request.to_user == request.user %}
+                        Unfriend {{ friend_request.from_user }}
+                        {% else %}
+                        Unfriend {{ friend_request.to_user }}
+                        {% endif %}
+                    </h4>
+
+                    <button type="button" class="close" data-dismiss="modal" id="close">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    {% if friend_request.to_user == request.user %}
+                    Are you sure you want to remove {{ friend_request.from_user }} as your friend?
+                    {% else %}
+                    Are you sure you want to remove {{ friend_request.to_user }} as your friend?
+                    {% endif %}
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="remove_friend_button"
+                        data-friend_request_id="{{ friend_request.id }}">Confirm</button>
+                </div>
             </div>
         </div>
-    {% empty %}
-    <div class="d-flex justify-content-center align-items-center" style="min-height: 600px">
-        <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
-        <h5 class="text-muted">When you have friends, you'll see them here.</h5>
     </div>
+
+    {% empty %}
+        <div class="d-flex justify-content-center align-items-center" style="min-height: 600px">
+            <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
+            <h5 class="text-muted">When you have friends, you'll see them here.</h5>
+        </div>
     {% endfor %}
 
 {% endblock %}

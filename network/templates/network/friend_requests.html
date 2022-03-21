@@ -4,32 +4,39 @@
 
 {% block body %}
 
-    {% for friend_request in friend_requests %}
-        <div class="card">
-            <div class="card-header" id="friend_request_header_{{friend_request.id}}">
-                <a href="{% url 'profile' friend_request.from_user.id %}">{{ friend_request.from_user }}</a> sent you a friend request
-                <div class="dropdown text-right ">
-                    <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Respond
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="{% url 'friend_requests' %}" id="accept_friend_request_button" data-friend_request_id="{{ friend_request.id }}">Confirm </a>
-                        <a class="dropdown-item" href="{% url 'friend_requests' %}" id="decline_friend_request_button" data-friend_request_id="{{ friend_request.id }}">Delete request</a>
-                    </div>
-                </div>
+{% for friend_request in friend_requests %}
+<div class="card">
+    <div class="card-header d-flex justify-content-around" id="friend_request_header_{{friend_request.id}}">
+        <div>
+            <img src="{{ friend_request.from_user.profile.picture.url }}" alt="" width="40px" height="40px" style="border-radius: 50%">
+            <a href="{% url 'profile' friend_request.from_user.id %}">{{ friend_request.from_user }}</a> sent you a friend
+            request    
+        </div>
+        <div class="dropdown">
+            <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Respond
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="{% url 'friend_requests' %}" id="accept_friend_request_button"
+                    data-friend_request_id="{{ friend_request.id }}">Confirm </a>
+                <a class="dropdown-item" href="{% url 'friend_requests' %}" id="decline_friend_request_button"
+                    data-friend_request_id="{{ friend_request.id }}">Delete request</a>
             </div>
         </div>
-
-    {% empty %}
-    <div class="d-flex justify-content-center align-items-center text-muted" style="min-height: 600px">
-        <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
-        <h5>When you have friend requests, you'll see them here.</h5>
     </div>
-    {% endfor %}
+</div>
+
+{% empty %}
+<div class="d-flex justify-content-center align-items-center text-muted" style="min-height: 600px">
+    <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
+    <h5>When you have friend requests, you'll see them here.</h5>
+</div>
+{% endfor %}
 
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'network/js/decline_friend_request.js' %}"></script>
-    <script src="{% static 'network/js/accept_friend_request.js' %}"></script>
+<script src="{% static 'network/js/decline_friend_request.js' %}"></script>
+<script src="{% static 'network/js/accept_friend_request.js' %}"></script>
 {% endblock %}

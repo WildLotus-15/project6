@@ -12,7 +12,7 @@ function remove_friend(friend_request_id) {
     fetch(`/remove_from_friends/${friend_request_id}`)
     .then(response => response.json())
     .then(response => {
-        document.getElementById(`friend_request_header_${friend_request_id}`).remove()
+        window.location.reload()
 
         console.log(response.message)
     })

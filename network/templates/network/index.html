@@ -1,38 +1,75 @@
-{% extends "network/layout.html" %} {% load static %} 
+{% extends "network/layout.html" %} {% load static %}
 
 {% block title %}Network{% endblock %}
 
 {% block body %}
 
-    {% if not search %}
-        <div id="newPost">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Create Post</h5>
-                    <form id="newPost" class="form-inline">
-                        {% if request.user.is_authenticated %}
-                            <img src="{{ request.user.profile.picture.url }}" class="d-inline" alt="Logged in Profile Picture" width="40px" height="40px" style="border-radius: 50%">
-                            <input id="post_content" type="text" placeholder="What's on your mind, {{ request.user.username }}?" class="form-control w-75">
-                        {% else %}
-                            <input id="post_content" class="form-control" type="text" placeholder="What's on your mind?">
-                        {% endif %}
-                        <input id="post_submit" type="submit" class="btn btn-primary" value="Post">
-                    </form>
-                </div>
+{% if not search %}
+<div id="newPost">
+    <div class="card">
+        <div class="card-body">
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'profile' request.user.id %}">
+                <img src="{{ request.user.profile.picture.url }}" class="d-inline" alt="Logged in Profile Picture"
+                width="40px" height="40px" style="border-radius: 50%">
+            </a>
+            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#myModal">What's on your
+                mind, {{ request.user.username }}?</button>
+            {% else %}
+            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#myModal">What's on your
+                mind?</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Create Post</h4>
+
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form id="newPost">
+                    {% if request.user.is_authenticated %}
+                    <a href="{% url 'profile' request.user.id %}">
+                        <img src="{{ request.user.profile.picture.url }}" class="d-inline" alt="Logged in Profile Picture"
+                        width="40px" height="40px" style="border-radius: 50%">
+                    </a>
+                    {{ request.user.username }}
+                    <input id="post_content" type="text" placeholder="What's on your mind, {{ request.user.username }}?"
+                        class="form-control">
+                    {% else %}
+                    <input id="post_content" class="form-control" type="text" placeholder="What's on your mind?">
+                    {% endif %}
+                </form>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <input id="post_submit" type="submit" class="btn btn-primary btn-block" value="Post">
             </div>
         </div>
-    {% endif %}
-
-    {% for post in posts %}
-        {% include "network/posts.html" %}
-    {% empty %}
-    <div class="d-flex justify-content-center text-muted">
-        <h4 class="mt-4">No posts available</h4>
     </div>
-    :{% endfor %}
+</div>
+{% endif %}
+
+{% for post in posts %}
+{% include "network/posts.html" %}
+{% empty %}
+<div class="d-flex justify-content-center text-muted">
+    <h4 class="mt-4">No posts available</h4>
+</div>
+{% endfor %}
 
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'network/js/create_post.js' %}"></script>
+<script src="{% static 'network/js/create_post.js' %}"></script>
 {% endblock %}
