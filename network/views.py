@@ -233,11 +233,15 @@ def create_post(request):
 
 def search(request):
     query = request.GET.get('q')
-    query_list = Post.objects.filter(
+    post_query_list = Post.objects.filter(
         Q(description__icontains=query) | Q(author__user__username__icontains=query)
     )
+    profile_query_list = UserProfile.objects.filter(
+        Q(user__username__icontains=query)
+    )
     return render(request, "network/index.html", {
-        "posts": query_list,
+        "posts": post_query_list,
+        "profiles": profile_query_list,
         "search": True
     })
 

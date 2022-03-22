@@ -28,8 +28,8 @@
         <div class="modal-content">
 
             <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title">Create Post</h4>
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100">Create Post</h4>
 
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
@@ -43,20 +43,22 @@
                             alt="Logged in Profile Picture" width="40px" height="40px" style="border-radius: 50%">
                     </a>
                     {{ request.user.username }}
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="only_friends" checked>
-                        <label class="form-check-label" for="flexRadioDefault1">
-                            Friends
-                        </label>
-                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="only_me">
-                        <label class="form-check-label" for="flexRadioDefault1">
-                            Only me
-                        </label>
-                    </div>
-                    <input id="post_content" type="text" placeholder="What's on your mind, {{ request.user.username }}?"
+                    <div class="btn-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="only_friends" checked>
+                            <label class="form-check-label" for="flexRadioDefault1">
+                                Friends
+                            </label>
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="only_me">
+                            <label class="form-check-label" for="flexRadioDefault1">
+                                Only me
+                            </label>
+                        </div>
+                          </div>
+                    <div class="mt-3">
+                        <input id="post_content" type="text" placeholder="What's on your mind, {{ request.user.username }}?"
                         class="form-control">
-                    {% else %}
-                    <input id="post_content" class="form-control" type="text" placeholder="What's on your mind?">
+                    </div>
                     {% endif %}
                 </form>
             </div>
@@ -70,19 +72,32 @@
 </div>
 {% endif %}
 
-{% for post in posts %}
-    {% include "network/posts.html" %}
-{% empty %}
-    {% if search %}
+{% if search %}
+    {% for profile in profiles %}
+        {% include "network/profiles.html" %}
+    {% empty %}
         <div class="d-flex justify-content-center text-muted">
-            <h4 class="mt-4">No posts or users available</h4>
+            <h4 class="mt-4">No users available</h4>
         </div>
-    {% else %}
-    <div class="d-flex justify-content-center text-muted">
-        <h4 class="mt-4">No posts available</h4>
-    </div>
-    {% endif %}
-{% endfor %}
+    {% endfor %}
+
+    {% for post in posts %}
+        {% include "network/posts.html" %}
+    {% empty %}
+        <div class="d-flex justify-content-center text-muted">
+            <h4 class="mt-4">No posts available</h4>
+        </div>
+    {% endfor %}
+{% else %}
+    {% for post in posts %}
+        {% include "network/posts.html" %}
+    {% empty %}
+        <div class="d-flex justify-content-center text-muted">
+            <h4 class="mt-4">No posts available</h4>
+        </div>
+    {% endfor %}
+{% endif %}
+
 
 {% endblock %}
 

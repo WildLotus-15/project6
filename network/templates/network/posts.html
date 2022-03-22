@@ -1,8 +1,7 @@
 {% load static %}
 
 {% if post.only_friends %}
-    {% if post.author.user in request.user.profile.friends.all or request.user in post.author.friends.all or
-    post.author.user == request.user %}
+    {% if post.author.user in request.user.profile.friends.all or request.user in post.author.friends.all or post.author.user == request.user %}
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">

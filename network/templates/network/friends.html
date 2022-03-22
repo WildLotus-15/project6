@@ -80,9 +80,13 @@
     </div>
 
     {% empty %}
-        <div class="d-flex justify-content-center align-items-center" style="min-height: 600px">
-            <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
-            <h5 class="text-muted">When you have friends, you'll see them here.</h5>
+        <div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px;">
+            <div class="p-2">
+                <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
+            </div>
+            <div class="p-2 text-muted">
+                <h5 class="text-muted">When you have friends, you'll see them here.</h5>
+            </div>
         </div>
     {% endfor %}
 
