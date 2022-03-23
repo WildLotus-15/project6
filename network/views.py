@@ -1,4 +1,5 @@
 import json
+from tkinter.tix import Tree
 from django.db.models import Q
 from django.db import IntegrityError
 from django.urls import reverse
@@ -152,17 +153,42 @@ def remove_from_friends(request, requestID):
 
 def friends(request, profile_id):
     try:
-        friends = UserProfile.objects.get(pk=profile_id).friends.all()
+        profile = UserProfile.objects.get(pk=profile_id)
+
+        friends = profile.friends.all()
+
         friend_requests = FriendRequest.objects.filter(
             Q(from_user__in=friends) | Q(to_user__in=friends)
         )
-    
+
+        context = {}
+
+        if request.user.is_authenticated:
+            context["friends"] = friend_requests
+
+            requests = FriendRequest.objects.filter(
+                Q(to_user=profile.user) | Q(from_user=profile.user)
+            )
+
+            for friend_request in requests:
+                if friend_request.to_user == profile.user:
+                    requests_friends = requests.values_list('from_user', flat=True)
+                else:
+                    requests_friends = requests.values_list('to_user', flat=True)
+
+            requests_profiles = UserProfile.objects.filter(pk__in=requests_friends)
+            friends_with_profile = profile.friends.values_list('pk', flat=True)
+
+            for request_profile in requests_profiles:
+                request_friends = request_profile.friends.filter(pk__in=friends_with_profile)
+
+            context["mutual_friends"] = request_friends
+            context["mutual_friends_amount"] = request_friends.count()
+
     except UserProfile.DoesNotExist:
         return JsonResponse({"error": "User profile matching query does not exist."}, status=400)
 
-    return render(request, "network/friends.html", {
-        "friends": friend_requests
-    })
+    return render(request, "network/friends.html", context)
 
 
 def mutual_friends(request_user, profile):

@@ -20,10 +20,10 @@
                     <div>
                         <span id="friends_amount">{{ profile.friends.count }} friends</span>
                         <span class="profile-mutual-friends">
+                            &middot; {{ mutual_friends_amount }} Mutual
                             {% for mutual_friend in mutual_friends %}
-                                &middot; {{ mutual_friends_amount }} Mutual
                                 <a href="{% url 'profile' mutual_friend.id %}">
-                                    <img src="{{ mutual_friend.profile.picture.url }}" alt="Mutual Friend Profile Picture" class="profile_picture">
+                                    <img src="{{ mutual_friend.profile.picture.url }}" alt="Mutual Friend Profile Picture" width="32" height="32" style="border-radius: 50%;">
                                 </a>
                             {% endfor %}
                         </span>    
