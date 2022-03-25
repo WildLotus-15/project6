@@ -10,7 +10,7 @@
         <div>
             <img src="{{ friend_request.from_user.profile.picture.url }}" alt="" width="40px" height="40px" style="border-radius: 50%">
             <a href="{% url 'profile' friend_request.from_user.id %}">{{ friend_request.from_user }}</a> sent you a friend
-            request    
+            request
         </div>
         <div class="dropdown">
             <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown"

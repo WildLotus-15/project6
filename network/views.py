@@ -55,10 +55,31 @@ def accept_friend_request(request, requestID):
 
 
 def friend_requests(request):
-    friend_requests = FriendRequest.objects.filter(to_user=request.user, active=True)
-    return render(request, "network/friend_requests.html", {
-        "friend_requests": friend_requests
-    })
+    context = {}
+
+    friend_requests = FriendRequest.objects.filter(to_user=request.user, active=True).all()
+    from_users = friend_requests.values_list('from_user', flat=True)
+    print(from_users)
+
+    context["friend_requests"] = friend_requests
+
+    from_users_profiles = UserProfile.objects.filter(pk__in=from_users).all()
+    print(from_users_profiles)
+
+    for from_user_profile in from_users_profiles:
+        from_user_friends = from_user_profile.friends.values_list('pk', flat=True)
+        print(from_user_friends)
+    
+        mutual_friends = request.user.profile.friends.filter(pk__in=from_user_friends).all()
+        print(mutual_friends)
+
+        # NEED TO FIX THIS GLOBAL MUTUAL FRIENDS VARIABLE
+        # ALL FRIENDS MUST HAVE SPECIFIC TO THEM MUTUAL FRIEND LISTS IN RELATION TO REQUEST USER
+
+        context["mutual_friends"] = mutual_friends
+        context["mutual_friends_amount"] = mutual_friends.count()
+
+    return render(request, "network/friend_requests.html", context)
 
 
 def edit_profile(request, profile_id):
@@ -166,24 +187,24 @@ def friends(request, profile_id):
         if request.user.is_authenticated:
             context["friends"] = friend_requests
 
-            requests = FriendRequest.objects.filter(
-                Q(to_user=profile.user) | Q(from_user=profile.user)
-            )
-
-            for friend_request in requests:
+            for friend_request in friend_requests:
                 if friend_request.to_user == profile.user:
-                    requests_friends = requests.values_list('from_user', flat=True)
+                    requests_friends = friend_requests.values_list('from_user', flat=True)
                 else:
-                    requests_friends = requests.values_list('to_user', flat=True)
+                    requests_friends = friend_requests.values_list('to_user', flat=True)
 
-            requests_profiles = UserProfile.objects.filter(pk__in=requests_friends)
-            friends_with_profile = profile.friends.values_list('pk', flat=True)
+                requests_profiles = UserProfile.objects.filter(pk__in=requests_friends)
+                friends_with_profile = profile.friends.values_list('pk', flat=True)
 
-            for request_profile in requests_profiles:
-                request_friends = request_profile.friends.filter(pk__in=friends_with_profile)
+                for request_profile in requests_profiles:
+                    request_friends = request_profile.friends.filter(pk__in=friends_with_profile)
+                    print(request_friends)
 
-            context["mutual_friends"] = request_friends
-            context["mutual_friends_amount"] = request_friends.count()
+                # NEED TO FIX THIS GLOBAL MUTUAL FRIENDS VARIABLE
+                # ALL FRIENDS MUST HAVE SPECIFIC TO THEM MUTUAL FRIEND LISTS IN RELATION TO REQUEST USER
+
+                context["mutual_friends"] = request_friends
+                context["mutual_friends_amount"] = request_friends.count()
 
     except UserProfile.DoesNotExist:
         return JsonResponse({"error": "User profile matching query does not exist."}, status=400)
@@ -195,6 +216,7 @@ def mutual_friends(request_user, profile):
     profile_friends = profile.friends.all()
     friends_with_profile = profile_friends.values_list('pk', flat=True)
     mutual_friends_of_request_user = request_user.friends.filter(pk__in=friends_with_profile)
+    print(friends_with_profile)
     return mutual_friends_of_request_user
 
 

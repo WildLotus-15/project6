@@ -16,14 +16,6 @@
                                 {{ friend_request.from_user }}
                             </div>
                         </a>
-                        {{ mutual_friends_amount }} mutual friends
-                        {% for mutual_friend in mutual_friends %}
-                            <a href="{% url 'profile' mutual_friend.id %}">
-                                <img src="{{ mutual_friend.profile.picture.url }}" alt="" width="40px" height="40px"
-                                    style="border-radius: 50%;">
-                                {{ mutual_friend.username }}
-                            </a>
-                        {% endfor %}   
                     </div>
                     <div>
                         <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-secondary"
@@ -37,19 +29,11 @@
                     <div>
                         <a href="{% url 'profile' friend_request.to_user.id %}">
                             <div id="friend_request_header_{{friend_request.id}}">
-                                <img src="{{ friend_request.to_user.profile.picture.url }}" alt="" width="40px" height="40px"
+                                <img src="{{ friend_request.to_user.profile.picture.url }}" alt="" width="60px" height="60px"
                                     style="border-radius: 50%">
                                 {{ friend_request.to_user }}
                             </div>
                         </a>
-                        {{ mutual_friends_amount }} mutual friends
-                        {% for mutual_friend in mutual_friends %}
-                            <a href="{% url 'profile' mutual_friend.id %}">
-                                <img src="{{ mutual_friend.profile.picture.url }}" alt="" width="40px" height="40px"
-                                    style="border-radius: 50%;">
-                                {{ mutual_friend.username }}
-                            </a>
-                        {% endfor %}
                     </div>
                     <div>
                         <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-secondary"
