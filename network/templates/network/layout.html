@@ -37,39 +37,33 @@
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item">
                     <a class="navbar-brand nav-link" href="{% url 'index' %}">
-                        <img src="{% static 'network/images/Home_homepage_interface-256.webp' %}" width="30" class="d-inline-block align-top" alt="">
                         Home
                     </a>
                 </li>
                 {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="navbar-brand nav-link" href="{% url 'friend_requests' %}">
-                        <img src="{% static 'network/images/7282320.png' %}" width="30" class="d-inline-block align-top" alt="">
                         Friend Requests
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="navbar-brand nav-link" href="{% url 'friends' user.id %}">
-                        <img src="{% static 'network/images/users2-1-256.webp' %}" width="30" class="d-inline-block align-top" alt="">
                         All Friends
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="navbar-brand nav-link" href="{% url 'logout' %}">
-                        <img src="{% static 'network/images/exit_logout_sign-256.webp' %}" width="30" height="30" class="d-inline-block align-top" alt="">
+                    <a class="navbar-brand nav-link" href="{% url 'account_logout' %}">
                         Log Out
                     </a>
                 </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="navbar-brand nav-link" href="{% url 'login' %}" id="login">
-                            <img src="{% static 'network/images/exit_logout_sign-256.webp' %}" width="30" height="30" class="d-inline-block align-top" alt="">
+                        <a class="navbar-brand nav-link" href="{% url 'account_login' %}">
                             Login
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="navbar-brand nav-link" href="{% url 'register' %}">
-                            <img src="{% static 'network/images/exit_logout_sign-256.webp' %}" width="30" height="30" class="d-inline-block align-top" alt="">
+                        <a class="navbar-brand nav-link" href="{% url 'account_signup' %}">
                             Register
                         </a>
                     </li>

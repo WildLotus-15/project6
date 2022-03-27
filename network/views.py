@@ -1,15 +1,21 @@
 import json
-from tkinter.tix import Tree
 from django.db.models import Q
-from django.db import IntegrityError
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout
 from .models import FriendRequest, Post, User, UserProfile
 from .forms import EditProfileForm
 
+from allauth.account.views import SignupView, LoginView
+
 # Create your views here.
+class MySignupView(SignupView):
+    template_name = 'network/my_signup.html'
+
+
+class MyLoginView(LoginView):
+    template_name = 'account/login.html'
+
 def index(request):
     posts = Post.objects.order_by('-timestamp')
     return render(request, "network/index.html", {
@@ -292,50 +298,3 @@ def search(request):
         "profiles": profile_query_list,
         "search": True
     })
-
-
-def login_view(request):
-    if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
-
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return HttpResponseRedirect(reverse("index"))
-        else:
-            return render(request, "network/login.html", {
-                "message": "Invalid username and/or password."
-            })
-    else:
-        return render(request, "network/login.html")
-
-
-def logout_view(request):
-    logout(request)
-    return HttpResponseRedirect(reverse("index"))
-
-
-def register(request):
-    if request.method == "POST":
-        username = request.POST["username"]
-        email = request.POST["email"]
-
-        password = request.POST["password"]
-        confirmation = request.POST["confirmation"]
-        if password != confirmation:
-            return render(request, "network/register.html", {
-                "message": "Passwords must match."
-            })
-
-        try:
-            user = User.objects.create_user(username, email, password)
-            user.save()
-        except IntegrityError:
-            return render(request, "network/register.html", {
-                "message": "This username is already taken."
-            })
-        login(request, user)
-        return HttpResponseRedirect(reverse("index"))
-    else:
-        return render(request, "network/register.html")
