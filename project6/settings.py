@@ -71,13 +71,12 @@ ACCOUNT_UNIQUE_EMAIL = True
 DEFAULT_FROM_EMAIL = 'mtchedlidzealexander@gmail.com'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'apikey'
-EMAIL_HOST_PASSWORD = "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"
+EMAIL_HOST_PASSWORD = "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"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index' 
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
