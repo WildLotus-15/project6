@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     if (!document.querySelector('#profile')) {
-        document.querySelector('#newPost').addEventListener('click', () => force_login())
+        document.querySelector('#newPostModal').addEventListener('click', () => force_login())
     }
 
     document.querySelector('#post_submit').addEventListener('click', () => create_post())

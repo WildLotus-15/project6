@@ -7,7 +7,7 @@
     {% for friend_request in friends %}
         {% if friend_request.to_user == request.user %}
             <div class="card">
-                <div class="card-header d-flex justify-content-around">
+                <div class="card-header d-flex justify-content-between">
                     <div>
                         <a href="{% url 'profile' friend_request.from_user.id %}">
                             <div id="friend_request_header_{{friend_request.id}}">
@@ -25,7 +25,7 @@
             </div>
         {% else %}
             <div class="card">
-                <div class="card-header d-flex justify-content-around">
+                <div class="card-header d-flex justify-content-between">
                     <div>
                         <a href="{% url 'profile' friend_request.to_user.id %}">
                             <div id="friend_request_header_{{friend_request.id}}">

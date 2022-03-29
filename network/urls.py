@@ -10,10 +10,11 @@ urlpatterns = [
     path("accept_friend_request/<int:requestID>", views.accept_friend_request, name="accept_friend_request"),
     path("decline_friend_request/<int:requestID>", views.decline_friend_request, name="decline_friend_request"),
     path("friend_requests", views.friend_requests, name="friend_requests"),
-    path("friends/<int:profile_id>", views.friends, name="friends"),
+    path("friends", views.friends, name="friends"),
     path("remove_from_friends/<int:requestID>", views.remove_from_friends, name="remove_from_friends"),
     path("remove_profile_friend/<int:profile_id>", views.remove_profile_friend, name="remove_profile_friend"),
     path("cancel_friend_request/<int:profile_id>", views.cancel_friend_request, name="cancel_friend_request"),
     path("edit_profile/<int:profile_id>", views.edit_profile, name="edit_profile"),
-    path("search_results", views.search, name="search_results")
+    path("search_results", views.search, name="search_results"),
+    path("profile_friends/<int:profile_id>", views.profile_friends, name="profile_friends")
 ]

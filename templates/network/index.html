@@ -5,23 +5,23 @@
 {% block body %}
 
 {% if not search %}
-<div id="newPost">
-    <div class="card">
-        <div class="card-body">
-            {% if request.user.is_authenticated %}
-            <a href="{% url 'profile' request.user.id %}">
-                <img src="{{ request.user.profile.picture.url }}" class="d-inline" alt="Logged in Profile Picture"
-                    width="40px" height="40px" style="border-radius: 50%">
-            </a>
-            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#myModal">What's on your
-                mind, {{ request.user.username }}?</button>
-            {% else %}
-            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#myModal">What's on your
-                mind?</button>
-            {% endif %}
+    <div id="newPost">
+        <div class="card">
+            <div class="card-body">
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'profile' request.user.id %}">
+                    <img src="{{ request.user.profile.picture.url }}" class="d-inline" alt="Logged in Profile Picture"
+                        width="40px" height="40px" style="border-radius: 50%">
+                </a>
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#myModal">What's on your
+                    mind, {{ request.user.username }}?</button>
+                {% else %}
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#myModal" id="newPostModal">What's on your
+                    mind?</button>
+                {% endif %}
+            </div>
         </div>
     </div>
-</div>
 
 <div class="modal fade" id="myModal">
     <div class="modal-dialog modal-dialog-centered">
@@ -38,11 +38,12 @@
             <div class="modal-body">
                 <form id="newPost">
                     {% if request.user.is_authenticated %}
-                    <a href="{% url 'profile' request.user.id %}">
-                        <img src="{{ request.user.profile.picture.url }}" class="d-inline"
-                            alt="Logged in Profile Picture" width="40px" height="40px" style="border-radius: 50%">
-                    </a>
-                    {{ request.user.username }}
+                        <a href="{% url 'profile' request.user.id %}">
+                            <img src="{{ request.user.profile.picture.url }}" class="d-inline"
+                                alt="Logged in Profile Picture" width="40px" height="40px" style="border-radius: 50%">
+                        </a>
+                        {{ request.user.username }}
+                    {% endif %}
                     <div class="form-group" style="float: right;">
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="flexRadioDefault" id="only_friends" checked>
@@ -61,7 +62,6 @@
                         <input id="post_content" type="text" placeholder="What's on your mind, {{ request.user.username }}?"
                         class="form-control">
                     </div>
-                    {% endif %}
                 </form>
             </div>
 
@@ -85,6 +85,11 @@
 
     {% for post in posts %}
         {% include "network/posts.html" %}
+        {% if search and post.author != request.user and not post.author.user in request.user.profile.friends.all or not request.user in post.author.friends.all %}
+            <div class="d-flex justify-content-center text-muted">
+                <h4 class="mt-4">No posts available</h4>
+            </div>
+        {% endif %}
     {% empty %}
         <div class="d-flex justify-content-center text-muted">
             <h4 class="mt-4">No posts available</h4>
@@ -104,5 +109,5 @@
 {% endblock %}
 
 {% block script %}
-<script src="{% static 'network/js/create_post.js' %}"></script>
+    <script src="{% static 'network/js/create_post.js' %}"></script>
 {% endblock %}

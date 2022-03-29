@@ -47,7 +47,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="navbar-brand nav-link" href="{% url 'friends' user.id %}">
+                    <a class="navbar-brand nav-link" href="{% url 'friends' %}">
                         All Friends
                     </a>
                 </li>
@@ -58,7 +58,7 @@
                 </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="navbar-brand nav-link" href="{% url 'account_login' %}">
+                        <a class="navbar-brand nav-link" href="{% url 'account_login' %}" id="login">
                             Login
                         </a>
                     </li>

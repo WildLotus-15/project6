@@ -3,23 +3,34 @@ from django.db.models import Q
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from .models import FriendRequest, Post, User, UserProfile
 from .forms import EditProfileForm
 
-from allauth.account.views import SignupView, LoginView
-
 # Create your views here.
-class MySignupView(SignupView):
-    template_name = 'network/my_signup.html'
-
-
-class MyLoginView(LoginView):
-    template_name = 'account/login.html'
-
 def index(request):
     posts = Post.objects.order_by('-timestamp')
     return render(request, "network/index.html", {
         "posts": posts,
+    })
+
+
+def profile_friends(request, profile_id):
+    try:
+        profile = UserProfile.objects.get(pk=profile_id)
+
+        friends = profile.friends.all()
+
+        friend_requests = FriendRequest.objects.filter(
+            Q(from_user__in=friends, to_user=profile.user) | Q(to_user__in=friends, from_user=profile.user)
+        )
+
+    except UserProfile.DoesNotExist:
+        return JsonResponse({"error": "User matching query does not exist."}, status=400)
+    
+    return render(request, "network/profile_friends.html", {
+        "profile": profile,
+        "friends": friend_requests
     })
 
 
@@ -177,15 +188,15 @@ def remove_from_friends(request, requestID):
 
     return JsonResponse({"message": "Friend has been successfully removed."}, status=201)
 
-
-def friends(request, profile_id):
+@login_required
+def friends(request):
     try:
-        profile = UserProfile.objects.get(pk=profile_id)
+        profile = UserProfile.objects.get(pk=request.user.id)
 
         friends = profile.friends.all()
 
         friend_requests = FriendRequest.objects.filter(
-            Q(from_user__in=friends) | Q(to_user__in=friends)
+            Q(from_user__in=friends, to_user=request.user) | Q(to_user__in=friends, from_user=request.user)
         )
 
         context = {}

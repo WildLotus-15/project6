@@ -1,0 +1,37 @@
+{% extends "network/layout.html" %} {% block title %}
+    {{ profile.user.username }} | Friends
+{% endblock %}
+
+{% block body %}         
+    {% for friend in friends %}
+        {% if friend.to_user == profile.user %}
+            <div class="card">
+                <div class="card-header d-flex justify-content-start">
+                    <div>
+                        <a href="{% url 'profile' friend.from_user.id %}">
+                            <div>
+                                <img src="{{ friend.from_user.profile.picture.url }}" alt="" width="60px" height="60px"
+                                    style="border-radius: 50%">
+                                {{ friend.from_user }}
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="card">
+                <div class="card-header d-flex justify-content-start">
+                    <div>
+                        <a href="{% url 'profile' friend.to_user.id %}">
+                            <div>
+                                <img src="{{ friend.to_user.profile.picture.url }}" alt="" width="60px" height="60px"
+                                    style="border-radius: 50%">
+                                {{ friend.to_user }}
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
