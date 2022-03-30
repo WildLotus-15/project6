@@ -6,8 +6,8 @@
 
     <div id="profile">
         <div class="card">
-            <div class="card-header d-flex">
-                <div>
+            <div class="card-header d-flex p-2">
+                <div class="m-2">
                     <img class="profile_picture" src="{{ profile.picture.url }}" alt="Profile Picture" style="border-radius: 50%">
                 </div>
                 <div class="d-flex flex-column">
@@ -21,48 +21,65 @@
                             <a href="{% url 'profile_friends' profile.user.id %}">
                                 {{ profile.friends.count }} Friends
                             </a>
+                            {% if mutual_friends_amount != 0 %}
+                                &middot; 
+                                {{ mutual_friends_amount }} Mutual
+                            {% endif %}
+                            {% if limited_mutual_friends is None %}
+                                <div>
+                                    {% for mutual_friend in mutual_friends %}
+                                        <a href="{% url 'profile' mutual_friend.id %}">
+                                            <img src="{{ mutual_friend.profile.picture.url }}" alt="Mutual Friend Profile Picture" width="32" height="32" style="border-radius: 50%;">
+                                        </a>
+                                    {% endfor %}  
+                                </div>
+                            {% else %}
+                                <div>
+                                    {% for mutual_friend in limited_mutual_friends %}
+                                        <a href="{% url 'profile' mutual_friend.id %}">
+                                            <img src="{{ mutual_friend.profile.picture.url }}" alt="Mutual Friend Profile Picture" width="32" height="32" style="border-radius: 50%;">
+                                        </a>
+                                    {% endfor %}
+                                </div>         
+                            {% endif %}
                         </div>
-                        <div class="profile-mutual-friends">
-                            {{ mutual_friends_amount }}
-                            {% for mutual_friend in mutual_friends %}
-                                &middot; Mutual 
-                                <a href="{% url 'profile' mutual_friend.id %}">
-                                    <img src="{{ mutual_friend.profile.picture.url }}" alt="Mutual Friend Profile Picture" width="32" height="32" style="border-radius: 50%;">
-                                </a>
-                            {% endfor %}
-                        </div>    
                     </div>
-                    <div class="d-flex">
+                </div>
+                    <div class="d-flex ml-auto align-items-center p-2">
                         {% if request.user == profile.user %}
-                        <a href="{% url 'edit_profile' profile.user.id %}">
-                            <img src="{% static 'network/images/pen.svg' %}" alt="Profile Edit Button">
-                            Edit profile
-                        </a>
-                        <a href="{% url 'account_reset_password' %}">Password Reset</a>
-                        <a href="{% url 'account_change_password' %}">Password Change</a>
-                    {% endif %}
-                    </div>    
-
-                </div>
-                    <div class="profile-bio">
-                        <h4>About</h4>
-                        <p>{{ profile.bio }}</p>
-                    </div>
-                    {% if friend_request_available or self_in_friend_request or currently_friended or self_in_profile_friend_request %}
-                        {% if currently_friended %}
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Friends</button>
-                        {% elif self_in_friend_request %}
-                            <button type="button" class="btn btn-primary" id="cancel_friend_request_button" data-profile_id="{{ profile.user.id }}">Cancel Request</button>
-                        {% elif self_in_profile_friend_request %}
-                            {{ profile.user.username }} sent you a friend request
-                            <button type="button" class="btn btn-primary" id="accept_friend_request_button" data-friend_request_id="{{ friend_request_id }}">Confirm Request</button>
-                            <button type="button" class="btn btn-secondary" id="decline_friend_request_button" data-friend_request_id="{{ friend_request_id }}">Delete Request</button>
-                        {% else %}
-                            <button type="button" class="btn btn-primary" id="send_friend_request_button" data-profile_id="{{ profile.user.id }}">Add Friend</button>
+                        <div class="mr-2">
+                            <button type="button" class="btn btn-info">
+                                <!--
+                                <a class="dropdown-item" href="{% url 'edit_profile' profile.user.id %}">Edit Profile</a>
+                                -->
+                            Edit Profile
+                            </button>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              Account Settings
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="{% url 'account_change_password' %}">Password Change</a>
+                                <a class="dropdown-item" href="{% url 'account_reset_password' %}">Password Reset</a>
+                            </div>
                         {% endif %}
-                    {% endif %}
-                </div>
-                <div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        {% if friend_request_available or self_in_friend_request or currently_friended or self_in_profile_friend_request %}
+                            {% if currently_friended %}
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Friends</button>
+                            {% elif self_in_friend_request %}
+                                <button type="button" class="btn btn-primary" id="cancel_friend_request_button" data-profile_id="{{ profile.user.id }}">Cancel Request</button>
+                            {% elif self_in_profile_friend_request %}
+                                {{ profile.user.username }} sent you a friend request
+                                <button type="button" class="btn btn-primary" id="accept_friend_request_button" data-friend_request_id="{{ friend_request_id }}">Confirm Request</button>
+                                <button type="button" class="btn btn-secondary" id="decline_friend_request_button" data-friend_request_id="{{ friend_request_id }}">Delete Request</button>
+                            {% else %}
+                                <button type="button" class="btn btn-primary" id="send_friend_request_button" data-profile_id="{{ profile.user.id }}">Add Friend</button>
+                            {% endif %}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -71,19 +88,19 @@
     <div class="modal fade" id="myModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-    
+
                 <!-- Modal Header -->
                 <div class="modal-header">
                     <h4 class="modal-title">Unfriend {{ profile.user.username }}</h4>
-    
+
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
-    
+
                 <!-- Modal body -->
                 <div class="modal-body">
                     Are you sure you want to remove {{ profile.user.username }} as your friend?
                 </div>
-    
+
                 <!-- Modal footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>

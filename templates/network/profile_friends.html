@@ -1,4 +1,4 @@
-{% extends "network/layout.html" %} {% block title %}
+{% extends "network/layout.html" %} {% load static %} {% block title %}
     {{ profile.user.username }} | Friends
 {% endblock %}
 
@@ -33,5 +33,14 @@
                 </div>
             </div>
         {% endif %}
+    {% empty %}
+        <div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px;">
+            <div class="p-2">
+                <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
+            </div>
+            <div class="p-2 text-muted">
+                <h5 class="text-muted">When {{ profile.user.username }} has friends, you'll see them here.</h5>
+            </div>
+        </div>
     {% endfor %}
 {% endblock %}

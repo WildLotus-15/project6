@@ -15,6 +15,7 @@ def index(request):
     })
 
 
+@login_required
 def profile_friends(request, profile_id):
     try:
         profile = UserProfile.objects.get(pk=profile_id)
@@ -34,6 +35,7 @@ def profile_friends(request, profile_id):
     })
 
 
+@login_required
 def send_friend_request(request, profile_id):
     from_user = request.user
 
@@ -54,6 +56,7 @@ def send_friend_request(request, profile_id):
         return JsonResponse({"error": "User matching query does not exist."}, status=400)
 
 
+@login_required
 def accept_friend_request(request, requestID):
     try:
         friend_request = FriendRequest.objects.get(pk=requestID)
@@ -71,6 +74,7 @@ def accept_friend_request(request, requestID):
     return JsonResponse({"message": "New friend has been added successfully."}, status=201)
 
 
+@login_required
 def friend_requests(request):
     context = {}
 
@@ -99,6 +103,7 @@ def friend_requests(request):
     return render(request, "network/friend_requests.html", context)
 
 
+@login_required
 def edit_profile(request, profile_id):
     if request.method == "POST":
         profile = UserProfile.objects.get(pk=profile_id)
@@ -120,6 +125,7 @@ def edit_profile(request, profile_id):
     })
 
 
+@login_required
 def remove_profile_friend(request, profile_id):
     try:
         to_user = User.objects.get(pk=profile_id)
@@ -139,6 +145,7 @@ def remove_profile_friend(request, profile_id):
     return JsonResponse({"message": "Friend has been successfully removed."}, status=201)
 
 
+@login_required
 def cancel_friend_request(request, profile_id):
     try:
         to_user = User.objects.get(pk=profile_id)
@@ -155,6 +162,7 @@ def cancel_friend_request(request, profile_id):
     return JsonResponse({"message": "Friend request has been successfully unsent."}, status=201)
 
 
+@login_required
 def decline_friend_request(request, requestID):
     try:
         friend_request = FriendRequest.objects.get(pk=requestID)
@@ -169,6 +177,7 @@ def decline_friend_request(request, requestID):
     return JsonResponse({"message": "Friend request has been declined successfully."}, status=201)
 
 
+@login_required
 def remove_from_friends(request, requestID):
     try:
         friend_request = FriendRequest.objects.get(pk=requestID)
@@ -187,6 +196,7 @@ def remove_from_friends(request, requestID):
         return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
 
     return JsonResponse({"message": "Friend has been successfully removed."}, status=201)
+
 
 @login_required
 def friends(request):
@@ -237,6 +247,14 @@ def mutual_friends(request_user, profile):
     return mutual_friends_of_request_user
 
 
+def limited_mutual_friends(request_user, profile):
+    profile_friends = profile.friends.all()[:9]
+    friends_with_profile = profile_friends.values_list('pk', flat=True)
+    mutual_friends_of_request_user = request_user.friends.filter(pk__in=friends_with_profile)
+    print(mutual_friends_of_request_user)
+    return mutual_friends_of_request_user
+
+
 def show_profile(request, profile_id):
     try:
         profile = UserProfile.objects.get(pk=profile_id)
@@ -262,6 +280,9 @@ def show_profile(request, profile_id):
                 context["mutual_friends"] = mutual_friends(request.user.profile, profile)
                 context["mutual_friends_amount"] = mutual_friends(request.user.profile, profile).count()
 
+                if context["mutual_friends_amount"] >= 8:
+                    context["limited_mutual_friends"] = limited_mutual_friends(request.user.profile, profile)
+
     except UserProfile.DoesNotExist:
         return JsonResponse({"error": "User matching query does not exist."})
 
@@ -285,6 +306,7 @@ def self_in_profile_friend_request(to_user, from_user):
     except FriendRequest.DoesNotExist:
         return False
 
+
 def create_post(request):
     if request.method == "POST":
         data = json.loads(request.body)
@@ -294,6 +316,9 @@ def create_post(request):
         post = Post(author=request.user.profile, description=description, only_friends=only_friends, only_me=only_me)
         post.save()
         return JsonResponse({"message": "Post was created successfully."}, status=201)
+
+    elif request.method == "GET":
+        return JsonResponse({"error": "POST request required."}, status=400)
 
 
 def search(request):
