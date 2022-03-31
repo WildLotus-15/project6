@@ -17,7 +17,35 @@
                 </div>
                 <div class="d-flex ml-auto align-items-center">
                     <button type="button" class="btn btn-secondary"
-                        style="float: right" data-profile_id="{{ blocked_user.id }}" id="unblock_button">Unblock</button>
+                        style="float: right" data-toggle="modal" data-target="#unblockModal">Unblock</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="unblockModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+    
+                    <!-- Modal Header -->
+                    <div class="modal-header text-center">
+                        <h4 class="modal-title w-100">Unblock {{ blocked_user.username }}?</h4>
+    
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+    
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <p>{{ blocked_user.username }} will be able to:</p>
+                        <ul style="padding-left: 20px;">
+                            <li>See your posts</li>
+                            <li>Add you as a friend</li>
+                        </ul>
+                    </div>
+    
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="unblock_button" data-profile_id="{{ blocked_user.id }}">Confirm</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -34,5 +62,5 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'network/js/update_block.js' %}"></script>
+    <script src="{% static 'network/js/unblock_user.js' %}"></script>
 {% endblock %}

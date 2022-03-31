@@ -68,12 +68,14 @@
                         {% endif %}
                     </div>
                     <div class="d-flex align-items-center p-2">
-                        {% if request.user != profile.user and profile.user in request.user.profile.blocked.all %}
-                            <button type="button" class="btn btn-danger" data-toggle="modal"
-                                data-target="#unblockModal" data-profile_id="{{ profile.user.id }}">Unblock</button>
-                        {% else %}
-                            <button type="button" class="btn btn-danger" data-toggle="modal"
-                                data-target="#blockModal" data-profile_id="{{ profile.user.id }}">Block</button>
+                        {% if request.user != profile.user %}
+                            {% if profile.user in request.user.profile.blocked.all %}
+                                <button type="button" class="btn btn-danger" data-toggle="modal"
+                                    data-target="#unblockModal" data-profile_id="{{ profile.user.id }}">Unblock</button>
+                            {% else %}
+                                <button type="button" class="btn btn-danger" data-toggle="modal"
+                                    data-target="#blockModal" data-profile_id="{{ profile.user.id }}">Block</button>
+                            {% endif %}
                         {% endif %}
                         {% if friend_request_available or self_in_friend_request or currently_friended or self_in_profile_friend_request %}
                             {% if currently_friended %}
@@ -136,18 +138,18 @@
 
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <p>Nika will no longer be able to:</p>
+                    <p>{{ profile.user.username }} will no longer be able to:</p>
                     <ul style="padding-left: 20px;">
                         <li>See your posts</li>
                         <li>Add you as a friend</li>
                     </ul>
-                    If you're friends, blocking Nika will also unfriend him/her.
+                    If you're friends, blocking {{ profile.user.username }} will also unfriend him/her.
                 </div>
 
                 <!-- Modal footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="update_block_button">Confirm</button>
+                    <button type="button" class="btn btn-primary" id="block_button" data-profile_id="{{ profile.user.id }}">Confirm</button>
                 </div>
             </div>
         </div>
@@ -158,7 +160,7 @@
             <div class="modal-content">
 
                 <!-- Modal Header -->
-                <div class="modal-header">
+                <div class="modal-header text-center">
                     <h4 class="modal-title w-100">Unblock {{ profile.user.username }}?</h4>
 
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -166,18 +168,17 @@
 
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <p>Nika will no longer be able to:</p>
+                    <p>{{ profile.user.username }} will be able to:</p>
                     <ul style="padding-left: 20px;">
                         <li>See your posts</li>
                         <li>Add you as a friend</li>
                     </ul>
-                    If you're friends, blocking Nika will also unfriend him.
                 </div>
 
                 <!-- Modal footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="update_block">Confirm</button>
+                    <button type="button" class="btn btn-primary" id="unblock_button" data-profile_id="{{ profile.user.id }}">Confirm</button>
                 </div>
             </div>
         </div>
@@ -199,5 +200,5 @@
     <script src="{% static 'network/js/cancel_friend_request.js' %}"></script>
     <script src="{% static 'network/js/decline_friend_request.js' %}"></script>
     <script src="{% static 'network/js/accept_friend_request.js' %}"></script>
-    <script src="{% static 'network/js/block_profile.js' %}"></script>
+    <script src="{% static 'network/js/update_block_profile.js' %}"></script>
 {% endblock %}

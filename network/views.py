@@ -91,16 +91,22 @@ def send_friend_request(request, profile_id):
     try:
         to_user = User.objects.get(pk=profile_id)
 
-        if not to_user in from_user.profile.friends.all() or not from_user in to_user.profile.friends.all():
-            friend_request, created = FriendRequest.objects.get_or_create(from_user=from_user, to_user=to_user)
-            if created:
-                return JsonResponse({"message": "Friend request was sent successfully."}, status=201)
-            else:
-                return JsonResponse({"message": "Friend request has been already sent."}, status=409)
+        if not from_user in to_user.profile.blocked.all() or not to_user in from_user.profile.blocked.all():
 
+            if not from_user in to_user.profile.blocked.all() or to_user in from_user.profile.blocked.all():
+                if not to_user in from_user.profile.friends.all() or not from_user in to_user.profile.friends.all():
+                    friend_request, created = FriendRequest.objects.get_or_create(from_user=from_user, to_user=to_user)
+                    if created:
+                        return JsonResponse({"message": "Friend request was sent successfully."}, status=201)
+                    else:
+                        return JsonResponse({"message": "Friend request has been already sent."}, status=409)
+
+                else:
+                    return JsonResponse({"error": "You are already friends."}, status=409)
+            
         else:
-            return JsonResponse({"error": "You are already friends."}, status=409)
-    
+            return JsonResponse({"error": "User matching query has blocked you."}, status=400)
+        
     except User.DoesNotExist:
         return JsonResponse({"error": "User matching query does not exist."}, status=400)
 
@@ -260,27 +266,26 @@ def friends(request):
 
         context = {}
 
-        if request.user.is_authenticated:
-            context["friends"] = friend_requests
+        context["friends"] = friend_requests
 
-            for friend_request in friend_requests:
-                if friend_request.to_user == profile.user:
-                    requests_friends = friend_requests.values_list('from_user', flat=True)
-                else:
-                    requests_friends = friend_requests.values_list('to_user', flat=True)
+        for friend_request in friend_requests:
+            if friend_request.to_user == profile.user:
+                requests_friends = friend_requests.values_list('from_user', flat=True)
+            else:
+                requests_friends = friend_requests.values_list('to_user', flat=True)
 
-                requests_profiles = UserProfile.objects.filter(pk__in=requests_friends)
-                friends_with_profile = profile.friends.values_list('pk', flat=True)
+            requests_profiles = UserProfile.objects.filter(pk__in=requests_friends)
+            friends_with_profile = profile.friends.values_list('pk', flat=True)
 
-                for request_profile in requests_profiles:
-                    request_friends = request_profile.friends.filter(pk__in=friends_with_profile)
-                    print(request_friends)
+            for request_profile in requests_profiles:
+                request_friends = request_profile.friends.filter(pk__in=friends_with_profile)
+                print(request_friends)
 
-                # NEED TO FIX THIS GLOBAL MUTUAL FRIENDS VARIABLE
-                # ALL FRIENDS MUST HAVE SPECIFIC TO THEM MUTUAL FRIEND LISTS IN RELATION TO REQUEST USER
+            # NEED TO FIX THIS GLOBAL MUTUAL FRIENDS VARIABLE
+            # ALL FRIENDS MUST HAVE SPECIFIC TO THEM MUTUAL FRIEND LISTS IN RELATION TO REQUEST USER
 
-                context["mutual_friends"] = request_friends
-                context["mutual_friends_amount"] = request_friends.count()
+            context["mutual_friends"] = request_friends
+            context["mutual_friends_amount"] = request_friends.count()
 
     except UserProfile.DoesNotExist:
         return JsonResponse({"error": "User profile matching query does not exist."}, status=400)
@@ -330,9 +335,8 @@ def show_profile(request, profile_id):
         context = {
             "profile": profile,
             "posts": Post.objects.filter(author=profile).order_by('-timestamp'),
-            "friend_request_available": not request.user.is_anonymous and not profile.user in request.user.profile.friends.all() and profile.user != request.user,
+            "friend_request_available": not request.user.is_anonymous and not profile.user in request.user.profile.friends.all() and profile.user != request.user and not profile.user in request.user.profile.blocked.all(),
             "currently_friended": not request.user.is_anonymous and profile.user in request.user.profile.friends.all(),
-            "friend_request_available": not request.user.is_anonymous and profile.user != request.user and not profile.user in request.user.profile.friends.all(),
         }
         
         if request.user.is_authenticated:
