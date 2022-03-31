@@ -1,0 +1,38 @@
+{% extends "network/layout.html" %} {% load static %} {% block title %}
+    Blocked | {{ request.user.username }}
+{% endblock %}
+
+{% block body %}
+    {% for blocked_user in blocked_users %}
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <div>
+                    <a href="{% url 'profile' blocked_user.id %}">
+                        <div>
+                            <img src="{{ blocked_user.profile.picture.url }}" alt="" width="60px" height="60px"
+                                style="border-radius: 50%">
+                            {{ blocked_user }}
+                        </div>
+                    </a>
+                </div>
+                <div class="d-flex ml-auto align-items-center">
+                    <button type="button" class="btn btn-secondary"
+                        style="float: right" data-profile_id="{{ blocked_user.id }}" id="unblock_button">Unblock</button>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px;">
+            <div class="p-2">
+                <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
+            </div>
+            <div class="p-2 text-muted">
+                <h5 class="text-muted">When you have blocked users, you'll see them here.</h5>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/js/update_block.js' %}"></script>
+{% endblock %}

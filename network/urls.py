@@ -16,5 +16,8 @@ urlpatterns = [
     path("cancel_friend_request/<int:profile_id>", views.cancel_friend_request, name="cancel_friend_request"),
     path("edit_profile/<int:profile_id>", views.edit_profile, name="edit_profile"),
     path("search_results", views.search, name="search_results"),
-    path("profile_friends/<int:profile_id>", views.profile_friends, name="profile_friends")
+    path("profile_friends/<int:profile_id>", views.profile_friends, name="profile_friends"),
+    path("profile_mutuals/<int:profile_id>", views.profile_mutuals, name="profile_mutuals"),
+    path("profile/<int:profile_id>/update_block", views.update_block, name="update_block"),
+    path("blocked_users", views.blocked_users, name="blocked_users")
 ]

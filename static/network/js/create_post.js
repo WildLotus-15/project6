@@ -1,8 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    if (!document.querySelector('#profile')) {
-        document.querySelector('#newPostModal').addEventListener('click', () => force_login())
-    }
-
     document.querySelector('#post_submit').addEventListener('click', () => create_post())
 
     document.querySelector('#post_submit').disabled = true
@@ -15,10 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 })
-
-function force_login() {
-    document.querySelector('#login').click()
-}
 
 function create_post() {
     const description = document.querySelector('#post_content').value

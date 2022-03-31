@@ -8,10 +8,59 @@ from .models import FriendRequest, Post, User, UserProfile
 from .forms import EditProfileForm
 
 # Create your views here.
+@login_required
 def index(request):
-    posts = Post.objects.order_by('-timestamp')
     return render(request, "network/index.html", {
-        "posts": posts,
+        "posts": blocked_users(request),
+    })
+
+
+@login_required
+def blocked_users(request):
+    blocked_users = request.user.profile.blocked.all()
+    blocked_users_profiles = UserProfile.objects.filter(user__in=blocked_users).all()
+    print(blocked_users_profiles)
+    posts = Post.objects.filter(
+        ~Q(author__in=blocked_users_profiles)
+    ).order_by('-timestamp')
+    print(posts)
+    return posts
+
+
+@login_required
+def update_block(request, profile_id):
+    try:
+        user = User.objects.get(pk=profile_id)
+
+        try:
+            friend_request = FriendRequest.objects.get(
+                Q(from_user=request.user, to_user=user) | Q(from_user=user, to_user=request.user)
+            )
+
+            friend_request.delete()
+            user.profile.friends.remove(request.user)
+            request.user.profile.friends.remove(user)
+
+        except FriendRequest.DoesNotExist:
+            pass
+
+        if user in request.user.profile.blocked.all():
+            request.user.profile.blocked.remove(user)
+        else:
+            request.user.profile.blocked.add(user)
+        
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User matching query does not exist."}, status=400)
+
+    return JsonResponse({"message": "Updated user block, friendship successfully."}, status=200)
+
+
+@login_required
+def blocked_users(request):
+    blocked_users = request.user.profile.blocked.all()
+    print(blocked_users)
+    return render(request, "network/blocked_users.html", {
+        "blocked_users": blocked_users
     })
 
 
@@ -237,6 +286,25 @@ def friends(request):
         return JsonResponse({"error": "User profile matching query does not exist."}, status=400)
 
     return render(request, "network/friends.html", context)
+
+
+@login_required
+def profile_mutuals(request, profile_id):
+    try:
+        profile = UserProfile.objects.get(pk=profile_id)
+
+        profile_friends = profile.friends.all()
+        friends_with_profile = profile_friends.values_list('pk', flat=True)
+        mutual_friends_of_request_user = request.user.profile.friends.filter(pk__in=friends_with_profile)
+        print(friends_with_profile)
+    
+    except UserProfile.DoesNotExist:
+        return JsonResponse({"error": "UserProfile matching query does not exist."})
+    
+    return render(request, "network/profile_mutuals.html", {
+        "profile": profile,
+        "mutual_friends": mutual_friends_of_request_user
+    })
 
 
 def mutual_friends(request_user, profile):

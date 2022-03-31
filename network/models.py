@@ -15,6 +15,7 @@ class UserProfile(models.Model):
     bio = models.TextField(blank=True)
     picture = models.ImageField(blank=True, default="default_profile_image.png")
     friends = models.ManyToManyField(User, blank=True, related_name="friends")
+    blocked = models.ManyToManyField(User, blank=True, related_name="blocked")
 
 
 class FriendRequest(models.Model):
