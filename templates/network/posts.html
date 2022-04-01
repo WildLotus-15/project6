@@ -1,6 +1,6 @@
 {% if post.only_friends %}
     {% if post.author.user in request.user.profile.friends.all or request.user in post.author.friends.all or post.author.user == request.user %}
-        <div class="card">
+        <div class="card mb-3">
             <div class="card-body">
                 <h5 class="card-title">
                     <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40px" height="40px"
@@ -13,19 +13,18 @@
             </div>
         </div>
     {% endif %}
-{% else %}
-    {% if post.author.user == request.user %}
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">
-                    <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40px" height="40px"
-                        style="border-radius: 50%">
-                    <a href="{% url 'profile' post.author.user.id %}">{{ post.author.user.username }}</a>
-                </h5>
-                <p class="card-text">{{ post.description }}</p>
-                <p class="card-text text-muted">{{ post.timestamp }}</p>
-                <a href="#" class="card-link">TODO</a>
-            </div>
+{% endif %}
+{% if post.only_me and post.author.user == request.user %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">
+                <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40px" height="40px"
+                    style="border-radius: 50%">
+                <a href="{% url 'profile' post.author.user.id %}">{{ post.author.user.username }}</a>
+            </h5>
+            <p class="card-text">{{ post.description }}</p>
+            <p class="card-text text-muted">{{ post.timestamp }}</p>
+            <a href="#" class="card-link">TODO</a>
         </div>
-    {% endif %}
+    </div>
 {% endif %}

@@ -11,19 +11,17 @@ from .forms import EditProfileForm
 @login_required
 def index(request):
     return render(request, "network/index.html", {
-        "posts": blocked_users(request),
+        "posts": ignore_blocked_users(request.user.profile)
     })
 
 
 @login_required
-def blocked_users(request):
-    blocked_users = request.user.profile.blocked.all()
+def ignore_blocked_users(profile):
+    blocked_users = profile.blocked.all()
     blocked_users_profiles = UserProfile.objects.filter(user__in=blocked_users).all()
-    print(blocked_users_profiles)
     posts = Post.objects.filter(
         ~Q(author__in=blocked_users_profiles)
     ).order_by('-timestamp')
-    print(posts)
     return posts
 
 
@@ -395,12 +393,26 @@ def create_post(request):
 
 def search(request):
     query = request.GET.get('q')
+
+    blocked_users = request.user.profile.blocked.all()
+
+    blocked_users_profiles = UserProfile.objects.filter(user__in=blocked_users).all()
+
     post_query_list = Post.objects.filter(
-        Q(description__icontains=query) | Q(author__user__username__icontains=query)
+        Q(description__icontains=query) | Q(author__user__username__icontains=query) & ~Q(author__in=blocked_users_profiles)
     )
+
     profile_query_list = UserProfile.objects.filter(
-        Q(user__username__icontains=query)
+        Q(user__username__icontains=query) & ~Q(user__in=blocked_users)
     )
+
+    try:
+        searched_profile = UserProfile.objects.get(Q(user__username=query))
+        
+        return HttpResponseRedirect(reverse("profile", args=(searched_profile.user.id,)))
+    except UserProfile.DoesNotExist:
+        pass
+
     return render(request, "network/index.html", {
         "posts": post_query_list,
         "profiles": profile_query_list,

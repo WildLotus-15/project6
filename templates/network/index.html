@@ -73,29 +73,39 @@
 {% endif %}
 
 {% if search %}
-    {% for profile in profiles %}
-        {% include "network/profiles.html" %}
-    {% empty %}
-        <div class="d-flex justify-content-center text-muted">
-            <h4 class="mt-4">No users available</h4>
-        </div>
-    {% endfor %}
-
-    {% for post in posts %}
-        {% include "network/posts.html" %}
-    {% empty %}
-        <div class="d-flex justify-content-center text-muted">
-            <h4 class="mt-4">No posts available</h4>
-        </div>
-    {% endfor %}
+    <div class="card">
+        <div class="card-header" style="font-size: 20px;">Users</div>
+        {% for profile in profiles %}
+            {% include "network/profiles.html" %}
+        {% empty %}
+            <div class="d-flex justify-content-center text-muted">
+                <h4 class="mt-3 mb-3">No users available</h4>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="card">
+        <div class="card-header" style="font-size: 20px;">Posts</div>
+        {% for post in posts %}
+            {% include "network/posts.html" %}
+        {% empty %}
+            <div class="d-flex justify-content-center text-muted">
+                <h4 class="mt-3 mb-3">No posts available</h4>
+            </div>
+        {% endfor %}
+    </div>
+    
 {% else %}
-    {% for post in posts %}
-        {% include "network/posts.html" %}
-    {% empty %}
-        <div class="d-flex justify-content-center text-muted">
-            <h4 class="mt-4">No posts available</h4>
-        </div>
-    {% endfor %}
+    <div class="card mt-3">
+        <div class="card-header" style="font-size: 20px;">Posts</div>
+        {% for post in posts %}
+            {% include "network/posts.html" %}
+        {% empty %}
+            <div class="d-flex justify-content-center text-muted">
+                <h4 class="mt-4">No posts available</h4>
+            </div>
+        {% endfor %}
+    </div>
+    
 {% endif %}
 
 
