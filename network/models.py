@@ -49,6 +49,11 @@ class RecentSearch(models.Model):
     content = models.CharField(max_length=255)
     timestamp = models.DateTimeField(default=timezone.now)
 
+    def serialize(self):
+        return {
+            "content": self.content
+        }
+
 
 class Post(models.Model):
     author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
