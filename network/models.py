@@ -18,10 +18,11 @@ class UserProfile(models.Model):
     blocked = models.ManyToManyField(User, blank=True, related_name="blocked")
 
 
-    def serialize(self):
+    def serialize(self, user):
         return {
             "username": self.user.username,
-            "picture": self.picture.url
+            "picture": self.picture.url,
+            "currently_friended": self.user in user.profile.friends.all()
         }
 
 

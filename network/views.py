@@ -413,12 +413,20 @@ def search(request):
     if not created:
         recent_search.timestamp = timezone.now()
         recent_search.save()
+    
+    try:
+        profile = User.objects.get(username=query)
+
+        return HttpResponseRedirect(reverse("profile", args=(profile.id,)))
+    except User.DoesNotExist:
+        pass
 
     return render(request, "network/index.html", {
         "posts": post_query_list,
         "profiles": profile_query_list,
         "search": True
     })
+
 
 def search_json(request):
     query = request.GET.get('q')
@@ -427,25 +435,14 @@ def search_json(request):
 
     blocked_users = request.user.profile.blocked.all()
 
-    blocked_users_profiles = UserProfile.objects.filter(user__in=blocked_users).all()
-
-    #post_query_list = Post.objects.filter(
-        #Q(description__icontains=query) | Q(author__user__username__icontains=query) & ~Q(author__in=blocked_users_profiles)
-    #)
-
     if query:      
         profile_query_list = UserProfile.objects.filter(
             Q(user__username__icontains=query) & ~Q(user__in=blocked_users)
         )
 
         for profile in profile_query_list:
-            query_list.append(profile.serialize())
+            query_list.append(profile.serialize(request.user))
 
-    #recent_search, created = RecentSearch.objects.get_or_create(from_user=request.user, content=query)
-    #if not created:
-        #recent_search.timestamp = timezone.now()
-        #recent_search.save()
-    
     return JsonResponse({
         "query_list": query_list
     })
