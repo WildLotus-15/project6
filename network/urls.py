@@ -19,5 +19,6 @@ urlpatterns = [
     path("profile_friends/<int:profile_id>", views.profile_friends, name="profile_friends"),
     path("profile_mutuals/<int:profile_id>", views.profile_mutuals, name="profile_mutuals"),
     path("profile/<int:profile_id>/update_block", views.update_block, name="update_block"),
-    path("blocked_users", views.blocked_users, name="blocked_users")
+    path("blocked_users", views.blocked_users, name="blocked_users"),
+    path("search", views.search_json, name="search_results_json"),
 ]

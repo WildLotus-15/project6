@@ -18,6 +18,13 @@ class UserProfile(models.Model):
     blocked = models.ManyToManyField(User, blank=True, related_name="blocked")
 
 
+    def serialize(self):
+        return {
+            "username": self.user.username,
+            "picture": self.picture.url
+        }
+
+
 class FriendRequest(models.Model):
     from_user = models.ForeignKey(User, related_name="from_user", on_delete=models.CASCADE)
     to_user = models.ForeignKey(User, related_name="to_user", on_delete=models.CASCADE)
@@ -34,6 +41,12 @@ class FriendRequest(models.Model):
                 check=~models.Q(from_user=models.F("to_user")),
             ),
         ]
+
+
+class RecentSearch(models.Model):
+    from_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(default=timezone.now)
 
 
 class Post(models.Model):

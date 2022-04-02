@@ -1,17 +1,20 @@
 import json
+from django.utils import timezone
 from django.db.models import Q
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import FriendRequest, Post, User, UserProfile
+from .models import FriendRequest, Post, RecentSearch, User, UserProfile
 from .forms import EditProfileForm
 
 # Create your views here.
 @login_required
 def index(request):
+    recent_searches = RecentSearch.objects.filter(from_user=request.user).order_by('-timestamp').all()
     return render(request, "network/index.html", {
-        "posts": ignore_blocked_users(request.user.profile)
+        "posts": ignore_blocked_users(request.user.profile),
+        "recent_searches": recent_searches
     })
 
 
@@ -406,15 +409,43 @@ def search(request):
         Q(user__username__icontains=query) & ~Q(user__in=blocked_users)
     )
 
-    try:
-        searched_profile = UserProfile.objects.get(Q(user__username=query))
-        
-        return HttpResponseRedirect(reverse("profile", args=(searched_profile.user.id,)))
-    except UserProfile.DoesNotExist:
-        pass
+    recent_search, created = RecentSearch.objects.get_or_create(from_user=request.user, content=query)
+    if not created:
+        recent_search.timestamp = timezone.now()
+        recent_search.save()
 
     return render(request, "network/index.html", {
         "posts": post_query_list,
         "profiles": profile_query_list,
         "search": True
+    })
+
+def search_json(request):
+    query = request.GET.get('q')
+
+    query_list = []
+
+    blocked_users = request.user.profile.blocked.all()
+
+    blocked_users_profiles = UserProfile.objects.filter(user__in=blocked_users).all()
+
+    #post_query_list = Post.objects.filter(
+        #Q(description__icontains=query) | Q(author__user__username__icontains=query) & ~Q(author__in=blocked_users_profiles)
+    #)
+
+    if query:      
+        profile_query_list = UserProfile.objects.filter(
+            Q(user__username__icontains=query) & ~Q(user__in=blocked_users)
+        )
+
+        for profile in profile_query_list:
+            query_list.append(profile.serialize())
+
+    #recent_search, created = RecentSearch.objects.get_or_create(from_user=request.user, content=query)
+    #if not created:
+        #recent_search.timestamp = timezone.now()
+        #recent_search.save()
+    
+    return JsonResponse({
+        "query_list": query_list
     })

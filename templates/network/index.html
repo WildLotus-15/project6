@@ -4,21 +4,63 @@
 
 {% block body %}
 
+<div id="autocomplete" class="autocomplete">
+    <input class="autocomplete-input" id="autocomplete_input"
+      placeholder="Search for a country"
+      aria-label="Search for a country"
+    >
+    <ul class="autocomplete-result-list"></ul>
+  </div>
+
+<script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
+
+<script>
+    new Autocomplete('#autocomplete', {
+    search: input => {
+        console.log(input)
+
+        const url = `/search?q=${input}`
+        return new Promise(resolve => {
+            fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+
+                resolve(data.query_list)
+            })
+        })
+    },
+    renderResult: (result, props) => `
+    <li ${props}>
+      <div>
+        <img src="${result.picture}" width=36 height=36 style="border-radius: 50%">
+        ${result.username}
+      </div>
+    </li>
+    `,
+    onSubmit: result => {
+        console.log(result)
+    }
+})
+
+function aleko(data) {
+    const username = data.username
+    console.log(data.username)
+
+    document.querySelector('.autocomplete-result-list').append(username)
+}
+</script>
+
 {% if not search %}
     <div id="newPost">
         <div class="card">
             <div class="card-body">
-                {% if request.user.is_authenticated %}
                 <a href="{% url 'profile' request.user.id %}">
                     <img src="{{ request.user.profile.picture.url }}" class="d-inline" alt="Logged in Profile Picture"
                         width="40px" height="40px" style="border-radius: 50%">
                 </a>
                 <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#myModal">What's on your
                     mind, {{ request.user.username }}?</button>
-                {% else %}
-                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#myModal" id="newPostModal">What's on your
-                    mind?</button>
-                {% endif %}
             </div>
         </div>
     </div>
@@ -72,6 +114,12 @@
 </div>
 {% endif %}
 
+{% for recent_search in recent_searches %}
+    <a href="{% url 'search_results' %}?q={{ recent_search.content }} ">
+    {{ recent_search.content }}
+    </a>
+{% endfor %}
+
 {% if search %}
     <div class="card">
         <div class="card-header" style="font-size: 20px;">Users</div>
@@ -101,7 +149,7 @@
             {% include "network/posts.html" %}
         {% empty %}
             <div class="d-flex justify-content-center text-muted">
-                <h4 class="mt-4">No posts available</h4>
+                <h4 class="mt-3 mb-3">No posts available</h4>
             </div>
         {% endfor %}
     </div>
