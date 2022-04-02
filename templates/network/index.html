@@ -9,14 +9,18 @@
 <script>
     var aleko = JSON.parse('{{ historicals | safe }}')
     var aleko_credintials = aleko.forEach(a => a['fields']['content'])
-    console.log(aleko_credintials)
+    console.log(aleko)
     new Autocomplete('#autocomplete', {
     search: input => {
         return new Promise(resolve => {
             if (input.length < 1) { 
-                return resolve([
-                    console.log("ALEKO")
-                ])
+                return [
+                    fetch('/recent_searches')
+                    .then(response => response.json())
+                    .then(response => {
+                        resolve(response)
+                    })
+                ]
             }
             const url = `/search?q=${input}`
     
@@ -30,6 +34,10 @@
         })
     },
     renderResult: (result, props) => `
+    ${result.username
+        ? `ALEKO`
+        : `ALEKO2`
+    }
     ${result
         ? `
         <li ${props}>
@@ -51,12 +59,15 @@
             </div>
         </li>
         `
-        : `${aleko}`
+        : ''
     }
-    
     `,
     onSubmit: result => {
-        window.location.href = "/search_results" + "?q=" + result.username
+        if (result.username) {
+            window.location.href = "/search_results" + "?q=" + result.username
+        } else {
+            window.location.href = "/search_results" + "?q=" + result.content
+        }
     }
 })
 </script>

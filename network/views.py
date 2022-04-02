@@ -13,7 +13,7 @@ from django.core import serializers
 @login_required
 def index(request):
     recent_searches = RecentSearch.objects.filter(from_user=request.user).order_by('-timestamp').all()
-    historicals = serializers.serialize("json", RecentSearch.objects.filter(from_user=request.user).order_by('-timestamp').all(), fields=["id", "content"])
+    historicals = serializers.serialize("json", RecentSearch.objects.filter(from_user=request.user).order_by('-timestamp').all(), fields=["content"])
     print(historicals)
     return render(request, "network/index.html", {
         "posts": ignore_blocked_users(request.user.profile),
