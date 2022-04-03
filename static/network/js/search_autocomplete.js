@@ -6,7 +6,10 @@ new Autocomplete('#autocomplete', {
                     fetch('/recent_searches')
                         .then(response => response.json())
                         .then(response => {
-                            resolve(response)
+                            const results = response.map((result, index) => {
+                                return { ...result, index }
+                            })
+                            resolve(results)
                         })
                 ]
             }
@@ -17,7 +20,10 @@ new Autocomplete('#autocomplete', {
                 .then(data => {
                     console.log(data)
 
-                    resolve(data.query_list)
+                    const results = data.query_list.map((result, index) => {
+                        return { ...result, index }
+                    })
+                    resolve(results)
                 })
         })
     },
@@ -27,10 +33,14 @@ new Autocomplete('#autocomplete', {
         : `${result.content}`
         }`,
 
-    renderResult: (result, props) =>
-    `
+    renderResult: (result, props) => {
+        let group = ''
+        if (result.index == 0) {
+            group = `<li class="header">Recent Searches</li>`
+        }
+        return `
     ${result.username
-            ? `
+                ? `
         <li ${props}>
             <div class="d-flex align-items-center">
                 <div>
@@ -42,22 +52,23 @@ new Autocomplete('#autocomplete', {
                     </div>
                     <div class="text-muted">
                         ${result.currently_friended
-                ? "<small>Friend</small>"
-                : ""
-            }
+                    ? "<small>Friend</small>"
+                    : ""
+                }
                     </div>
                 </div>
             </div>
         </li>
         `
-            : `
+                : `
+        ${group}
         <li ${props}>
             <div class="d-flex align-items-center">
                 <div>
                     ${result.picture !== null
-                ? `<img src="${result.picture}" width=36 height=36 style="border-radius: 50%">`
-                : ''
-            }  
+                    ? `<img src="${result.picture}" width=36 height=36 style="border-radius: 50%">`
+                    : ''
+                }  
                 </div>
                 <div class="ml-1">
                     ${result.content}
@@ -65,8 +76,9 @@ new Autocomplete('#autocomplete', {
             </div>
         </li>
         `
-        }
-    `,
+            }
+    `
+    },
     onSubmit: result => {
         if (result.username) {
             window.location.href = "/search_results" + "?q=" + result.username
