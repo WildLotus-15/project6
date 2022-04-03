@@ -21,5 +21,6 @@ urlpatterns = [
     path("profile/<int:profile_id>/update_block", views.update_block, name="update_block"),
     path("blocked_users", views.blocked_users, name="blocked_users"),
     path("search", views.search_json, name="search_results_json"),
-    path("recent_searches", views.recent_searches, name="recent_searches")
+    path("recent_searches", views.recent_searches, name="recent_searches"),
+    path("delete_recent_search/<int:searchID>", views.delete_recent_search, name="delete_recent_search")
 ]

@@ -7,21 +7,32 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .models import FriendRequest, Post, RecentSearch, User, UserProfile
 from .forms import EditProfileForm
-from django.core import serializers
 
 # Create your views here.
 @login_required
 def index(request):
-    recent_searches = RecentSearch.objects.filter(from_user=request.user).order_by('-timestamp').all()
-    historicals = serializers.serialize("json", RecentSearch.objects.filter(from_user=request.user).order_by('-timestamp').all(), fields=["content"])
-    print(historicals)
     return render(request, "network/index.html", {
         "posts": ignore_blocked_users(request.user.profile),
-        "recent_searches": recent_searches,
-        "historicals": historicals
     })
 
 
+@login_required
+def delete_recent_search(request, searchID):
+    try:
+        recent_search = RecentSearch.objects.get(pk=searchID)
+
+        if recent_search.from_user == request.user:
+            recent_search.delete()
+        else:
+            return JsonResponse({"error": "You do not have the right to perform this action."}, status=403)
+    
+    except RecentSearch.DoesNotExist:
+        return JsonResponse({"error": "Recent search matching query does not exist."}, status=400)
+    
+    return JsonResponse({"message": "Recent search was deleted successfully."}, status=201)
+
+
+@login_required
 def recent_searches(request):
     recent_searches = RecentSearch.objects.filter(from_user=request.user).order_by('-timestamp').all()
     return JsonResponse([recent_search.serialize() for recent_search in recent_searches], safe=False)
