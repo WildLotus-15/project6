@@ -52,8 +52,19 @@ class RecentSearch(models.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "content": self.content
+            "content": self.content,
+            "picture": self_in_user(self.content)
         }
+
+
+def self_in_user(content):
+    try:
+        user = User.objects.get(username=content)
+
+        return user.profile.picture.url
+
+    except User.DoesNotExist:
+        pass
 
 
 class Post(models.Model):

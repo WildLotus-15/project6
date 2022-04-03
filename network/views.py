@@ -35,6 +35,8 @@ def delete_recent_search(request, searchID):
 @login_required
 def recent_searches(request):
     recent_searches = RecentSearch.objects.filter(from_user=request.user).order_by('-timestamp').all()
+    for post in recent_searches:
+        print(post.serialize())
     return JsonResponse([recent_search.serialize() for recent_search in recent_searches], safe=False)
 
 

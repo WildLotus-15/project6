@@ -26,16 +26,9 @@ new Autocomplete('#autocomplete', {
         ? `${result.username}`
         : `${result.content}`
         }`,
-    
-    onUpdate: (results, selectedIndex) => {
-        `ALEKO`
-        console.log(`${results.length} results`)
-        if (selectedIndex > -1) {
-            console.log(`Selected: ${results[selectedIndex]}`)
-        }
-        },
 
-    renderResult: (result, props) => `
+    renderResult: (result, props) =>
+    `
     ${result.username
             ? `
         <li ${props}>
@@ -59,8 +52,14 @@ new Autocomplete('#autocomplete', {
         `
             : `
         <li ${props}>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex align-items-center">
                 <div>
+                    ${result.picture !== null
+                ? `<img src="${result.picture}" width=36 height=36 style="border-radius: 50%">`
+                : ''
+            }  
+                </div>
+                <div class="ml-1">
                     ${result.content}
                 </div>
             </div>
