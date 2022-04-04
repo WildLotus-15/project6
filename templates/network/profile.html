@@ -9,7 +9,7 @@
         <div class="card">
             <div class="card-header d-flex p-2">
                 <div class="m-2">
-                    <img class="profile_picture" src="{{ profile.picture.url }}" alt="Profile Picture" style="border-radius: 50%">
+                    <img class="profile_picture" src="{{ profile.picture.url }}" alt="Profile Picture" style="border-radius: 50%" id="default_profile_picture">
                 </div>
                 <div class="d-flex flex-column">
                     <div>
@@ -247,6 +247,21 @@
     </div>
 
     <div class="card mt-3">
+        <div class="card-header" style="font-size: 20px;">About</div>
+            <div class="d-flex justify-content-start text-muted">
+                <div class="m-3 p-2">
+                    <h4>Bio:</h4>
+                </div>
+                <div class="m-3 p-2">
+                    <h4 id="default_profile_bio">
+                        {{ profile.bio }}
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-3">
         <div class="card-header" style="font-size: 20px;">Posts</div>
         {% for post in posts %}
             {% include "network/posts.html" %}
@@ -254,9 +269,9 @@
             <div class="d-flex justify-content-center text-muted">
                 <h4 class="mt-3 mb-3">No posts available</h4>
             </div>
-    {% endfor %}
+        {% endfor %}
     </div>
-    
+
     {% else %}
         <div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px">
             <div>

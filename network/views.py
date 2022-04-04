@@ -181,7 +181,7 @@ def friend_requests(request):
 
 
 @login_required
-def edit_profile(request, profile_id):
+def edit_profile_bio(request, profile_id):
     if request.method == "POST":
 
         try:
@@ -191,7 +191,7 @@ def edit_profile(request, profile_id):
                 new_bio = request.POST["new_bio"]
                 profile.bio = new_bio
                 profile.save()
-
+                
                 return JsonResponse({"message": "Profile bio was updated successfully."}, status=201)
 
             else:
@@ -202,6 +202,31 @@ def edit_profile(request, profile_id):
         
     else:
         return JsonResponse({"POST request method required."}, status=400)
+
+
+@login_required
+def edit_profile_picture(request, profile_id):
+    if request.method == "POST":
+
+        try:
+            profile = UserProfile.objects.get(pk=profile_id)
+
+            if request.user == profile.user:
+                new_picture = request.FILES["new_picture"]
+                profile.picture = new_picture
+                profile.save()
+                
+                return JsonResponse({"message": "Profile picture was updated successfully.", "new_picture_url": profile.picture.url}, status=201)
+
+            else:
+                return JsonResponse({"error": "You do not have the right to perform this action."}, status=403)
+
+        except UserProfile.DoesNotExist:
+            return JsonResponse({"error": "User profile matching query does not exist."}, status=400)
+        
+    else:
+        return JsonResponse({"POST request method required."}, status=400)
+
 
 @login_required
 def remove_profile_friend(request, profile_id):

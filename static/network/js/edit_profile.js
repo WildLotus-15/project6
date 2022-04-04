@@ -21,6 +21,7 @@ function edit_profile_picture(profile_id) {
 
     const new_picture_form = document.createElement('input')
     new_picture_form.type = "file"
+    new_picture_form.id = 'new_picture'
     new_picture_form.style.width = "216px"
     new_picture_form.accept = "image/png, image/jpeg"
     picture_div.append(new_picture_form)
@@ -60,6 +61,31 @@ function edit_profile_picture(profile_id) {
     save_button.innerHTML = "Save"
     save_button.disabled = true
     buttons_row.append(save_button)
+
+    save_button.addEventListener('click', () => {
+        const new_picture = document.querySelector('#new_picture')
+
+        const formData = new FormData()
+
+        formData.append('new_picture', new_picture.files[0])
+
+        fetch(`/edit_profile_picture/${profile_id}`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(response => {
+            document.querySelector('#cancel').click()
+
+            document.querySelector('#profile_picture').src = response.new_picture_url
+
+            document.querySelector('#default_profile_picture').src = response.new_picture_url
+            console.log(response.message)
+        })
+    })
 }
 
 function edit_profile_bio(profile_id) {
@@ -124,9 +150,8 @@ function edit_profile_bio(profile_id) {
         const formData = new FormData()
 
         formData.append('new_bio', new_bio)
-        formData.append('profile_id', profile_id)
 
-        fetch(`/edit_profile/${profile_id}`, {
+        fetch(`/edit_profile_bio/${profile_id}`, {
             method: "POST",
             headers: {
                 "X-CSRFToken": getCookie("csrftoken")
@@ -138,6 +163,10 @@ function edit_profile_bio(profile_id) {
             document.querySelector('#cancel').click()
 
             document.querySelector('#profile_bio').innerHTML = new_bio
+
+            document.querySelector("#default_profile_bio").innerHTML = new_bio
+
+            console.log(response.message)
         })
     })
 }
