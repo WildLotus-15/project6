@@ -6,7 +6,6 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .models import FriendRequest, Post, RecentSearch, User, UserProfile
-from .forms import EditProfileForm
 
 # Create your views here.
 @login_required
@@ -184,24 +183,25 @@ def friend_requests(request):
 @login_required
 def edit_profile(request, profile_id):
     if request.method == "POST":
-        profile = UserProfile.objects.get(pk=profile_id)
-        if profile.user == request.user:
-            form = EditProfileForm(request.POST, request.FILES, instance=profile)
-            if form.is_valid():
-                form.save()
-                return HttpResponseRedirect(reverse("edit_profile", args=(profile.user.id,)))
-        else:
-            return JsonResponse({"error": "You do not have the permisson to perform this action."}, status=403)
 
+        try:
+            profile = UserProfile.objects.get(pk=profile_id)
+
+            if request.user == profile.user:
+                new_bio = request.POST["new_bio"]
+                profile.bio = new_bio
+                profile.save()
+
+                return JsonResponse({"message": "Profile bio was updated successfully."}, status=201)
+
+            else:
+                return JsonResponse({"error": "You do not have the right to perform this action."}, status=403)
+
+        except UserProfile.DoesNotExist:
+            return JsonResponse({"error": "User profile matching query does not exist."}, status=400)
+        
     else:
-        profile = UserProfile.objects.get(pk=profile_id)
-        form = EditProfileForm(instance=profile)
-
-    return render(request, "network/edit_profile.html", {
-        "profile": profile,
-        "form": form
-    })
-
+        return JsonResponse({"POST request method required."}, status=400)
 
 @login_required
 def remove_profile_friend(request, profile_id):

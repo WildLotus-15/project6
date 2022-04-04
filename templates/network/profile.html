@@ -51,16 +51,12 @@
                     <div class="d-flex ml-auto align-items-center p-2">
                         {% if request.user == profile.user %}
                         <div class="mr-2">
-                            <button type="button" class="btn btn-info">
-                                <!--
-                                <a class="dropdown-item" href="{% url 'edit_profile' profile.user.id %}">Edit Profile</a>
-                                -->
-                            Edit Profile
-                            </button>
+                            <button type="button" class="btn btn-info"
+                                data-toggle="modal" data-target="#profileModal">Edit Profile</button>
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              Account Settings
+                            Account Settings
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <a class="dropdown-item" href="{% url 'account_change_password' %}">Password Change</a>
@@ -188,6 +184,68 @@
         </div>
     </div>
 
+    <div class="modal fade" id="profileModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+    
+                <!-- Modal Header -->
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100">Edit Profile</h4>
+    
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+    
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div style="min-height: 200px;">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>Profile Picture</h4>
+                            </div>
+                            <div id="profile_picture_edit_div">
+                                <button type="button" class="btn btn-primary" id="edit_profile_picture" data-profile_id="{{ profile.user.id }}">Add</button>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <img src="{{ profile.picture.url }}" width="168" height="168" alt="" id="profile_picture" style="border-radius: 50%;">
+                            <div class="flex-column">
+                                <div id="new_picture_div" class="mt-2">
+
+                                </div>
+                                <div class="d-flex align-items-center mt-3" id="new_picture_buttons_div">
+
+                                </div>
+                            </div>
+                        </div>      
+                    </div>
+                    <div style="min-height: 30px;">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4>Bio</h4>
+                            </div>
+                            <div id="profile_bio_edit_div">
+                                <button type="button" class="btn btn-primary" id="edit_profile_bio" data-profile_id="{{ profile.user.id }}">Add</button>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-center">
+                            {% if profile.bio %}
+                                <div id="profile_bio" class="text-muted">{{ profile.bio }}</div>
+                            {% endif %}  
+                            <div class="flex-column">
+                                <div id="new_bio_div" data-profile_id="{{ profile.id }}">
+
+                                </div>
+                                <div class="d-flex align-items-center mt-3" id="new_buttons_div">
+
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card mt-3">
         <div class="card-header" style="font-size: 20px;">Posts</div>
         {% for post in posts %}
@@ -222,4 +280,5 @@
     <script src="{% static 'network/js/decline_friend_request.js' %}"></script>
     <script src="{% static 'network/js/accept_friend_request.js' %}"></script>
     <script src="{% static 'network/js/update_block_profile.js' %}"></script>
+    <script src="{% static 'network/js/edit_profile.js' %}"></script>
 {% endblock %}
