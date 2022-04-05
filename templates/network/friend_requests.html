@@ -3,8 +3,10 @@
 {% endblock %}
 
 {% block body %}
+<div class="card">
+    <div class="card-header" style="font-size: 20px;">All Friend Requests</div>
 
-{% for friend_request in friend_requests %}
+    {% for friend_request in friend_requests %}
 <div class="card">
     <div class="card-header d-flex justify-content-between" id="friend_request_header_{{friend_request.id}}">
         <div>
@@ -37,6 +39,9 @@
     </div>
 </div>
 {% endfor %}
+</div>
+
+
 
 {% endblock %}
 

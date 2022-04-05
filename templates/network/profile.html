@@ -69,11 +69,8 @@
                     </div>
                     <div class="d-flex align-items-center p-2">
                         {% if request.user != profile.user %}
-                            {% if profile.user in request.user.profile.blocked.all %}
-                                <button type="button" class="btn btn-danger" data-toggle="modal"
-                                    data-target="#unblockModal" data-profile_id="{{ profile.user.id }}">Unblock</button>
-                            {% else %}
-                                <button type="button" class="btn btn-danger" data-toggle="modal"
+                            {% if not profile.user in request.user.profile.blocked.all %}
+                                <button type="button" class="btn btn-danger mr-2" data-toggle="modal"
                                     data-target="#blockModal" data-profile_id="{{ profile.user.id }}">Block</button>
                             {% endif %}
                         {% endif %}
@@ -294,6 +291,10 @@
     <script src="{% static 'network/js/cancel_friend_request.js' %}"></script>
     <script src="{% static 'network/js/decline_friend_request.js' %}"></script>
     <script src="{% static 'network/js/accept_friend_request.js' %}"></script>
-    <script src="{% static 'network/js/update_block_profile.js' %}"></script>
-    <script src="{% static 'network/js/edit_profile.js' %}"></script>
+    {% if not profile.user in request.user.profile.blocked.all %}
+        <script src="{% static 'network/js/update_block_profile.js' %}"></script>
+    {% endif %}
+    {% if profile.user == request.user %}
+        <script src="{% static 'network/js/edit_profile.js' %}"></script>
+    {% endif %}
 {% endblock %}

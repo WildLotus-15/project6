@@ -14,6 +14,6 @@ function update_block(profile_id) {
     .then(response => {
         console.log(response.message)
 
-        window.location.reload()
+        window.location.pathname = "/blocked_users"
     })
 }

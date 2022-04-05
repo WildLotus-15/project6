@@ -3,28 +3,32 @@
 {% endblock %}
 
 {% block body %}
-    {% for mutual_friend in mutual_friends %}
     <div class="card">
-        <div class="card-header d-flex justify-content-between">
-            <div>
-                <a href="{% url 'profile' mutual_friend.id %}">
+        <div class="card-header" style="font-size: 20px;">All Mutual Friends</div>
+        {% for mutual_friend in mutual_friends %}
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
                     <div>
-                        <img src="{{ mutual_friend.profile.picture.url }}" alt="" width="60px" height="60px"
-                            style="border-radius: 50%">
-                        {{ mutual_friend }}
+                        <a href="{% url 'profile' mutual_friend.id %}">
+                            <div>
+                                <img src="{{ mutual_friend.profile.picture.url }}" alt="" width="60px" height="60px"
+                                    style="border-radius: 50%">
+                                {{ mutual_friend }}
+                            </div>
+                        </a>
                     </div>
-                </a>
+                </div>
             </div>
-        </div>
+        {% empty %}
+            <div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px;">
+                <div class="p-2">
+                    <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
+                </div>
+                <div class="p-2 text-muted">
+                    <h5 class="text-muted">When you have mutual friends with {{ profile.user.username }}, you'll see them here.</h5>
+                </div>
+            </div>
+        {% endfor %}
     </div>
-    {% empty %}
-        <div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px;">
-            <div class="p-2">
-                <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
-            </div>
-            <div class="p-2 text-muted">
-                <h5 class="text-muted">When you have mutual friends with {{ profile.user.username }}, you'll see them here.</h5>
-            </div>
-        </div>
-    {% endfor %}
+    
 {% endblock %}

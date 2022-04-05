@@ -54,22 +54,26 @@ def update_block(request, profile_id):
     try:
         user = User.objects.get(pk=profile_id)
 
-        try:
-            friend_request = FriendRequest.objects.get(
-                Q(from_user=request.user, to_user=user) | Q(from_user=user, to_user=request.user)
-            )
+        if not request.user == user:
+            try:
+                friend_request = FriendRequest.objects.get(
+                    Q(from_user=request.user, to_user=user) | Q(from_user=user, to_user=request.user)
+                )
 
-            friend_request.delete()
-            user.profile.friends.remove(request.user)
-            request.user.profile.friends.remove(user)
+                friend_request.delete()
+                user.profile.friends.remove(request.user)
+                request.user.profile.friends.remove(user)
 
-        except FriendRequest.DoesNotExist:
-            pass
+            except FriendRequest.DoesNotExist:
+                pass
 
-        if user in request.user.profile.blocked.all():
-            request.user.profile.blocked.remove(user)
+            if user in request.user.profile.blocked.all():
+                request.user.profile.blocked.remove(user)
+            else:
+                request.user.profile.blocked.add(user)
+        
         else:
-            request.user.profile.blocked.add(user)
+            return JsonResponse({"error": "You can not block youself."}, status=400)
         
     except User.DoesNotExist:
         return JsonResponse({"error": "User matching query does not exist."}, status=400)
@@ -486,6 +490,8 @@ def search_json(request):
         profile_query_list = UserProfile.objects.filter(
             Q(user__username__icontains=query) & ~Q(user__in=blocked_users)
         )
+
+        print(profile_query_list)
 
         for profile in profile_query_list:
             query_list.append(profile.serialize(request.user))
