@@ -16,22 +16,6 @@ def index(request):
 
 
 @login_required
-def delete_recent_search(request, searchID):
-    try:
-        recent_search = RecentSearch.objects.get(pk=searchID)
-
-        if recent_search.from_user == request.user:
-            recent_search.delete()
-        else:
-            return JsonResponse({"error": "You do not have the right to perform this action."}, status=403)
-    
-    except RecentSearch.DoesNotExist:
-        return JsonResponse({"error": "Recent search matching query does not exist."}, status=400)
-    
-    return JsonResponse({"message": "Recent search was deleted successfully."}, status=201)
-
-
-@login_required
 def recent_searches(request):
     recent_searches = RecentSearch.objects.filter(from_user=request.user).order_by('-timestamp').all()
     for post in recent_searches:
@@ -380,6 +364,7 @@ def limited_mutual_friends(request_user, profile):
     return mutual_friends_of_request_user
 
 
+@login_required
 def show_profile(request, profile_id):
     try:
         profile = UserProfile.objects.get(pk=profile_id)
@@ -389,23 +374,20 @@ def show_profile(request, profile_id):
             "posts": Post.objects.filter(author=profile).order_by('-timestamp'),
             "friend_request_available": not request.user.is_anonymous and not profile.user in request.user.profile.friends.all() and profile.user != request.user and not profile.user in request.user.profile.blocked.all(),
             "currently_friended": not request.user.is_anonymous and profile.user in request.user.profile.friends.all(),
+            "self_in_friend_request": self_in_friend_request(profile.user, request.user),
+            "self_in_profile_friend_request": self_in_profile_friend_request(request.user, profile.user)
         }
-        
-        if request.user.is_authenticated:
-            context["self_in_friend_request"] = self_in_friend_request(profile.user, request.user)
+                
+        if self_in_profile_friend_request(request.user, profile.user):
+            friend_request = FriendRequest.objects.get(to_user=request.user, from_user=profile.user)
+            context["friend_request_id"] = friend_request.id
 
-            context["self_in_profile_friend_request"] = self_in_profile_friend_request(request.user, profile.user)
-            
-            if self_in_profile_friend_request(request.user, profile.user):
-                friend_request = FriendRequest.objects.get(to_user=request.user, from_user=profile.user)
-                context["friend_request_id"] = friend_request.id
+        if request.user != profile.user:
+            context["mutual_friends"] = mutual_friends(request.user.profile, profile)
+            context["mutual_friends_amount"] = mutual_friends(request.user.profile, profile).count()
 
-            if request.user != profile.user:
-                context["mutual_friends"] = mutual_friends(request.user.profile, profile)
-                context["mutual_friends_amount"] = mutual_friends(request.user.profile, profile).count()
-
-                if context["mutual_friends_amount"] >= 8:
-                    context["limited_mutual_friends"] = limited_mutual_friends(request.user.profile, profile)
+            if context["mutual_friends_amount"] >= 8:
+                context["limited_mutual_friends"] = limited_mutual_friends(request.user.profile, profile)
 
     except UserProfile.DoesNotExist:
         return JsonResponse({"error": "User matching query does not exist."})

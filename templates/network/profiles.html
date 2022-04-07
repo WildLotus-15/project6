@@ -1,8 +1,21 @@
 <div class="card mb-3">
-    <div class="card-header">
-        <a href="{% url 'profile' profile.user.id %}" class="card-link">
-            <img src="{{ profile.picture.url }}" alt="" width="40" height="40" style="border-radius: 50%;">
-            {{ profile.user.username }}
-        </a>
+    <div class="card-header d-flex">
+        <div>
+            <a href="{% url 'profile' profile.user.id %}" class="card-link">
+                <img src="{{ profile.picture.url }}" alt="" width="60" height="60" style="border-radius: 50%;">
+            </a>
+        </div>
+        <div class="d-flex flex-column ml-2">
+            <div>
+                <a href="{% url 'profile' profile.user.id %}">
+                    {{ profile.user.username }}
+                </a>
+            </div>
+            <div class="text-muted">
+                {% if profile.user in request.user.profile.friends.all %}
+                    Friend
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>

@@ -22,6 +22,5 @@ urlpatterns = [
     path("blocked_users", views.blocked_users, name="blocked_users"),
     path("search", views.search_json, name="search_results_json"),
     path("recent_searches", views.recent_searches, name="recent_searches"),
-    path("delete_recent_search/<int:searchID>", views.delete_recent_search, name="delete_recent_search"),
     path("edit_profile_picture/<int:profile_id>", views.edit_profile_picture, name="edit_profile_picture"),
 ]

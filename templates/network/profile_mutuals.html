@@ -4,17 +4,19 @@
 
 {% block body %}
     <div class="card">
-        <div class="card-header" style="font-size: 20px;">All Mutual Friends</div>
+        <div class="card-header" style="font-size: 20px;">All Mutual Friends with <a href="{% url 'profile' profile.user.id %}">{{ profile.user.username }}</a></div>
         {% for mutual_friend in mutual_friends %}
             <div class="card">
-                <div class="card-header d-flex justify-content-between">
+                <div class="card-header d-flex">
                     <div>
                         <a href="{% url 'profile' mutual_friend.id %}">
-                            <div>
-                                <img src="{{ mutual_friend.profile.picture.url }}" alt="" width="60px" height="60px"
-                                    style="border-radius: 50%">
-                                {{ mutual_friend }}
-                            </div>
+                            <img src="{{ mutual_friend.profile.picture.url }}" alt="" width="60px" height="60px"
+                                style="border-radius: 50%">
+                        </a>
+                    </div>
+                    <div class="d-flex flex-column ml-2">
+                        <a href="{% url 'profile' mutual_friend.id %}">
+                            {{ mutual_friend }}
                         </a>
                     </div>
                 </div>

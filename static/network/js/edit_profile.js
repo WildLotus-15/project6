@@ -11,7 +11,7 @@ function edit_profile_picture(profile_id) {
 
     const edit_picture = document.querySelector('#edit_profile_picture')
 
-    const edit_picture_div = document.querySelector('#profile_picture_edit_div') 
+    const edit_picture_div = document.querySelector('#profile_picture_edit_div')
 
     const buttons_row = document.querySelector("#new_picture_buttons_div")
 
@@ -27,7 +27,13 @@ function edit_profile_picture(profile_id) {
     picture_div.append(new_picture_form)
 
     new_picture_form.onchange = () => {
-        if (new_picture_form.value == '') {
+        const new_picture_value = document.querySelector('#new_picture').value
+
+        const idxDot = new_picture_value.lastIndexOf(".") + 1;
+
+        const extFile = new_picture_value.substr(idxDot, new_picture_value.length).toLowerCase();
+        if (new_picture_form.value == '' || extFile == 'mp4') {
+            console.log(extFile)
             save_button.disabled = true
         } else {
             save_button.disabled = false
@@ -35,7 +41,7 @@ function edit_profile_picture(profile_id) {
     }
 
     const public_logo = document.createElement('div')
-    public_logo.innerHTML  = "<img src='/images/globe.svg'> Public"
+    public_logo.innerHTML = "<img src='/images/globe.svg'> Public"
     public_logo.className = "mr-2"
     buttons_row.append(public_logo)
 
@@ -52,6 +58,7 @@ function edit_profile_picture(profile_id) {
         cancel_button.remove()
         public_logo.remove()
         profile_picture.style.display = 'block'
+        document.querySelector('#message_div').innerHTML = ""
         edit_picture_div.append(edit_picture)
     })
 
@@ -69,22 +76,37 @@ function edit_profile_picture(profile_id) {
 
         formData.append('new_picture', new_picture.files[0])
 
-        fetch(`/edit_profile_picture/${profile_id}`, {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": getCookie("csrftoken")
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(response => {
-            document.querySelector('#cancel').click()
+        const extn = new_picture.files[0].type.split('/')[1]
+        const size = new_picture.files[0].size
+        const maxSize = 4000000; // 4 mb
 
-            document.querySelector('#profile_picture').src = response.new_picture_url
+        const valid = ["png", "jpg", "jpeg"]
 
-            document.querySelector('#default_profile_picture').src = response.new_picture_url
-            console.log(response.message)
-        })
+        if (valid.includes(extn) && size < maxSize && new_picture.clientWidth <= 180 && new_picture.clientHeight <= 180) {
+            fetch(`/edit_profile_picture/${profile_id}`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: formData
+            })
+                .then(response => response.json())
+                .then(response => {
+                    document.querySelector('#cancel').click()
+
+                    document.querySelector('#profile_picture').src = response.new_picture_url
+
+                    document.querySelector('#default_profile_picture').src = response.new_picture_url
+
+                    document.querySelector('#logged_in_picture').src = response.new_picture_url
+
+                    console.log(response.message)
+                })
+        } else {
+            console.log("File must be an image and must be smaller than 40kb.")
+            document.querySelector('#message_div').innerHTML = "The file must be an image smaller than 4 MB and should be at least 180 x 180 pixels."
+            save_button.disabled = true
+        }
     })
 }
 
@@ -98,7 +120,7 @@ function edit_profile_bio(profile_id) {
     const edit_bio_div = document.querySelector('#profile_bio_edit_div')
 
     const buttons_row = document.querySelector("#new_buttons_div")
-    
+
     document.querySelector('#profile_bio').remove()
     document.querySelector('#edit_profile_bio').remove()
 
@@ -110,7 +132,7 @@ function edit_profile_bio(profile_id) {
     bio_div.append(new_bio_form)
 
     const public_logo = document.createElement('div')
-    public_logo.innerHTML  = "<img src='/images/globe.svg'> Public"
+    public_logo.innerHTML = "<img src='/images/globe.svg'> Public"
     public_logo.className = "mr-2"
     buttons_row.append(public_logo)
 
@@ -143,7 +165,7 @@ function edit_profile_bio(profile_id) {
             save_button.disabled = true
         }
     }
-    
+
     save_button.addEventListener('click', () => {
         const new_bio = document.querySelector('#new_bio').value
 
@@ -158,16 +180,16 @@ function edit_profile_bio(profile_id) {
             },
             body: formData
         })
-        .then(response => response.json())
-        .then(response => {
-            document.querySelector('#cancel').click()
+            .then(response => response.json())
+            .then(response => {
+                document.querySelector('#cancel').click()
 
-            document.querySelector('#profile_bio').innerHTML = new_bio
+                document.querySelector('#profile_bio').innerHTML = new_bio
 
-            document.querySelector("#default_profile_bio").innerHTML = new_bio
+                document.querySelector("#default_profile_bio").innerHTML = new_bio
 
-            console.log(response.message)
-        })
+                console.log(response.message)
+            })
     })
 }
 

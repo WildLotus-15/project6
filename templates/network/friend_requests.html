@@ -8,13 +8,27 @@
 
     {% for friend_request in friend_requests %}
 <div class="card">
-    <div class="card-header d-flex justify-content-between" id="friend_request_header_{{friend_request.id}}">
+    <div class="card-header d-flex" id="friend_request_header_{{friend_request.id}}">
         <div>
-            <img src="{{ friend_request.from_user.profile.picture.url }}" alt="" width="40px" height="40px" style="border-radius: 50%">
-            <a href="{% url 'profile' friend_request.from_user.id %}">{{ friend_request.from_user }}</a> sent you a friend
-            request
+            <img src="{{ friend_request.from_user.profile.picture.url }}" alt="" width="60px" height="60px" style="border-radius: 50%">   
         </div>
-        <div class="dropdown">
+        <div class="d-flex flex-column">
+            <div>
+                <a href="{% url 'profile' friend_request.from_user.id %}">{{ friend_request.from_user }}</a> sent you a friend
+                request
+            </div>
+            <div>
+                {% for friend in friend_request.from_user.profile.friends.all|slice:":8" %}
+                    {% if friend in request.user.profile.friends.all %}
+                        <a href="{% url 'profile_mutuals' friend_request.from_user.pk %}">
+                            <img src="{{ friend.profile.picture.url }}" width="32" height="32" alt="" style="border-radius: 50%;">
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            
+        </div>
+        <div class="dropdown d-flex ml-auto align-items-center">
             <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
                 Respond
