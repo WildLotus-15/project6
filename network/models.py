@@ -68,7 +68,7 @@ def self_in_user(content):
 
 class Post(models.Model):
     author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    description = models.CharField(max_length=64)
+    description = models.TextField()
     only_friends = models.BooleanField(default=False)
     only_me = models.BooleanField(default=False)
     timestamp = models.DateTimeField(default=timezone.now)

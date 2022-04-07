@@ -131,6 +131,11 @@ function edit_profile_bio(profile_id) {
     new_bio_form.value = bio.innerHTML
     bio_div.append(new_bio_form)
 
+    const char_left = document.createElement('div')
+    char_left.id = "char_left"
+    char_left.innerHTML = `<small>${101 - bio.innerHTML.length} characters remaining</small>`
+    document.querySelector('#char_left_div').append(char_left)
+
     const public_logo = document.createElement('div')
     public_logo.innerHTML = "<img src='/images/globe.svg'> Public"
     public_logo.className = "mr-2"
@@ -148,23 +153,20 @@ function edit_profile_bio(profile_id) {
         save_button.remove()
         cancel_button.remove()
         public_logo.remove()
+        char_left.remove()
         bio_div.append(bio)
         edit_bio_div.append(edit_bio)
     })
 
     const save_button = document.createElement("button")
+    save_button.id = "bio_save_btn"
     save_button.type = "button"
     save_button.className = "btn btn-primary ml-1"
     save_button.innerHTML = "Save"
     buttons_row.append(save_button)
 
-    new_bio_form.onkeyup = () => {
-        if (new_bio_form.value.length > 0) {
-            save_button.disabled = false
-        } else {
-            save_button.disabled = true
-        }
-    }
+    new_bio_form.onkeydown = aleko
+    new_bio_form.onkeyup = aleko
 
     save_button.addEventListener('click', () => {
         const new_bio = document.querySelector('#new_bio').value
@@ -197,4 +199,15 @@ function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function aleko(event) {
+    document.querySelector('#char_left').innerHTML = `<small>${101 - event.target.value.length} characters remaining</small>`
+    const button = document.querySelector('#bio_save_btn')
+
+    if (101 - event.target.value.length <= 0) {
+        button.disabled = true
+    } else {
+        button.disabled = false
+    }
 }
