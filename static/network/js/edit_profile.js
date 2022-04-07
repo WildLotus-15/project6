@@ -82,7 +82,7 @@ function edit_profile_picture(profile_id) {
 
         const valid = ["png", "jpg", "jpeg"]
 
-        if (valid.includes(extn) && size < maxSize && new_picture.clientWidth <= 180 && new_picture.clientHeight <= 180) {
+        if (valid.includes(extn) && size < maxSize && new_picture.clientWidth <= 220 && new_picture.clientHeight <= 220) {
             fetch(`/edit_profile_picture/${profile_id}`, {
                 method: "POST",
                 headers: {
@@ -103,8 +103,9 @@ function edit_profile_picture(profile_id) {
                     console.log(response.message)
                 })
         } else {
-            console.log("File must be an image and must be smaller than 40kb.")
-            document.querySelector('#message_div').innerHTML = "The file must be an image smaller than 4 MB and should be at least 180 x 180 pixels."
+            const message = document.createElement('div')
+            message.innerHTML = "The file must be an image smaller than 4 MB and should be at least 160 x 160 pixels."
+            document.querySelector('#message_div').append(message)
             save_button.disabled = true
         }
     })
@@ -131,7 +132,8 @@ function edit_profile_bio(profile_id) {
     new_bio_form.value = bio.innerHTML
     bio_div.append(new_bio_form)
 
-    const char_left = document.createElement('div')
+    const char_left = document.createElement('p')
+    char_left.className = "text-right"
     char_left.id = "char_left"
     char_left.innerHTML = `<small>${101 - bio.innerHTML.length} characters remaining</small>`
     document.querySelector('#char_left_div').append(char_left)
@@ -167,6 +169,21 @@ function edit_profile_bio(profile_id) {
 
     new_bio_form.onkeydown = aleko
     new_bio_form.onkeyup = aleko
+    new_bio_form.addEventListener('paste', (event) => {
+        let paste = (event.clipboardData || window.clipboardData).getData('text')
+
+        new_bio_form.value = paste
+
+        document.querySelector('#char_left').innerHTML = `<small>${101 - paste.length} characters remaining</small>`
+
+        if (paste.length > 0) {
+            save_button.disabled = false
+        } else {
+            save_button.disabled = true
+        }
+
+        event.preventDefault();
+    })
 
     save_button.addEventListener('click', () => {
         const new_bio = document.querySelector('#new_bio').value
@@ -205,7 +222,7 @@ function aleko(event) {
     document.querySelector('#char_left').innerHTML = `<small>${101 - event.target.value.length} characters remaining</small>`
     const button = document.querySelector('#bio_save_btn')
 
-    if (101 - event.target.value.length <= 0) {
+    if (101 - event.target.value.length <= 0 || event.target.value.length == 0) {
         button.disabled = true
     } else {
         button.disabled = false
