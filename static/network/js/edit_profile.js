@@ -126,7 +126,7 @@ function edit_profile_bio(profile_id) {
     document.querySelector('#edit_profile_bio').remove()
 
     const new_bio_form = document.createElement('input')
-    new_bio_form.placeholder = "Describe who you are"
+    new_bio_form.placeholder = "Describe yourself..."
     new_bio_form.className = "form-control"
     new_bio_form.id = 'new_bio'
     new_bio_form.value = bio.innerHTML

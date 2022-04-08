@@ -3,6 +3,7 @@
 {% endblock %}
 
 {% block body %}
+    {% if not request.user == profile.user and not profile.user in request.user.profile.blocked.all %}
     <div class="card">
         <div class="card-header" style="font-size: 20px;">All Mutual Friends with <a href="{% url 'profile' profile.user.id %}">{{ profile.user.username }}</a></div>
         {% for mutual_friend in mutual_friends %}
@@ -32,5 +33,18 @@
             </div>
         {% endfor %}
     </div>
+    {% else %}
+    <div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px">
+        <div>
+            <img src="{% static 'network/images/permissions_gray_wash.svg' %}" alt="" width="112" height="112">
+        </div>
+        <div class="text-muted">
+            <h4 class="mt-4">This content isn't available right now</h4>
+        </div>
+        <div class="text-muted">
+            <p>When this happens, it's usually because the requested profile is located in your blocked users.</p>
+        </div>
+    </div>
+    {% endif %}
     
 {% endblock %}

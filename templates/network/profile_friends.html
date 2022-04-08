@@ -1,50 +1,64 @@
 {% extends "network/layout.html" %} {% load static %} {% block title %}
-    {{ profile.user.username }} | Friends
+{{ profile.user.username }} | Friends
 {% endblock %}
 
 {% block body %}
+{% if not request.user == profile.user and not profile.user in request.user.profile.blocked.all %}
+<div class="card">
+    <div class="card-header" style="font-size: 20px;">All Friends</div>
+    {% for friend in friends %}
+    {% if friend.to_user == profile.user %}
     <div class="card">
-        <div class="card-header" style="font-size: 20px;">All Friends</div>
-        {% for friend in friends %}
-        {% if friend.to_user == profile.user %}
-            <div class="card">
-                <div class="card-header d-flex justify-content-start">
+        <div class="card-header d-flex justify-content-start">
+            <div>
+                <a href="{% url 'profile' friend.from_user.id %}">
                     <div>
-                        <a href="{% url 'profile' friend.from_user.id %}">
-                            <div>
-                                <img src="{{ friend.from_user.profile.picture.url }}" alt="" width="60px" height="60px"
-                                    style="border-radius: 50%">
-                                {{ friend.from_user }}
-                            </div>
-                        </a>
+                        <img src="{{ friend.from_user.profile.picture.url }}" alt="" width="60px" height="60px"
+                            style="border-radius: 50%">
+                        {{ friend.from_user }}
                     </div>
-                </div>
-            </div>
-        {% else %}
-            <div class="card">
-                <div class="card-header d-flex justify-content-start">
-                    <div>
-                        <a href="{% url 'profile' friend.to_user.id %}">
-                            <div>
-                                <img src="{{ friend.to_user.profile.picture.url }}" alt="" width="60px" height="60px"
-                                    style="border-radius: 50%">
-                                {{ friend.to_user }}
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-    {% empty %}
-        <div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px;">
-            <div class="p-2">
-                <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
-            </div>
-            <div class="p-2 text-muted">
-                <h5 class="text-muted">When {{ profile.user.username }} has friends, you'll see them here.</h5>
+                </a>
             </div>
         </div>
-    {% endfor %}
-    </div>         
-    
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-header d-flex justify-content-start">
+            <div>
+                <a href="{% url 'profile' friend.to_user.id %}">
+                    <div>
+                        <img src="{{ friend.to_user.profile.picture.url }}" alt="" width="60px" height="60px"
+                            style="border-radius: 50%">
+                        {{ friend.to_user }}
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% empty %}
+    <div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px;">
+        <div class="p-2">
+            <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
+        </div>
+        <div class="p-2 text-muted">
+            <h5 class="text-muted">When {{ profile.user.username }} has friends, you'll see them here.</h5>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px">
+    <div>
+        <img src="{% static 'network/images/permissions_gray_wash.svg' %}" alt="" width="112" height="112">
+    </div>
+    <div class="text-muted">
+        <h4 class="mt-4">This content isn't available right now</h4>
+    </div>
+    <div class="text-muted">
+        <p>When this happens, it's usually because the requested profile is located in your blocked users.</p>
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}

@@ -1,15 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#post_submit').addEventListener('click', () => create_post())
 
-    document.querySelector('#post_submit').disabled = true
+    const submit = document.querySelector('#post_submit')
+
+    submit.disabled = true
+
+    const content = document.querySelector('#post_content')
     
-    document.querySelector('#post_content').onkeyup = function() {
-        if (document.querySelector('#post_content').value.length > 0) {
-            document.querySelector('#post_submit').disabled = false
+    content.onkeyup = function() {
+        if (content.value.length > 0) {
+            submit.disabled = false
         } else {
-            document.querySelector('#post_submit').disabled = true
+            submit.disabled = true
         }
     }
+
+    content.addEventListener('paste', (event) => {
+        let paste = (event.clipboardData || window.clipboardData).getData('text')
+
+        content.value = paste
+
+        if (paste.length > 0) {
+            submit.disabled = false
+        } else {
+            submit.disabled = true
+        }
+
+        event.preventDefault();
+    })
 })
 
 function create_post() {
