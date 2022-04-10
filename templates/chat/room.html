@@ -16,6 +16,7 @@
 	<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 	<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
 	<link rel="stylesheet" href="{% static 'chat/css/styles.css' %}" />
 </head>
 
@@ -26,38 +27,42 @@
 				<div class="wrap">
 					<a href="{% url 'profile' request.user.id %}">
 						<img id="profile-img" src="{{ request.user.profile.picture.url }}" alt="" />
-						<p>{{ request.user.username }}</p>	
+						<p>{{ request.user.username }}</p>
 					</a>
 				</div>
 			</div>
-			<div id="search">
-				<label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
-				<input type="text" placeholder="Search contacts..." />
+			<div>
+				{% for group in groups %}
+				<a href="{% url 'chat:room' group.name %}" id="aleko">
+					{{ group.name }}
+				</a>
+				{% endfor %}
 			</div>
 			<div id="contacts">
 				<ul>
 				</ul>
 			</div>
 			<div id="bottom-bar">
-				<button id="addcontact"><i class="fa fa-user-plus fa-fw" aria-hidden="true"></i> <span>Add
-						contact</span></button>
-				<button id="settings"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Settings</span></button>
+				<a href=""></a>
+				<button id="addcontact" class="w-100">
+					<a href="{% url 'chat:rooms' %}">Join a Chat Room</a>
+				</button>
 			</div>
 		</div>
 		<div class="content">
+			<div class="contact-profile">
+				<img src="{{ group.picture.url }}" alt="">
+				<p>{{ group.name }}</p>
+			</div>
+
+			{% if request.user in group.users.all %}
+
 			<div class="messages">
 				<ul id="chat-log">
-					{% comment %} <li class="sent">
-						<img src="http://emilcarlsson.se/assets/mikeross.png" alt="" />
-						<p>How the hell am I supposed to get a jury to believe you when I am not even sure that I do?!
-						</p>
-					</li>
-					<li class="replies">
-						<img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-						<p>When you're backed against the wall, break the god damn thing down.</p>
-					</li> {% endcomment %}
+
 				</ul>
 			</div>
+
 			<div class="message-input">
 				<div class="wrap">
 					<input id="chat-message-input" type="text" placeholder="Write your message..." />
@@ -66,6 +71,16 @@
 					</button>
 				</div>
 			</div>
+
+			{% else %}
+
+			<div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px;">
+				<div class="p-2 text-muted">
+					<h5 class="text-muted">First you have to join specified chat room, in order to see and type messages.</h5>
+				</div>
+			</div>
+
+			{% endif %}
 		</div>
 	</div>
 
@@ -77,7 +92,7 @@
 
 		var chatSocket = new ReconnectingWebSocket(
 			'ws://' + window.location.host +
-			'/ws/chat/' + roomName + '/');
+			'/ws/chat/room' + roomName + '/');
 
 		chatSocket.onopen = function (e) {
 			fetchMessages();
@@ -111,34 +126,49 @@
 				'command': 'new_message',
 				'message': message,
 				'from': username,
+				'group_name': roomName
 			}));
 
 			messageInputDom.value = '';
 		};
 
 		function fetchMessages() {
-			chatSocket.send(JSON.stringify({'command': 'fetch_messages'}));
+			chatSocket.send(JSON.stringify({ 'command': 'fetch_messages', "group_name": roomName }));
 		}
 
 		function createMessage(data) {
-			var author = data['author'];
+			var author = document.createElement('a')
+			author.href = `/profile/${data.author_id}`
+			author.innerHTML = data['author'];
+
 			var author_picture = data["author_picture"];
+
 			var msgListTag = document.createElement('li');
+
+			var wrapperTag = document.createElement('div');
+
 			var imgTag = document.createElement('img');
 			imgTag.src = author_picture
-			var pTag = document.createElement('p');
-			pTag.textContent = data.content;
-			var timestamp = document.createElement('p');
-			timestamp.textContent = data["timestamp"]
+			imgTag.addEventListener('click', () => {
+				window.location.href = `/profile/${data.author_id}`
+			})
 
-			if (author === username) {
-				msgListTag.className = 'sent';
-			} else {
-				msgListTag.className = 'replies';
-			}
+			var messageTag = document.createElement('div')
+			messageTag.textContent = data.content;
+
+			var timestampTag = document.createElement('div');
+			timestampTag.textContent = data["timestamp"]
+
+			wrapperTag.appendChild(author)
+			wrapperTag.appendChild(messageTag)
+			wrapperTag.appendChild(timestampTag)
+
+			msgListTag.className = 'sent';
+
 			msgListTag.appendChild(imgTag);
-			msgListTag.appendChild(pTag);
-			msgListTag.append(timestamp);
+
+			msgListTag.append(wrapperTag);
+
 			document.querySelector('#chat-log').appendChild(msgListTag);
 		}
 

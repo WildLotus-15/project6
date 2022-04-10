@@ -16,17 +16,7 @@
             <div>
                 <a href="{% url 'profile' friend_request.from_user.id %}">{{ friend_request.from_user }}</a> sent you a friend
                 request
-            </div>
-            <div>
-                {% for friend in friend_request.from_user.profile.friends.all|slice:":8" %}
-                    {% if friend in request.user.profile.friends.all %}
-                        <a href="{% url 'profile_mutuals' friend_request.from_user.pk %}">
-                            <img src="{{ friend.profile.picture.url }}" width="32" height="32" alt="" style="border-radius: 50%;">
-                        </a>
-                    {% endif %}
-                {% endfor %}
-            </div>
-            
+            </div>      
         </div>
         <div class="dropdown d-flex ml-auto align-items-center">
             <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown"
