@@ -1,8 +1,4 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-
-<head>
+{% extends "network/layout.html" %}{% load static %} {% block script %}
 	<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,300' rel='stylesheet'
 		type='text/css'>
 	<script src="https://use.typekit.net/hoy3lrg.js"></script>
@@ -18,41 +14,34 @@
 	<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 	<script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
 	<link rel="stylesheet" href="{% static 'chat/css/styles.css' %}" />
-</head>
-
-<body>
-	<div id="frame">
+{% endblock %}
+{% block body %}
+	<div id="frame" class="mt-0">
 		<div id="sidepanel">
-			<div id="profile">
-				<div class="wrap">
-					<a href="{% url 'profile' request.user.id %}">
-						<img id="profile-img" src="{{ request.user.profile.picture.url }}" alt="" />
-						<p>{{ request.user.username }}</p>
-					</a>
-				</div>
-			</div>
-			<div>
-				{% for group in groups %}
-				<a href="{% url 'chat:room' group.name %}" id="aleko">
-					{{ group.name }}
-				</a>
-				{% endfor %}
-			</div>
 			<div id="contacts">
-				<ul>
+				<ul id="contactList">
+					{% for group in groups %}
+					<li class="contact">
+						<div class="wrap">
+							<div class="meta">
+								<a href="{% url 'chat:room' group.name %}">
+									{{ group.name }}
+								</a>
+							</div>
+						</div>
+					</li>
+					{% endfor %}
 				</ul>
 			</div>
 			<div id="bottom-bar">
-				<a href=""></a>
-				<button id="addcontact" class="w-100">
-					<a href="{% url 'chat:rooms' %}">Join a Chat Room</a>
-				</button>
+				<a href="{% url 'chat:rooms' %}">
+					<button id="addcontact" class="w-100">Join a Chat Room</button>
+				</a>
 			</div>
 		</div>
 		<div class="content">
 			<div class="contact-profile">
-				<img src="{{ group.picture.url }}" alt="">
-				<p>{{ group.name }}</p>
+				<p class="ml-3">{{ group.name }}</p>
 			</div>
 
 			{% if request.user in group.users.all %}
@@ -113,9 +102,18 @@
 			console.error('Chat socket closed unexpectedly');
 		};
 
+		document.querySelector('#chat-message-submit').disabled = true
+
 		document.querySelector('#chat-message-input').onkeyup = function (e) {
-			if (e.keyCode === 13) {  // enter, return
-				document.querySelector('#chat-message-submit').click();
+			if (document.querySelector('#chat-message-input').value.length > 0) {
+				document.querySelector('#chat-message-submit').disabled = false
+			} else {
+				document.querySelector('#chat-message-submit').disabled = true
+			}
+
+			if (e.keyCode === 13 &&	document.querySelector('#chat-message-submit').disabled !== true) {
+				// enter, return
+				document.querySelector('#chat-message-submit').click();  
 			}
 		};
 
@@ -141,38 +139,53 @@
 			author.href = `/profile/${data.author_id}`
 			author.innerHTML = data['author'];
 
-			var author_picture = data["author_picture"];
-
 			var msgListTag = document.createElement('li');
 
 			var wrapperTag = document.createElement('div');
+			wrapperTag.className = "d-flex mb-4 ml-3"
+
+			var imgTagDiv = document.createElement('div')
+			imgTagDiv.className = "mt-auto"
 
 			var imgTag = document.createElement('img');
-			imgTag.src = author_picture
+			imgTag.src = data["author_picture"];
 			imgTag.addEventListener('click', () => {
 				window.location.href = `/profile/${data.author_id}`
 			})
 
-			var messageTag = document.createElement('div')
-			messageTag.textContent = data.content;
+			imgTagDiv.append(imgTag)
+
+			wrapperTag.append(imgTagDiv)
+
+			var contentTag = document.createElement('div')
+			contentTag.className = 'd-flex flex-column'
+			wrapperTag.append(contentTag)
+
+			var inlineTag = document.createElement('div')
+			contentTag.append(inlineTag)
 
 			var timestampTag = document.createElement('div');
-			timestampTag.textContent = data["timestamp"]
+			timestampTag.className = "d-inline ml-1"
+			timestampTag.textContent = `on ${data["timestamp"]}`
 
-			wrapperTag.appendChild(author)
-			wrapperTag.appendChild(messageTag)
-			wrapperTag.appendChild(timestampTag)
+			inlineTag.append(author)
+			inlineTag.append(timestampTag)
 
+			var messageTagDiv = document.createElement('div')
+
+			var messageTag = document.createElement('p')
+			messageTag.className = "mb-0"
+			messageTag.textContent = data.content;
+			
+			messageTagDiv.append(messageTag)
+			contentTag.append(messageTagDiv)
+
+			wrapperTag.append(contentTag)
 			msgListTag.className = 'sent';
 
-			msgListTag.appendChild(imgTag);
-
-			msgListTag.append(wrapperTag);
+			msgListTag.append(wrapperTag)
 
 			document.querySelector('#chat-log').appendChild(msgListTag);
 		}
-
 	</script>
-</body>
-
-</html>
+{% endblock %}
