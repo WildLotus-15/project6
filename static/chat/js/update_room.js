@@ -6,6 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.addEventListener('click', () => update_room(room_id))
         }    
     })
+
+    var room_save_button = document.querySelector('#room_save_button')
+
+    room_save_button.addEventListener('click', () => {
+        window.location.href = "/chat/"
+    })
 })
 
 function update_room(room_id) {

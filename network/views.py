@@ -372,8 +372,8 @@ def show_profile(request, profile_id):
         context = {
             "profile": profile,
             "posts": Post.objects.filter(author=profile).order_by('-timestamp'),
-            "friend_request_available": not request.user.is_anonymous and not profile.user in request.user.profile.friends.all() and profile.user != request.user and not profile.user in request.user.profile.blocked.all(),
-            "currently_friended": not request.user.is_anonymous and profile.user in request.user.profile.friends.all(),
+            "friend_request_available": not profile.user in request.user.profile.friends.all() and profile.user != request.user and not profile.user in request.user.profile.blocked.all(),
+            "currently_friended": profile.user in request.user.profile.friends.all(),
             "self_in_friend_request": self_in_friend_request(profile.user, request.user),
             "self_in_profile_friend_request": self_in_profile_friend_request(request.user, profile.user)
         }

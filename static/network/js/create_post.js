@@ -52,7 +52,7 @@ function create_post() {
     
         window.location.reload()
 
-        return false;    
+        return false;
     })
 }
 

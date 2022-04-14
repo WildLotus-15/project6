@@ -1,33 +1,38 @@
 {% extends "network/layout.html" %}{% load static %} {% block script %}
 	<link rel="stylesheet" href="{% static 'chat/css/styles.css' %}" />
+	<script src="{% static 'chat/js/update_room.js' %}"></script>
 {% endblock %}
+
+{% block title %}
+	Chat Room | {{ group.name }}
+{% endblock %}
+
 {% block body %}
-	<div id="frame" class="mt-0">
+	<div id="frame" class="bg-light">
 		<div id="sidepanel">
 			<div id="contacts" class="d-flex flex-column">
-				<h4>Chat Rooms</h4>
-					{% for group in groups %}
-						<div>
-							<a href="{% url 'chat:room' group.name %}">
-								{{ group.name }}
-							</a>
-						</div>
-					{% endfor %}
+				<div class="d-flex align-items-center" style="height: 80px; line-height: 80px">
+					<h5 class="ml-3">Chat Rooms</h5>
+				</div>
+				{% for group in groups %}
+				<div class="ml-3">
+					<a href="{% url 'chat:room' group.name %}">
+						{{ group.name }}
+					</a>
+				</div>
+				{% endfor %}
 			</div>
 			<div id="bottom-bar">
-				<a href="{% url 'chat:rooms' %}">
-					<button id="addcontact" class="w-100">Join a Chat Room</button>
-				</a>
+				<button id="addcontact" style="height: 48px;" data-toggle="modal" data-target="#chatRoomsModal">Manage Chat Rooms</button>
 			</div>
 		</div>
 		<div class="content">
-			<div class="contact-profile">
-				<p class="ml-3">{{ group.name }}</p>
+			<div class="contact-profile border border-top-0 d-flex align-items-center">
+				<h5 class="ml-3">{{ group.name }}</h5>
 			</div>
 
 			{% if request.user in group.users.all %}
-
-			<div class="messages">
+			<div class="messages border-left">
 				<ul id="chat-log">
 
 				</ul>
@@ -37,26 +42,25 @@
 				<div class="wrap">
 					<input id="chat-message-input" type="text" placeholder="Write your message..." />
 					<button id="chat-message-submit" class="submit">
-						<i class="fa fa-paper-plane" aria-hidden="true"></i>
+						<img src="{% static 'network/images/send.svg' %}" alt="">
 					</button>
 				</div>
 			</div>
-
 			{% else %}
-
-			<div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px;">
+			<div class="d-flex align-items-center justify-content-center border border-top-0" style="min-height: 640px;">
 				<div class="p-2 text-muted">
-					<h5 class="text-muted">First you have to join specified chat room, in order to see and type messages.</h5>
+					<h5 class="text-muted">First, you have to join a specified chat room, to see and type messages.</h5>
 				</div>
 			</div>
-
 			{% endif %}
 		</div>
 	</div>
 
+	{% include "chat/roomsModal.html" %}
+
 	<script src="{% static 'chat/js/main.js' %}"></script>
 	<script src="{% static 'chat/js/reconnecting-websocket.js' %}"></script>
-	<script>
+	<script>	
 		var roomName = {{ room_name_json }};
 		var username = {{ username }};
 
@@ -94,7 +98,7 @@
 
 			if (e.keyCode === 13 &&	document.querySelector('#chat-message-submit').disabled !== true) {
 				// enter, return
-				document.querySelector('#chat-message-submit').click();  
+				document.querySelector('#chat-message-submit').click();
 			}
 		};
 
@@ -109,6 +113,9 @@
 			}));
 
 			messageInputDom.value = '';
+
+			var messagesUl = document.querySelector('.messages')
+			messagesUl.scrollTop = messagesUl.scrollHeight
 		};
 
 		function fetchMessages() {

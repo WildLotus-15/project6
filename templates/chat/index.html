@@ -1,27 +1,41 @@
 <!-- chat/templates/chat/index.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8"/>
-    <title>Chat Rooms</title>
-</head>
-<body>
-    What chat room would you like to enter?<br>
-    <input id="room-name-input" type="text" size="100"><br>
-    <input id="room-name-submit" type="button" value="Enter">
+{% extends "network/layout.html" %} {% load static %} {% block title %}
+    Chat Rooms | Network
+{% endblock %}
 
-    <script>
-        document.querySelector('#room-name-input').focus();
-        document.querySelector('#room-name-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#room-name-submit').click();
-            }
-        };
+{% block script %}
+    <link rel="stylesheet" href="{% static 'chat/css/styles.css' %}" />
+    <script src="{% static 'chat/js/update_room.js' %}"></script>
+{% endblock %}
 
-        document.querySelector('#room-name-submit').onclick = function(e) {
-            var roomName = document.querySelector('#room-name-input').value;
-            window.location.pathname = '/chat/' + roomName + '/';
-        };
-    </script>
-</body>
-</html>
+{% block body %}
+<div id="frame" class="bg-light">
+    <div id="sidepanel">
+        <div id="contacts" class="d-flex flex-column">
+            <div class="d-flex align-items-center" style="height: 80px; line-height: 80px">
+                <h5 class="ml-3">Chat Rooms</h5>
+            </div>
+            {% for group in groups %}
+            <div class="ml-3">
+                <a href="{% url 'chat:room' group.name %}">
+                    {{ group.name }}
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        <div id="bottom-bar">
+            <button id="addcontact" class="w-100" style="height: 48px;" data-toggle="modal" data-target="#chatRoomsModal">Manage Chat Rooms</button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="d-flex align-items-center justify-content-center border border-top-0" style="min-height: 640px;">
+            <div class="p-2 text-muted">
+                <h5 class="text-muted">Select joined Chat Room to start chatting with other people!</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "chat/roomsModal.html" %}
+
+{% endblock %}

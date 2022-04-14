@@ -7,10 +7,12 @@ from django.http import JsonResponse
 from chat.models import Group, User
 
 # Create your views here.
-
-
+@login_required
 def index(request):
-    return render(request, "chat/index.html")
+    return render(request, "chat/index.html", {
+        "groups": request.user.joined_groups.all(),
+        "rooms": Group.objects.all()
+    })
 
 
 @login_required
@@ -25,15 +27,12 @@ def room(request, group_name):
         "room_name_json": mark_safe(json.dumps(group.name)),
         "username": mark_safe(json.dumps(request.user.username)),
         "groups": request.user.joined_groups.all(),
-        "group": group
-    })
-
-
-def chat_rooms(request):
-    return render(request, "chat/rooms.html", {
+        "group": group,
         "rooms": Group.objects.all()
     })
 
+
+@login_required
 def update_room(request, room_id):
     try:
         room = Group.objects.get(pk=room_id)
