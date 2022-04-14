@@ -6,13 +6,14 @@
 
 {% if not search %}
     <div id="newPost">
+        <input type="hidden" value="{{ request.user.username }}" id="loggedInUsername">
         <div class="card">
             <div class="card-body">
                 <a href="{% url 'profile' request.user.id %}">
                     <img src="{{ request.user.profile.picture.url }}" class="d-inline" alt="Logged in Profile Picture"
                         width="40px" height="40px" style="border-radius: 50%">
                 </a>
-                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#myModal">What's on your
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#myModal" id="postModal">What's on your
                     mind, {{ request.user.username }}?</button>
             </div>
         </div>

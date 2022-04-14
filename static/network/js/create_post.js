@@ -6,12 +6,18 @@ document.addEventListener('DOMContentLoaded', () => {
     submit.disabled = true
 
     const content = document.querySelector('#post_content')
+
+    const postModalButton = document.querySelector('#postModal')
+
+    const hiddenUsername = document.querySelector('#loggedInUsername').value
     
     content.onkeyup = function() {
         if (content.value.length > 0) {
             submit.disabled = false
+            postModalButton.innerHTML = content.value
         } else {
             submit.disabled = true
+            postModalButton.innerHTML = `What's on your mind, ${hiddenUsername}?`
         }
     }
 
