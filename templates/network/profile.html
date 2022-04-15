@@ -178,14 +178,17 @@
                                 <button type="button" class="btn btn-primary" id="edit_profile_picture" data-profile_id="{{ profile.user.id }}">Add</button>
                             </div>
                         </div>
-                        <div class="d-flex align-items-center justify-content-center">
+                        <div class="d-flex justify-content-center">
                             <img src="{{ profile.picture.url }}" width="168" height="168" alt="" id="profile_picture" style="border-radius: 50%;">
                             <div class="flex-column">
-                                <div id="message_div" class="text-center"></div>
+                                <div id="new_message_div" style="display: none;">
+                                
+                                </div>
                                 
                                 <div id="new_picture_div" class="mt-2">
 
                                 </div>
+
                                 <div class="d-flex align-items-center mt-3" id="new_picture_buttons_div">
 
                                 </div>

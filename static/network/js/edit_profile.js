@@ -58,7 +58,7 @@ function edit_profile_picture(profile_id) {
         cancel_button.remove()
         public_logo.remove()
         profile_picture.style.display = 'block'
-        document.querySelector('#message_div').innerHTML = ""
+        document.querySelector('#new_message_div').innerHTML = ""
         edit_picture_div.append(edit_picture)
     })
 
@@ -82,7 +82,7 @@ function edit_profile_picture(profile_id) {
 
         const valid = ["png", "jpg", "jpeg"]
 
-        if (valid.includes(extn) && size < maxSize && new_picture.clientWidth <= 220 && new_picture.clientHeight <= 220) {
+        if (valid.includes(extn) && size < maxSize && new_picture.clientWidth <= 120 && new_picture.clientHeight <= 220) {
             fetch(`/edit_profile_picture/${profile_id}`, {
                 method: "POST",
                 headers: {
@@ -103,9 +103,14 @@ function edit_profile_picture(profile_id) {
                     console.log(response.message)
                 })
         } else {
-            const message = document.createElement('div')
-            message.innerHTML = "The file must be an image smaller than 4 MB and should be at least 160 x 160 pixels."
-            document.querySelector('#message_div').append(message)
+            document.querySelector('#new_message_div').style.display = "unset"
+            const new_message = document.createElement('div')
+            new_message.className = "alert alert-danger alert-dismissible fade show"
+            new_message.role = "alert"
+            new_message.style.width = "216px"
+            new_message.innerHTML = "The file must be an image smaller than 4 MB and should be at least 160 x 160 pixels. <button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"
+            document.querySelector('#new_message_div').append(new_message)
+
             save_button.disabled = true
         }
     })

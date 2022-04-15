@@ -8,28 +8,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const content = document.querySelector('#post_content')
 
     const postModalButton = document.querySelector('#postModal')
-
-    const hiddenUsername = document.querySelector('#loggedInUsername').value
     
-    content.onkeyup = function() {
-        if (content.value.length > 0) {
-            submit.disabled = false
-            postModalButton.innerHTML = content.value
-        } else {
-            submit.disabled = true
-            postModalButton.innerHTML = `What's on your mind, ${hiddenUsername}?`
-        }
-    }
+    content.onkeydown = newPostHandle
+    content.onkeyup = newPostHandle
 
     content.addEventListener('paste', (event) => {
         let paste = (event.clipboardData || window.clipboardData).getData('text')
 
         content.value = paste
 
-        if (paste.length > 0) {
+        if (paste.length > 0 && paste.indexOf(' ') !== 0) {
             submit.disabled = false
-        } else {
-            submit.disabled = true
+            postModalButton.innerHTML = paste
         }
 
         event.preventDefault();
@@ -66,4 +56,26 @@ function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function newPostHandle(event) {
+    const content = document.querySelector('#post_content')
+    const submit = document.querySelector('#post_submit')
+    const postModal = document.querySelector('#postModal')
+    const hiddenUsername = document.querySelector('#loggedInUsername').value
+
+    content.innerHTML = event.target.value
+
+    if (event.target.value.length > 0 && event.target.value.indexOf(' ') !== 0) {
+        postModal.innerHTML = event.target.value
+        submit.disabled = false
+    } else {
+        if (window.location.href == "/") {
+            postModal.innerHTML = `What's on your mind, ${hiddenUsername}?`
+        } else {
+            postModal.innerHTML = `What's on your mind?`
+        }
+
+        submit.disabled = true
+    }
 }
