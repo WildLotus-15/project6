@@ -1,4 +1,5 @@
 import json
+from types import new_class
 from django.utils import timezone
 from django.db.models import Q
 from django.urls import reverse
@@ -177,7 +178,11 @@ def edit_profile_bio(request, profile_id):
 
             if request.user == profile.user:
                 new_bio = request.POST["new_bio"]
-                profile.bio = new_bio
+                if new_bio == "":
+                    profile.bio = "No Bio..."
+                else:
+                    profile.bio = new_bio
+                    
                 profile.save()
                 
                 return JsonResponse({"message": "Profile bio was updated successfully."}, status=201)
@@ -200,10 +205,14 @@ def edit_profile_picture(request, profile_id):
             profile = UserProfile.objects.get(pk=profile_id)
 
             if request.user == profile.user:
-                new_picture = request.FILES["new_picture"]
-                profile.picture = new_picture
+                if request.FILES:
+                    new_picture = request.FILES["new_picture"]
+                    profile.picture = new_picture
+                else:
+                    profile.picture = "default_profile_image.png"
+
                 profile.save()
-                
+                           
                 return JsonResponse({"message": "Profile picture was updated successfully.", "new_picture_url": profile.picture.url}, status=201)
 
             else:

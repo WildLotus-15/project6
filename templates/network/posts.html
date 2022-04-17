@@ -4,7 +4,7 @@
             <div class="card-body">
                 <h5 class="card-title">
                     <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40px" height="40px"
-                        style="border-radius: 50%">
+                        style="border-radius: 50%" class="postAuthorPicture">
                     <a href="{% url 'profile' post.author.user.id %}">{{ post.author.user.username }}</a>
                 </h5>
                 <p class="card-text">{{ post.description }}</p>

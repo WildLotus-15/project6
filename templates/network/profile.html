@@ -174,8 +174,15 @@
                             <div>
                                 <h4>Profile Picture</h4>
                             </div>
-                            <div id="profile_picture_edit_div">
-                                <button type="button" class="btn btn-primary" id="edit_profile_picture" data-profile_id="{{ profile.user.id }}">Add</button>
+                            <div id="profile_picture_edit_div" class="d-flex">
+                                {% if profile.picture.url != "/images/default_profile_image.png" %}
+                                    <div id="remove_button_div" class="mr-1">
+
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <button type="button" class="btn btn-primary" id="edit_profile_picture" data-profile_id="{{ profile.user.id }}">Add</button>
+                                </div>
                             </div>
                         </div>
                         <div class="d-flex justify-content-center">
@@ -205,9 +212,7 @@
                             </div>
                         </div>
                         <div class="d-flex align-items-center justify-content-center">
-                            {% if profile.bio %}
-                                <div id="profile_bio" class="text-muted">{{ profile.bio }}</div>
-                            {% endif %}  
+                            <div id="profile_bio" class="text-muted text-center">{{ profile.bio }}</div>
                             <div class="flex-column">
                                 <div id="new_bio_div" data-profile_id="{{ profile.id }}">
 
@@ -218,7 +223,6 @@
                                 <div class="d-flex align-items-center mt-3" id="new_buttons_div">
 
                                 </div>
-                                <div></div>
                             </div>
                         </div> 
                     </div>
@@ -249,7 +253,7 @@
             <div class="card-body">
                 <a href="{% url 'profile' request.user.id %}">
                     <img src="{{ request.user.profile.picture.url }}" class="d-inline" alt="Logged in Profile Picture"
-                        width="40px" height="40px" style="border-radius: 50%">
+                        width="40px" height="40px" style="border-radius: 50%" id="newPostProfilePicture">
                 </a>
                 <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#newPostModal" id="postModal">What's on your
                     mind?</button>

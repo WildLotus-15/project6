@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         content.value = paste
 
+        // value length must not be equal to 0 and whitespaces are not accepted
         if (paste.length > 0 && paste.indexOf(' ') !== 0) {
             submit.disabled = false
             postModalButton.innerHTML = paste
@@ -70,7 +71,7 @@ function newPostHandle(event) {
         postModal.innerHTML = event.target.value
         submit.disabled = false
     } else {
-        if (window.location.href == "/") {
+        if (window.location.pathname === "/") {
             postModal.innerHTML = `What's on your mind, ${hiddenUsername}?`
         } else {
             postModal.innerHTML = `What's on your mind?`

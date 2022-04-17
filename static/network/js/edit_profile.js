@@ -4,6 +4,19 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector("#edit_profile_picture").addEventListener('click', () => edit_profile_picture(profile_id))
 
     document.querySelector("#edit_profile_bio").addEventListener('click', () => edit_profile_bio(profile_id))
+
+    const removeButtonDiv = document.querySelector('#remove_button_div')
+
+    if (removeButtonDiv) {
+        removeButtonDiv.innerHTML = ''
+        const remove_button = document.createElement('button')
+        remove_button.className = "btn btn-danger"
+        remove_button.id = "remove_picture"
+        remove_button.innerHTML = "Remove"
+        removeButtonDiv.append(remove_button)
+
+        remove_button.addEventListener('click', () => remove_picture(remove_button, profile_id))
+    }
 })
 
 function edit_profile_picture(profile_id) {
@@ -23,7 +36,7 @@ function edit_profile_picture(profile_id) {
     new_picture_form.type = "file"
     new_picture_form.id = 'new_picture'
     new_picture_form.style.width = "216px"
-    new_picture_form.accept = "image/png, image/jpeg"
+    new_picture_form.accept = "image/png, image/jpeg, image/jpg"
     picture_div.append(new_picture_form)
 
     new_picture_form.onchange = () => {
@@ -33,7 +46,6 @@ function edit_profile_picture(profile_id) {
 
         const extFile = new_picture_value.substr(idxDot, new_picture_value.length).toLowerCase();
         if (new_picture_form.value == '' || extFile == 'mp4') {
-            console.log(extFile)
             save_button.disabled = true
         } else {
             save_button.disabled = false
@@ -76,13 +88,11 @@ function edit_profile_picture(profile_id) {
 
         formData.append('new_picture', new_picture.files[0])
 
-        const extn = new_picture.files[0].type.split('/')[1]
         const size = new_picture.files[0].size
-        const maxSize = 4000000; // 4 mb
+        const maxSize = 4_000_000; // 4 mb
 
-        const valid = ["png", "jpg", "jpeg"]
-
-        if (valid.includes(extn) && size < maxSize && new_picture.clientWidth <= 120 && new_picture.clientHeight <= 220) {
+        // only accepting image that is less than 4 MB and equal to or less than 360 px wide and 360 px height
+        if (size < maxSize && new_picture.clientWidth <= 360 && new_picture.clientHeight <= 360) {
             fetch(`/edit_profile_picture/${profile_id}`, {
                 method: "POST",
                 headers: {
@@ -100,18 +110,43 @@ function edit_profile_picture(profile_id) {
 
                     document.querySelector('#logged_in_picture').src = response.new_picture_url
 
+                    document.querySelector("#newPostProfilePicture").src = response.new_picture_url
+
+                    document.querySelectorAll(".postAuthorPicture").forEach((picture) => {
+                        picture.src = response.new_picture_url
+                    })
+
+                    console.log(response.new_picture_url)
+
+                    const buttons = document.querySelector('#remove_button_div')
+                    buttons.innerHTML = ''
+
+                    const remove_button = document.createElement('button')
+                    remove_button.className = "btn btn-danger"
+                    remove_button.id = "remove_picture"
+                    remove_button.innerHTML = "Remove"
+                    buttons.append(remove_button)
+
+                    remove_button.addEventListener('click', () => remove_picture(remove_button, profile_id))
+
                     console.log(response.message)
                 })
         } else {
-            document.querySelector('#new_message_div').style.display = "unset"
-            const new_message = document.createElement('div')
-            new_message.className = "alert alert-danger alert-dismissible fade show"
-            new_message.role = "alert"
-            new_message.style.width = "216px"
-            new_message.innerHTML = "The file must be an image smaller than 4 MB and should be at least 160 x 160 pixels. <button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"
-            document.querySelector('#new_message_div').append(new_message)
+            // if the image will fail validating the error message comes up indicating that state
+            if (!document.querySelector('#new_message')) {
+                document.querySelector('#new_message_div').style.display = "unset"
 
-            save_button.disabled = true
+                // Artificially delaying the creation of an element
+                setTimeout(() => {
+                    const new_message = document.createElement('div')
+                    new_message.id = "new_message"
+                    new_message.className = "alert alert-danger alert-dismissible fade show"
+                    new_message.role = "alert"
+                    new_message.style.width = "216px"
+                    new_message.innerHTML = "The image must be smaller than 4 MB in size and should be at least 160 x 160 pixels. <button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>"
+                    document.querySelector('#new_message_div').append(new_message)
+                }, 500)
+            }
         }
     })
 }
@@ -130,11 +165,15 @@ function edit_profile_bio(profile_id) {
     document.querySelector('#profile_bio').remove()
     document.querySelector('#edit_profile_bio').remove()
 
-    const new_bio_form = document.createElement('input')
-    new_bio_form.placeholder = "Describe yourself..."
+    const new_bio_form = document.createElement('textarea')
+    new_bio_form.placeholder = "Describe who you are"
     new_bio_form.className = "form-control"
     new_bio_form.id = 'new_bio'
-    new_bio_form.value = bio.innerHTML
+    if (bio.innerHTML == "No Bio...") {
+        new_bio_form.value = ""
+    } else {
+        new_bio_form.value = bio.innerHTML
+    }
     bio_div.append(new_bio_form)
 
     const char_left = document.createElement('p')
@@ -181,7 +220,7 @@ function edit_profile_bio(profile_id) {
 
         document.querySelector('#char_left').innerHTML = `<small>${101 - paste.length} characters remaining</small>`
 
-        if (paste.length > 0) {
+        if (paste.length > 0 && paste.indexOf(' ') !== 0) {
             save_button.disabled = false
         } else {
             save_button.disabled = true
@@ -208,9 +247,15 @@ function edit_profile_bio(profile_id) {
             .then(response => {
                 document.querySelector('#cancel').click()
 
-                document.querySelector('#profile_bio').innerHTML = new_bio
+                if (new_bio.length == 0) {
+                    document.querySelector('#profile_bio').innerHTML = "No Bio..."
 
-                document.querySelector("#default_profile_bio").innerHTML = new_bio
+                    document.querySelector("#default_profile_bio").innerHTML = "No Bio..."
+                } else {
+                    document.querySelector('#profile_bio').innerHTML = new_bio
+
+                    document.querySelector("#default_profile_bio").innerHTML = new_bio
+                }
 
                 console.log(response.message)
             })
@@ -225,11 +270,44 @@ function getCookie(name) {
 
 function aleko(event) {
     document.querySelector('#char_left').innerHTML = `<small>${101 - event.target.value.length} characters remaining</small>`
-    const button = document.querySelector('#bio_save_btn')
 
-    if (101 - event.target.value.length <= 0 || event.target.value.length == 0) {
+    const button = document.querySelector('#bio_save_btn')
+    const old_bio = document.querySelector("#default_profile_bio")
+    const new_bio = event.target.value
+
+    if (101 - new_bio.length <= 0 || new_bio.length == 0 && !(old_bio.innerHTML.length !== 0 && new_bio.length == 0 && new_bio.indexOf(' ') !== 0)) {
         button.disabled = true
     } else {
         button.disabled = false
     }
+}
+
+function remove_picture(remove_button, profile_id) {
+    fetch(`/edit_profile_picture/${profile_id}`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken")
+        },
+        body: JSON.stringify({
+            "action": "remove_picture"
+        })
+    })
+        .then(response => response.json())
+        .then(response => {
+            document.querySelector('#profile_picture').src = response.new_picture_url
+
+            document.querySelector('#default_profile_picture').src = response.new_picture_url
+
+            document.querySelector('#logged_in_picture').src = response.new_picture_url
+
+            document.querySelector("#newPostProfilePicture").src = response.new_picture_url
+
+            document.querySelectorAll(".postAuthorPicture").forEach((picture) => {
+                picture.src = response.new_picture_url
+            })
+
+            remove_button.style.display = 'none'
+
+            console.log(response.message)
+        })
 }
