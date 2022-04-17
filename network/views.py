@@ -1,5 +1,4 @@
 import json
-from types import new_class
 from django.utils import timezone
 from django.db.models import Q
 from django.urls import reverse
@@ -19,8 +18,6 @@ def index(request):
 @login_required
 def recent_searches(request):
     recent_searches = RecentSearch.objects.filter(from_user=request.user).order_by('-timestamp').all()
-    for post in recent_searches:
-        print(post.serialize())
     return JsonResponse([recent_search.serialize() for recent_search in recent_searches], safe=False)
 
 
@@ -131,13 +128,15 @@ def accept_friend_request(request, requestID):
             friend_request.from_user.profile.friends.add(friend_request.to_user)
             friend_request.active = False
             friend_request.save()
+
+            friend_requests_amount = FriendRequest.objects.filter(to_user=request.user, active=True).all().count()
         else:
             return JsonResponse({"error": "You do not have the right to perform this action."}, status=403)
 
     except FriendRequest.DoesNotExist:
         return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
 
-    return JsonResponse({"message": "New friend has been added successfully."}, status=201)
+    return JsonResponse({"message": "New friend has been added successfully.", "newAmount": friend_requests_amount}, status=201)
 
 
 @login_required
@@ -268,14 +267,14 @@ def decline_friend_request(request, requestID):
         friend_request = FriendRequest.objects.get(pk=requestID)
         if request.user == friend_request.to_user:
             friend_request.delete()
-            friend_requests = FriendRequest.objects.filter(to_user=request.user, active=True).all()
+            friend_requests_amount = FriendRequest.objects.filter(to_user=request.user, active=True).all().count()
         else:
             return JsonResponse({"error": "You do not have the right to perform this action."}, status=403)
 
     except FriendRequest.DoesNotExist:
         return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
 
-    return JsonResponse({"message": "Friend request has been declined successfully.", "newAmount": friend_requests.count()}, status=201)
+    return JsonResponse({"message": "Friend request has been declined successfully.", "newAmount": friend_requests_amount}, status=201)
 
 
 @login_required
@@ -290,13 +289,15 @@ def remove_from_friends(request, requestID):
             from_user.friends.remove(to_user.profile)
             to_user.friends.remove(from_user.profile)
             friend_request.delete()
+
+            friends_amount = request.user.profile.friends.all().count()
         else:
             return JsonResponse({"error": "You do not have the right to perform this action."}, status=403)
 
     except FriendRequest.DoesNotExist:
         return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
 
-    return JsonResponse({"message": "Friend has been successfully removed."}, status=201)
+    return JsonResponse({"message": "Friend has been successfully removed.", "newAmount": friends_amount}, status=201)
 
 
 @login_required
@@ -307,7 +308,7 @@ def friends(request):
         friends = profile.friends.all()
 
         friend_requests = FriendRequest.objects.filter(
-            Q(from_user__in=friends, to_user=request.user) | Q(to_user__in=friends, from_user=request.user)
+            Q(from_user__in=friends, to_user=request.user, active=False) | Q(to_user__in=friends, from_user=request.user, active=False)
         )
 
         context = {}
@@ -482,8 +483,6 @@ def search_json(request):
         profile_query_list = UserProfile.objects.filter(
             Q(user__username__icontains=query) & ~Q(user__in=blocked_users)
         )
-
-        print(profile_query_list)
 
         for profile in profile_query_list:
             query_list.append(profile.serialize(request.user))

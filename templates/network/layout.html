@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'network/css/styles.css' %}">
     <link rel="stylesheet" href="https://unpkg.com/@trevoreyre/autocomplete-js/dist/style.css">
-    <script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
+    {% if request.user.is_authenticated %}
+        <script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
+    {% endif %}
     <title>{% block title %}{% endblock %}</title>
     {% block script %}{% endblock %}
 </head>
@@ -19,12 +21,16 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top border-bottom">
         <a class="navbar-brand" href="{% url 'index' %}">Network</a>
 
-        <div id="autocomplete" class="autocomplete" style="width: 320px;">
-            <form action="{% url 'search_results' %}" method="get">
-                <input class="autocomplete-input" id="autocomplete_input" placeholder="Search Network" name="q">
-                <ul class="autocomplete-result-list" id="autocomplete_result"></ul>
+        {% if request.user.is_authenticated %}
+            <div id="autocomplete" class="autocomplete" style="width: 320px;">
+                <form action="{% url 'search_results' %}" method="get">
+                    <input class="autocomplete-input" id="autocomplete_input" placeholder="Search Network" name="q">
+                    <ul class="autocomplete-result-list" id="autocomplete_result"></ul>
+                </form>    
             </form>    
-        </div>
+                </form>    
+            </div>
+        {% endif %}
 
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -83,7 +89,9 @@
             {% endif %}
         </div>
 
+        {% if request.user.is_authenticated %}
         <script src="{% static 'network/js/search_autocomplete.js' %}"></script>
+        {% endif %}
     </nav>
 
     <div class="body">

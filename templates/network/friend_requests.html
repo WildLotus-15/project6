@@ -3,53 +3,53 @@
 {% endblock %}
 
 {% block body %}
-<div class="card">
-    <div class="card-header" style="font-size: 20px;">All Friend Requests</div>
-    {% for friend_request in friend_requests %}
-    <div class="card">
-        <div class="card-header d-flex border-bottom-0" id="friend_request_header_{{friend_request.id}}">
-            <div>
-                <img src="{{ friend_request.from_user.profile.picture.url }}" alt="" width="60px" height="60px" style="border-radius: 50%">   
-            </div>
-            <div class="d-flex flex-column">
+    <div class="card border-top-0">
+        <div class="card-header" style="font-size: 20px;">All Friend Requests</div>
+        {% for friend_request in friend_requests %}
+        <div class="card border-bottom-0 border-right-0" id="friend_request_card_{{friend_request.id}}">
+            <div class="card-header d-flex">
                 <div>
-                    <a href="{% url 'profile' friend_request.from_user.id %}">{{ friend_request.from_user }}</a> sent you a friend
-                    request
-                </div>      
-            </div>
-            <div class="dropdown d-flex ml-auto align-items-center">
-                <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    Respond
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="{% url 'friend_requests' %}" id="accept_friend_request_button"
-                        data-friend_request_id="{{ friend_request.id }}">Confirm </a>
-                    <a class="dropdown-item" id="decline_friend_request_button"
-                        data-friend_request_id="{{ friend_request.id }}" style="cursor: pointer;">Delete request</a>
+                    <img src="{{ friend_request.from_user.profile.picture.url }}" alt="" width="60px" height="60px" style="border-radius: 50%">   
+                </div>
+                <div class="d-flex flex-column">
+                    <div>
+                        <a href="{% url 'profile' friend_request.from_user.id %}">{{ friend_request.from_user }}</a> sent you a friend
+                        request
+                    </div>      
+                </div>
+                <div class="dropdown d-flex ml-auto align-items-center">
+                    <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Respond
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item accept_friend_request_link"
+                            data-friend_request_id="{{ friend_request.id }}" style="cursor: pointer;">Confirm</a>
+                        <a class="dropdown-item decline_friend_request_link"
+                            data-friend_request_id="{{ friend_request.id }}" style="cursor: pointer;">Delete request</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    {% empty %}
-        <div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px;">
+        {% empty %}
+            <div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px;">
+                <div class="p-2">
+                    <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
+                </div>
+                <div class="p-2 text-muted" id="empty_friend_requests_header">
+                    <h5>When you have friend requests, you'll see them here.</h5>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="d-none" id="empty_friend_requests_wrapper" style="min-height: 640px;">
             <div class="p-2">
                 <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
             </div>
-            <div class="p-2 text-muted" id="empty_friend_requests_header">
+            <div class="p-2 text-muted">
                 <h5>When you have friend requests, you'll see them here.</h5>
             </div>
         </div>
-    {% endfor %}
-    <div class="d-none" id="empty_friend_requests_wrapper" style="min-height: 640px;">
-        <div class="p-2">
-            <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
-        </div>
-        <div class="p-2 text-muted">
-            <h5>When you have friend requests, you'll see them here.</h5>
-        </div>
     </div>
-</div>
 {% endblock %}
 
 {% block script %}
