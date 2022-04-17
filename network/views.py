@@ -268,13 +268,14 @@ def decline_friend_request(request, requestID):
         friend_request = FriendRequest.objects.get(pk=requestID)
         if request.user == friend_request.to_user:
             friend_request.delete()
+            friend_requests = FriendRequest.objects.filter(to_user=request.user, active=True).all()
         else:
             return JsonResponse({"error": "You do not have the right to perform this action."}, status=403)
 
     except FriendRequest.DoesNotExist:
         return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
 
-    return JsonResponse({"message": "Friend request has been declined successfully."}, status=201)
+    return JsonResponse({"message": "Friend request has been declined successfully.", "newAmount": friend_requests.count()}, status=201)
 
 
 @login_required
