@@ -45,13 +45,13 @@ Blocked | {{ request.user.username }}
                     <!-- Modal footer -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="close_modal_{{ blocked_user.id }}" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary unblock_buttons" data-profile_id="{{ blocked_user.id }}">Confirm</button>
+                        <button type="button" class="btn btn-primary unblock_button" data-profile_id="{{ blocked_user.id }}">Confirm</button>
                     </div>
                 </div>
             </div>
         </div>
     
-        <div class="d-none" id="empty_blocked_users_wrapper" style="min-height: 640px;">
+        <div class="d-none" id="empty_blocked_users_wrapper">
             <div class="p-2">
                 <img src="{% static 'network/images/permissions_gray_wash.svg' %}" alt="" width="112" height="112">
             </div>
@@ -61,7 +61,7 @@ Blocked | {{ request.user.username }}
         </div>
 
     {% empty %}
-    <div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px;">
+    <div class="d-flex align-items-center justify-content-center flex-column min-vh-100">
         <div class="p-2">
             <img src="{% static 'network/images/permissions_gray_wash.svg' %}" alt="" width="112" height="112">
         </div>

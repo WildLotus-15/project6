@@ -1,6 +1,6 @@
 {% if post.only_friends %}
     {% if post.author.user in request.user.profile.friends.all or request.user in post.author.friends.all or post.author.user == request.user %}
-        <div class="card mb-3">
+        <div class="card mb-2">
             <div class="card-body">
                 <h5 class="card-title">
                     <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40px" height="40px"
@@ -15,7 +15,7 @@
     {% endif %}
 {% endif %}
 {% if post.only_me and post.author.user == request.user %}
-    <div class="card mb-3">
+    <div class="card mb-2">
         <div class="card-body">
             <h5 class="card-title">
                 <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40px" height="40px"

@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-    accept_friend_request_links = document.querySelectorAll('.accept_friend_request_link')
+    accept_friend_request_buttons = document.querySelectorAll('.accept_friend_request_button')
 
-    if (accept_friend_request_links) {
-        accept_friend_request_links.forEach(link => {
-            let request_id = link.dataset.friend_request_id
+    if (accept_friend_request_buttons) {
+        accept_friend_request_buttons.forEach(button => {
+            let request_id = button.dataset.friend_request_id
 
-            link.addEventListener('click', (event) => accept_friend_request(event, request_id))
+            button.addEventListener('click', () => accept_friend_request(request_id))
         })
     }
 
@@ -14,14 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (accept_friend_request_button) {
         let request_id = accept_friend_request_button.dataset.friend_request_id
 
-        accept_friend_request_button.addEventListener('click', (event) => accept_friend_request(event, request_id))    
+        accept_friend_request_button.addEventListener('click', () => accept_friend_request(request_id))    
     }
 })
 
-function accept_friend_request(event, request_id) {
-    // Preventing the "Confirm" dropdown link from redirecting to an another page
-    event.preventDefault();
-
+function accept_friend_request(request_id) {
     fetch(`/accept_friend_request/${request_id}`)
         .then(response => response.json())
         .then(response => {
@@ -30,7 +27,7 @@ function accept_friend_request(event, request_id) {
 
                 // If the user will not have any active friend requests page's content will indicate that
                 if (response.newAmount === 0) {
-                    document.querySelector('#empty_friend_requests_wrapper').className = "d-flex align-items-center justify-content-center flex-column"
+                    document.querySelector('#empty_friend_requests_wrapper').className = "d-flex align-items-center justify-content-center flex-column min-vh-100"
                 }
             // If the user is on the profile page when accepting a friend request page is being reloaded 
             } else {

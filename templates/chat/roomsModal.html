@@ -15,9 +15,9 @@
                     <div>
                         {{ room.name }}
                         {% if request.user in room.users.all %}
-                            <input type="checkbox" data-room_id="{{ room.pk }}" id="update_room_checkbox" checked>
+                            <input type="checkbox" data-room_id="{{ room.pk }}" class="update_room_checkbox" checked>
                         {% else %}
-                            <input type="checkbox" data-room_id="{{ room.pk }}" id="update_room_checkbox">
+                            <input type="checkbox" data-room_id="{{ room.pk }}" class="update_room_checkbox">
                         {% endif %}
                     </div>
                 {% endfor %}
@@ -27,6 +27,40 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="room_save_button">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="chatRoomMemberModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100">{{ group.name }} &middot; {{ group.users.all.count }} members</h4>
+
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                {% for member in group.users.all %}
+                <div class="d-flex flex-column">
+                    <a href="{% url 'profile' member.id %}">
+                        <div class="p-2">
+                            <img src="{{ member.profile.picture.url }}" alt="" width="42" height="42" class="rounded-circle">
+                            {{ member.username }}
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                
             </div>
         </div>
     </div>

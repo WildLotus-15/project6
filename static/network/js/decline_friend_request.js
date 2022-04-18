@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-    decline_friend_request_links = document.querySelectorAll('.decline_friend_request_link')
+    decline_friend_request_button = document.querySelectorAll('.decline_friend_request_button')
 
-    if (decline_friend_request_links) {
-        decline_friend_request_links.forEach(link => {
-            let request_id = link.dataset.friend_request_id
+    if (decline_friend_request_button) {
+        decline_friend_request_button.forEach(button => {
+            let request_id = button.dataset.friend_request_id
 
-            link.addEventListener('click', (event) => decline_friend_request(event, request_id))
+            button.addEventListener('click', () => decline_friend_request(request_id))
         })
     }
 
@@ -14,14 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (decline_friend_request_button) {
         let request_id = decline_friend_request_button.dataset.friend_request_id
 
-        decline_friend_request_button.addEventListener('click', (event) => decline_friend_request(event, request_id))    
+        decline_friend_request_button.addEventListener('click', () => decline_friend_request(request_id))    
     }
 })
 
-function decline_friend_request(event, request_id) {
-    // Preventing the "Delete request" dropdown link from redirecting to an another page
-    event.preventDefault();
-
+function decline_friend_request(request_id) {
     fetch(`/decline_friend_request/${request_id}`)
         .then(response => response.json())
         .then(response => {
@@ -31,7 +28,7 @@ function decline_friend_request(event, request_id) {
 
                 // If the user will not have any active friend requests page content will indicate that
                 if (response.newAmount === 0) {
-                    document.querySelector('#empty_friend_requests_wrapper').className = "d-flex align-items-center justify-content-center flex-column"
+                    document.querySelector('#empty_friend_requests_wrapper').className = "d-flex align-items-center justify-content-center flex-column min-vh-100"
                 }
             // If the user is on the profile page when declining a friend request page is being reloaded 
             } else {

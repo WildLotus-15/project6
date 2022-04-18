@@ -94,8 +94,8 @@
                             Account Settings
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" data-toggle="modal" data-target="#blockModal"
-                                    data-profile_id="{{ profile.user.id }}" style="cursor: pointer;">Block</a>
+                                <button class="dropdown-item" data-toggle="modal" data-target="#blockModal"
+                                    data-profile_id="{{ profile.user.id }}" style="cursor: pointer;">Block</button>
                             </div>
                         {% endif %}
                     </div>
@@ -172,7 +172,7 @@
     
                 <!-- Modal body -->
                 <div class="modal-body">
-                    <div style="min-height: 200px;">
+                    <div>
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h4>Profile Picture</h4>
@@ -205,7 +205,7 @@
                             </div>
                         </div>      
                     </div>
-                    <div style="min-height: 30px;">
+                    <div>
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h4>Bio</h4>
@@ -234,7 +234,7 @@
         </div>
     </div>
 
-    <div class="card mt-3">
+    <div class="card mt-2">
         <div class="card-header" style="font-size: 20px;">About</div>
             <div class="d-flex justify-content-start text-muted">
                 <div class="m-3 p-2">
@@ -313,7 +313,7 @@
 </div>
     {% endif %}
 
-    <div class="card mt-3">
+    <div class="card mt-2">
         <div class="card-header" style="font-size: 20px;">Posts</div>
         {% for post in posts %}
             {% include "network/posts.html" %}
@@ -325,7 +325,7 @@
     </div>
 
     {% else %}
-        <div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px">
+        <div class="d-flex align-items-center justify-content-center flex-column min-vh-100">
             <div>
                 <img src="{% static 'network/images/permissions_gray_wash.svg' %}" alt="" width="112" height="112">
             </div>
@@ -333,7 +333,7 @@
                 <h4 class="mt-4">This content isn't available right now</h4>
             </div>
             <div class="text-muted">
-                <p>When this happens, it's usually because the owner only shared it with a group of people that is not blocked.</p>
+                <p>When this happens, it's usually because the requested profile is located in your blocked users.</p>
             </div>
         </div>
     {% endif %}

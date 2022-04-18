@@ -21,7 +21,7 @@ function remove_friend(friend_request_id) {
 
         // If the user will not have any friends page's content will indicate that
         if (response.newAmount === 0) {
-            document.querySelector('#empty_friends_wrapper').className = "d-flex align-items-center justify-content-center flex-column" 
+            document.querySelector('#empty_friends_wrapper').className = "d-flex align-items-center justify-content-center flex-column min-vh-100" 
         }
 
         console.log(response.message)

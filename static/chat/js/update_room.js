@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    room_checkbox = document.querySelectorAll('#update_room_checkbox').forEach((checkbox) => {
+    room_checkbox = document.querySelectorAll('.update_room_checkbox')
+    
+    room_checkbox.forEach((checkbox) => {
         if (checkbox) {
             let room_id = checkbox.dataset.room_id
             

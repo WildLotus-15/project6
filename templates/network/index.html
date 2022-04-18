@@ -89,10 +89,9 @@
             </div>
         {% endfor %}
     </div>
-    
 {% else %}
-    <div class="card mt-3">
-        <div class="card-header" style="font-size: 20px;">Posts</div>
+    <div class="card mt-2">
+        <div class="card-header mb-2" style="font-size: 20px;">Posts</div>
         {% for post in posts %}
             {% include "network/posts.html" %}
         {% empty %}
@@ -101,10 +100,7 @@
             </div>
         {% endfor %}
     </div>
-    
 {% endif %}
-
-
 {% endblock %}
 
 {% block script %}

@@ -36,7 +36,7 @@
         </div>
     </div>
     {% endif %}
-    <div class="d-none" id="empty_friends_wrapper" style="min-height: 640px;">
+    <div class="d-none" id="empty_friends_wrapper">
         <div class="p-2">
             <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
         </div>
@@ -81,7 +81,7 @@
     </div>
 </div>
 {% empty %}
-<div class="d-flex align-items-center justify-content-center flex-column" style="min-height: 640px;">
+<div class="d-flex align-items-center justify-content-center flex-column min-vh-100">
     <div class="p-2">
         <img src="{% static 'network/images/null_states_people_gray_wash.svg' %}" width="112" height="112" alt="">
     </div>

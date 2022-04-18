@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    unblock_buttons = document.querySelectorAll(".unblock_buttons")
+    unblock_buttons = document.querySelectorAll(".unblock_button")
 
     if (unblock_buttons) {
         unblock_buttons.forEach((button) => {
@@ -22,7 +22,7 @@ function update_block(profile_id) {
 
         // If the user will not have any blocked users page content will indicate that
         if (response.newAmount === 0) {
-            document.querySelector('#empty_blocked_users_wrapper').className = "d-flex align-items-center justify-content-center flex-column"
+            document.querySelector('#empty_blocked_users_wrapper').className = "d-flex align-items-center justify-content-center flex-column min-vh-100"
         }
     })
 }
