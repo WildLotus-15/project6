@@ -3,9 +3,9 @@
 {% endblock %}
 
 {% block body %}
-{% if not request.user == profile.user and not profile.user in request.user.profile.blocked.all %}
+{% if not profile.user in request.user.profile.blocked.all %}
 <div class="card">
-    <div class="card-header" style="font-size: 20px;">All Friends</div>
+    <div class="card-header" style="font-size: 20px;">All Friends ({{ profile.friends.all.count }})</div>
     {% for friend in friends %}
     {% if friend.to_user == profile.user %}
     <div class="card">

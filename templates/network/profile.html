@@ -3,7 +3,6 @@
 {% endblock %}
 
 {% block body %}
-
     {% if not request.user in profile.blocked.all and not profile.user in request.user.profile.blocked.all %}
     <div id="profile">
         <div class="card">
@@ -28,22 +27,22 @@
                                     {{ mutual_friends_amount }} Mutual
                                 </a> 
                             {% endif %}
-                            {% if limited_mutual_friends is None %}
-                                <div>
-                                    {% for mutual_friend in mutual_friends %}
-                                        <a href="{% url 'profile' mutual_friend.id %}">
-                                            <img src="{{ mutual_friend.profile.picture.url }}" alt="Mutual Friend Profile Picture" width="32" height="32" style="border-radius: 50%;">
-                                        </a>
-                                    {% endfor %}  
-                                </div>
+                            {% if mutual_friends_amount < 9  %}
+                            <div>
+                                {% for mutual_friend in mutual_friends %}
+                                    <a href="{% url 'profile' mutual_friend.id %}">
+                                        <img src="{{ mutual_friend.profile.picture.url }}" alt="Mutual Friend Profile Picture" width="32" height="32" style="border-radius: 50%;">
+                                    </a>
+                                {% endfor %}
+                            </div>
                             {% else %}
-                                <div>
-                                    {% for mutual_friend in limited_mutual_friends %}
-                                        <a href="{% url 'profile' mutual_friend.id %}">
-                                            <img src="{{ mutual_friend.profile.picture.url }}" alt="Mutual Friend Profile Picture" width="32" height="32" style="border-radius: 50%;">
-                                        </a>
-                                    {% endfor %}
-                                </div>         
+                            <div>
+                                {% for limited_mutual_friend in mutual_friends|slice:":9" %}
+                                    <a href="{% url 'profile' limited_mutual_friend.id %}">
+                                        <img src="{{ limited_mutual_friend.profile.picture.url }}" alt="Mutual Friend Profile Picture" width="32" height="32" style="border-radius: 50%;">
+                                    </a>
+                                {% endfor %}
+                            </div>
                             {% endif %}
                         </div>
                     </div>
@@ -76,7 +75,7 @@
                             {% elif self_in_friend_request %}
                                 <button type="button" class="btn btn-primary" id="cancel_friend_request_button" data-profile_id="{{ profile.user.id }}">Cancel Request</button>
                             {% elif self_in_profile_friend_request %}
-                                <div class="border border-secondary rounded p-2 mr-3">
+                                <div class="border border-secondary rounded p-2">
                                     <div class="mr-2 ml-2 d-inline">
                                         <h6 class="d-inline">{{ profile.user.username }} sent you a friend request</h6>
                                     </div>
@@ -89,11 +88,15 @@
                                 <button type="button" class="btn btn-primary" id="send_friend_request_button" data-profile_id="{{ profile.user.id }}">Add Friend</button>
                             {% endif %}
                         {% endif %}
-                        {% if request.user != profile.user %}
-                            {% if not profile.user in request.user.profile.blocked.all %}
-                                <button type="button" class="btn btn-danger ml-2" data-toggle="modal"
-                                data-target="#blockModal" data-profile_id="{{ profile.user.id }}">Block</button>
-                            {% endif %}
+                        {% if request.user != profile.user and not profile.user in request.user.profile.blocked.all %}
+                        <div class="dropdown ml-2">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Account Settings
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" data-toggle="modal" data-target="#blockModal"
+                                    data-profile_id="{{ profile.user.id }}" style="cursor: pointer;">Block</a>
+                            </div>
                         {% endif %}
                     </div>
                 </div>

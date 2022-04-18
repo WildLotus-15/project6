@@ -5,7 +5,7 @@
 {% block body %}
     {% if not request.user == profile.user and not profile.user in request.user.profile.blocked.all %}
     <div class="card">
-        <div class="card-header" style="font-size: 20px;">All Mutual Friends with <a href="{% url 'profile' profile.user.id %}">{{ profile.user.username }}</a></div>
+        <div class="card-header" style="font-size: 20px;">({{ profile.friends.all.count }}) Mutual Friends with <a href="{% url 'profile' profile.user.id %}">{{ profile.user.username }}</a></div>
         {% for mutual_friend in mutual_friends %}
             <div class="card">
                 <div class="card-header d-flex">

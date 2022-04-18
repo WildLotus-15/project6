@@ -11,7 +11,7 @@ from .models import FriendRequest, Post, RecentSearch, User, UserProfile
 @login_required
 def index(request):
     return render(request, "network/index.html", {
-        "posts": ignore_blocked_users(request.user.profile),
+        "posts": ignore_blocked_users_posts(request.user.profile),
     })
 
 
@@ -22,7 +22,7 @@ def recent_searches(request):
 
 
 @login_required
-def ignore_blocked_users(profile):
+def ignore_blocked_users_posts(profile):
     blocked_users = profile.blocked.all()
     blocked_users_profiles = UserProfile.objects.filter(user__in=blocked_users).all()
     posts = Post.objects.filter(
@@ -53,6 +53,8 @@ def update_block(request, profile_id):
                 request.user.profile.blocked.remove(user)
             else:
                 request.user.profile.blocked.add(user)
+
+            blocked_users_amount = request.user.profile.blocked.all().count()
         
         else:
             return JsonResponse({"error": "You can not block youself."}, status=400)
@@ -60,7 +62,7 @@ def update_block(request, profile_id):
     except User.DoesNotExist:
         return JsonResponse({"error": "User matching query does not exist."}, status=400)
 
-    return JsonResponse({"message": "Updated user block, friendship successfully."}, status=200)
+    return JsonResponse({"message": "Updated user block successfully.", "newAmount": blocked_users_amount}, status=200)
 
 
 @login_required
@@ -80,7 +82,7 @@ def profile_friends(request, profile_id):
         friends = profile.friends.all()
 
         friend_requests = FriendRequest.objects.filter(
-            Q(from_user__in=friends, to_user=profile.user) | Q(to_user__in=friends, from_user=profile.user)
+            Q(from_user__in=friends, to_user=profile.user, active=False) | Q(to_user__in=friends, from_user=profile.user, active=False)
         )
 
     except UserProfile.DoesNotExist:
@@ -134,7 +136,7 @@ def accept_friend_request(request, requestID):
             return JsonResponse({"error": "You do not have the right to perform this action."}, status=403)
 
     except FriendRequest.DoesNotExist:
-        return JsonResponse({"error": "Specified friend request does not exist."}, status=400)
+        return JsonResponse({"error": "Friend request matching query does not exist."}, status=400)
 
     return JsonResponse({"message": "New friend has been added successfully.", "newAmount": friend_requests_amount}, status=201)
 
@@ -177,6 +179,7 @@ def edit_profile_bio(request, profile_id):
 
             if request.user == profile.user:
                 new_bio = request.POST["new_bio"]
+                # If the user cleared their bio it's value will fall back to the default configuration 
                 if new_bio == "":
                     profile.bio = "No Bio..."
                 else:
@@ -208,6 +211,7 @@ def edit_profile_picture(request, profile_id):
                     new_picture = request.FILES["new_picture"]
                     profile.picture = new_picture
                 else:
+                    # If the user removed their picture it's value will fall back to default configuration 
                     profile.picture = "default_profile_image.png"
 
                 profile.save()
@@ -234,7 +238,7 @@ def remove_profile_friend(request, profile_id):
         from_user.friends.remove(to_user.profile)
 
         friend_request = FriendRequest.objects.get(
-            Q(from_user=from_user, to_user=to_user) | Q(from_user=to_user, to_user=from_user)
+            Q(from_user=from_user, to_user=to_user, active=False) | Q(from_user=to_user, to_user=from_user, active=False)
         )
         friend_request.delete()
 
@@ -250,7 +254,7 @@ def cancel_friend_request(request, profile_id):
         to_user = User.objects.get(pk=profile_id)
         from_user = request.user
 
-        friend_request = FriendRequest.objects.get(from_user=from_user, to_user=to_user)
+        friend_request = FriendRequest.objects.get(from_user=from_user, to_user=to_user, active=True)
 
         if friend_request.from_user == from_user:
             friend_request.delete()
@@ -347,15 +351,14 @@ def profile_mutuals(request, profile_id):
 
         profile_friends = profile.friends.all()
         friends_with_profile = profile_friends.values_list('pk', flat=True)
-        mutual_friends_of_request_user = request.user.profile.friends.filter(pk__in=friends_with_profile)
-        print(friends_with_profile)
+        mutual_friends = request.user.profile.friends.filter(pk__in=friends_with_profile)
     
     except UserProfile.DoesNotExist:
         return JsonResponse({"error": "UserProfile matching query does not exist."})
     
     return render(request, "network/profile_mutuals.html", {
         "profile": profile,
-        "mutual_friends": mutual_friends_of_request_user
+        "mutual_friends": mutual_friends
     })
 
 
@@ -363,15 +366,6 @@ def mutual_friends(request_user, profile):
     profile_friends = profile.friends.all()
     friends_with_profile = profile_friends.values_list('pk', flat=True)
     mutual_friends_of_request_user = request_user.friends.filter(pk__in=friends_with_profile)
-    print(friends_with_profile)
-    return mutual_friends_of_request_user
-
-
-def limited_mutual_friends(request_user, profile):
-    profile_friends = profile.friends.all()[:9]
-    friends_with_profile = profile_friends.values_list('pk', flat=True)
-    mutual_friends_of_request_user = request_user.friends.filter(pk__in=friends_with_profile)
-    print(mutual_friends_of_request_user)
     return mutual_friends_of_request_user
 
 
@@ -397,9 +391,6 @@ def show_profile(request, profile_id):
             context["mutual_friends"] = mutual_friends(request.user.profile, profile)
             context["mutual_friends_amount"] = mutual_friends(request.user.profile, profile).count()
 
-            if context["mutual_friends_amount"] >= 8:
-                context["limited_mutual_friends"] = limited_mutual_friends(request.user.profile, profile)
-
     except UserProfile.DoesNotExist:
         return JsonResponse({"error": "User matching query does not exist."})
 
@@ -408,7 +399,7 @@ def show_profile(request, profile_id):
 
 def self_in_friend_request(to_user, from_user):
     try:
-        FriendRequest.objects.get(to_user=to_user, from_user=from_user)
+        FriendRequest.objects.get(to_user=to_user, from_user=from_user, active=True)
         return True
 
     except FriendRequest.DoesNotExist:
@@ -417,7 +408,7 @@ def self_in_friend_request(to_user, from_user):
 
 def self_in_profile_friend_request(to_user, from_user):
     try:
-        FriendRequest.objects.get(to_user=to_user, from_user=from_user)
+        FriendRequest.objects.get(to_user=to_user, from_user=from_user, active=True)
         return True
 
     except FriendRequest.DoesNotExist:
