@@ -7,8 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const removeButtonDiv = document.querySelector('#remove_button_div')
 
-    if (removeButtonDiv) {
-        removeButtonDiv.innerHTML = ''
+    if (removeButtonDiv.dataset.profile_picture_url !== "/images/default_profile_image.png") {
         const remove_button = document.createElement('button')
         remove_button.className = "btn btn-danger"
         remove_button.id = "remove_picture"
@@ -115,8 +114,6 @@ function edit_profile_picture(profile_id) {
                     document.querySelectorAll(".postAuthorPicture").forEach((picture) => {
                         picture.src = response.new_picture_url
                     })
-
-                    console.log(response.new_picture_url)
 
                     const buttons = document.querySelector('#remove_button_div')
                     buttons.innerHTML = ''
@@ -272,10 +269,9 @@ function aleko(event) {
     document.querySelector('#char_left').innerHTML = `<small>${101 - event.target.value.length} characters remaining</small>`
 
     const button = document.querySelector('#bio_save_btn')
-    const old_bio = document.querySelector("#default_profile_bio")
     const new_bio = event.target.value
 
-    if (101 - new_bio.length <= 0 || new_bio.length == 0 && !(old_bio.innerHTML.length !== 0 && new_bio.length == 0 && new_bio.indexOf(' ') !== 0)) {
+    if (101 - new_bio.length <= 0 && new_bio.length === 0 || new_bio.includes(' ')) {
         button.disabled = true
     } else {
         button.disabled = false

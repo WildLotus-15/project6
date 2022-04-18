@@ -38,12 +38,12 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto">
+                {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="navbar-brand nav-link" href="{% url 'index' %}">
                         Home
                     </a>
                 </li>
-                {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="navbar-brand nav-link" href="{% url 'friend_requests' %}">
                         Friend Requests
@@ -88,9 +88,8 @@
                 </ul>
             {% endif %}
         </div>
-
         {% if request.user.is_authenticated %}
-        <script src="{% static 'network/js/search_autocomplete.js' %}"></script>
+            <script src="{% static 'network/js/search_autocomplete.js' %}"></script>
         {% endif %}
     </nav>
 

@@ -178,11 +178,9 @@
                                 <h4>Profile Picture</h4>
                             </div>
                             <div id="profile_picture_edit_div" class="d-flex">
-                                {% if profile.picture.url != "/images/default_profile_image.png" %}
-                                    <div id="remove_button_div" class="mr-1">
+                                    <div id="remove_button_div" class="mr-1" data-profile_picture_url="{{ profile.picture.url }}">
 
                                     </div>
-                                {% endif %}
                                 <div>
                                     <button type="button" class="btn btn-primary" id="edit_profile_picture" data-profile_id="{{ profile.user.id }}">Add</button>
                                 </div>
