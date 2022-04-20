@@ -362,6 +362,7 @@ def profile_mutuals(request, profile_id):
     })
 
 
+@login_required
 def mutual_friends(request_user, profile):
     profile_friends = profile.friends.all()
     friends_with_profile = profile_friends.values_list('pk', flat=True)
@@ -429,6 +430,7 @@ def create_post(request):
         return JsonResponse({"error": "POST request required."}, status=400)
 
 
+@login_required
 def search(request):
     query = request.GET.get('q')
 
@@ -463,6 +465,7 @@ def search(request):
     })
 
 
+@login_required
 def search_json(request):
     query = request.GET.get('q')
 
