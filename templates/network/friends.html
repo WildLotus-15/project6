@@ -10,7 +10,7 @@
     {% if friend_request.to_user == request.user %}
     <div class="card-header d-flex p-2" id="friend_card_{{ friend_request.id }}">
         <div>
-            <a href="{% url 'profile' friend_request.from_user.id %}">
+            <a href="{% url 'profile' friend_request.from_user.profile.id %}">
                 <img src="{{ friend_request.from_user.profile.picture.url }}" alt="" width="60px" height="60px"
                     style="border-radius: 50%">
                 {{ friend_request.from_user }}
@@ -25,9 +25,9 @@
     <div class="card-header d-flex p-2" id="friend_card_{{ friend_request.id }}">
         <div>
             <a href="{% url 'profile' friend_request.to_user.id %}">
-                <img src="{{ friend_request.to_user.profile.picture.url }}" alt="" width="60px" height="60px"
+                <img src="{{ friend_request.to_user.picture.url }}" alt="" width="60px" height="60px"
                     style="border-radius: 50%">
-                {{ friend_request.to_user }}
+                {{ friend_request.to_user.user.username }}
             </a>
         </div>
         <div class="d-flex ml-auto align-items-center">
@@ -53,9 +53,9 @@
             <div class="modal-header">
                 <h4 class="modal-title">
                     {% if friend_request.to_user == request.user %}
-                    Unfriend {{ friend_request.from_user }}
+                    Unfriend {{ friend_request.from_user.user.username }}
                     {% else %}
-                    Unfriend {{ friend_request.to_user }}
+                    Unfriend {{ friend_request.to_user.user.username }}
                     {% endif %}
                 </h4>
 
@@ -65,9 +65,9 @@
             <!-- Modal body -->
             <div class="modal-body">
                 {% if friend_request.to_user == request.user %}
-                Are you sure you want to remove {{ friend_request.from_user }} as your friend?
+                Are you sure you want to remove {{ friend_request.from_user.user.username }} as your friend?
                 {% else %}
-                Are you sure you want to remove {{ friend_request.to_user }} as your friend?
+                Are you sure you want to remove {{ friend_request.to_user.user.username }} as your friend?
                 {% endif %}
             </div>
 

@@ -5,34 +5,23 @@
 {% block body %}
 {% if not profile.user in request.user.profile.blocked.all %}
 <div class="card">
-    <div class="card-header" style="font-size: 20px;">All Friends ({{ profile.friends.all.count }})</div>
     {% for friend in friends %}
-    {% if friend.to_user == profile.user %}
-    <div class="card">
-        <div class="card-header d-flex justify-content-start">
-            <div>
-                <a href="{% url 'profile' friend.from_user.id %}">
-                    <div>
-                        <img src="{{ friend.from_user.profile.picture.url }}" alt="" width="60px" height="60px"
-                            style="border-radius: 50%">
-                        {{ friend.from_user }}
-                    </div>
-                </a>
-            </div>
-        </div>
+    <div class="card-header" style="font-size: 20px;"> {{ profile.user.username }} &middot; All Friends ({{profile.friends.all.count }})</div>
+    {% if friend.to_user == profile %}
+    <div class="card-header d-flex p-2">
+        <a href="{% url 'profile' friend.from_user.id %}">
+            <img src="{{ friend.from_user.picture.url }}" alt="" width="60px" height="60px" style="border-radius: 50%">
+            {{ friend.from_user.user.username }}
+        </a>
     </div>
     {% else %}
-    <div class="card">
-        <div class="card-header d-flex justify-content-start">
-            <div>
-                <a href="{% url 'profile' friend.to_user.id %}">
-                    <div>
-                        <img src="{{ friend.to_user.profile.picture.url }}" alt="" width="60px" height="60px"
-                            style="border-radius: 50%">
-                        {{ friend.to_user }}
-                    </div>
-                </a>
-            </div>
+    <div class="card-header d-flex p-2">
+        <div>
+            <a href="{% url 'profile' friend.to_user.id %}">
+                <img src="{{ friend.to_user.picture.url }}" alt="" width="60px" height="60px"
+                    style="border-radius: 50%">
+                {{ friend.to_user.user.username }}
+            </a>
         </div>
     </div>
     {% endif %}
@@ -45,8 +34,8 @@
             <h5 class="text-muted">When {{ profile.user.username }} has friends, you'll see them here.</h5>
         </div>
     </div>
+    {% endfor %}
 </div>
-{% endfor %}
 {% else %}
 <div class="d-flex align-items-center justify-content-center flex-column min-vh-100">
     <div>

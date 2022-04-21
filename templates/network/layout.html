@@ -79,7 +79,7 @@
             </ul>
             {% if user.is_authenticated %}
                 <ul class="navbar-nav ml-auto">
-                    <a class="nav-link navbar-brand" href="{% url 'profile' user.id %}" id="profile">
+                    <a class="nav-link navbar-brand" href="{% url 'profile' request.user.profile.id %}" id="profile">
                         <li class="nav-item">
                             <img src="{{ user.profile.picture.url }}" alt="Logged in Profile Picture" width="40" height="40" style="border-radius: 50%;" id="logged_in_picture">
                             {{ user.username }}

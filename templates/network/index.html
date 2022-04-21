@@ -9,7 +9,7 @@
         <input type="hidden" value="{{ request.user.username }}" id="loggedInUsername">
         <div class="card">
             <div class="card-body">
-                <a href="{% url 'profile' request.user.id %}">
+                <a href="{% url 'profile' request.user.profile.id %}">
                     <img src="{{ request.user.profile.picture.url }}" class="d-inline" alt="Logged in Profile Picture"
                         width="40px" height="40px" style="border-radius: 50%">
                 </a>
@@ -33,7 +33,7 @@
             <!-- Modal body -->
             <div class="modal-body">
                 <form id="newPost">
-                    <a href="{% url 'profile' request.user.id %}">
+                    <a href="{% url 'profile' request.user.profile.id %}">
                         <img src="{{ request.user.profile.picture.url }}" class="d-inline"
                             alt="Logged in Profile Picture" width="40px" height="40px" style="border-radius: 50%">
                     </a>

@@ -10,9 +10,9 @@ Blocked Users | {{ request.user.username }}
             <div>
                 <a href="{% url 'profile' blocked_user.id %}">
                     <div>
-                        <img src="{{ blocked_user.profile.picture.url }}" alt="" width="60px" height="60px"
+                        <img src="{{ blocked_user.picture.url }}" alt="" width="60px" height="60px"
                             style="border-radius: 50%">
-                        {{ blocked_user }}
+                        {{ blocked_user.user.username }}
                     </div>
                 </a>
             </div>
@@ -28,14 +28,14 @@ Blocked Users | {{ request.user.username }}
     
                     <!-- Modal Header -->
                     <div class="modal-header text-center">
-                        <h4 class="modal-title w-100">Unblock {{ blocked_user.username }}?</h4>
+                        <h4 class="modal-title w-100">Unblock {{ blocked_user.user.username }}?</h4>
     
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
     
                     <!-- Modal body -->
                     <div class="modal-body">
-                        <p>{{ blocked_user.username }} will be able to:</p>
+                        <p>{{ blocked_user.user.username }} will be able to:</p>
                         <ul style="padding-left: 20px;">
                             <li>See your posts</li>
                             <li>Add you as a friend</li>

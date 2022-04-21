@@ -8,9 +8,9 @@
     {% for friend_request in friend_requests %}
     <div class="d-flex card-header p-2" id="friend_request_card_{{friend_request.id}}">
         <div>
-            <img src="{{ friend_request.from_user.profile.picture.url }}" alt="" width="60px" height="60px"
+            <img src="{{ friend_request.from_user.picture.url }}" alt="" width="60px" height="60px"
                 style="border-radius: 50%">
-            <a href="{% url 'profile' friend_request.from_user.id %}">{{ friend_request.from_user }}</a> sent you a
+            <a href="{% url 'profile' friend_request.from_user.id %}">{{ friend_request.from_user.user.username }}</a> sent you a
                 friend request
         </div>
         <div class="dropdown d-flex ml-auto align-items-center">

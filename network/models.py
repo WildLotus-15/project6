@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.dispatch import receiver
@@ -10,11 +11,12 @@ class User(AbstractUser):
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, primary_key=True, related_name="profile", on_delete=models.CASCADE)
-    bio = models.TextField(blank=True, default="No Bio...", max_length=101)
-    picture = models.ImageField(blank=True, default="default_profile_image.png")
-    friends = models.ManyToManyField(User, blank=True, related_name="friends")
-    blocked = models.ManyToManyField(User, blank=True, related_name="blocked")
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
+    bio = models.TextField(default="No Bio...", max_length=101)
+    picture = models.ImageField(default="default_profile_image.png")
+    friends = models.ManyToManyField(to="self", blank=True, related_name="+", symmetrical=False)
+    blocked = models.ManyToManyField(to="self", blank=True, related_name="+", symmetrical=False)
 
 
     def serialize(self, user):
@@ -26,8 +28,9 @@ class UserProfile(models.Model):
 
 
 class FriendRequest(models.Model):
-    from_user = models.ForeignKey(User, related_name="from_user", on_delete=models.CASCADE)
-    to_user = models.ForeignKey(User, related_name="to_user", on_delete=models.CASCADE)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    from_user = models.ForeignKey(UserProfile, related_name="+", on_delete=models.CASCADE)
+    to_user = models.ForeignKey(UserProfile, related_name="+", on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
 
     class Meta:
@@ -42,9 +45,26 @@ class FriendRequest(models.Model):
             ),
         ]
 
+    
+class Block(models.Model):
+    from_user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="+")
+    to_user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="+")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name="%(app_label)s_%(class)s_unique_relationships",
+                fields=["from_user", "to_user"],
+            ),
+            models.CheckConstraint(
+                name="%(app_label)s_%(class)s_prevent_self_block",
+                check=~models.Q(from_user=models.F("to_user")),
+            ),
+        ]
+
 
 class RecentSearch(models.Model):
-    from_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    from_user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     content = models.CharField(max_length=255)
     timestamp = models.DateTimeField(default=timezone.now)
 
@@ -67,6 +87,7 @@ def self_in_user(content):
 
 
 class Post(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     description = models.TextField()
     only_friends = models.BooleanField(default=False)
