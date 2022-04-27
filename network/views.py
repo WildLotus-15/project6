@@ -524,3 +524,40 @@ def comment(request, post_id):
 
     else:
         return JsonResponse({"error": "POST request method required."}, status=400)
+
+
+@login_required
+def update_reaction(request, post_id):
+    if request.method == "POST":
+
+        try:
+            post = Post.objects.get(id=post_id)
+
+            data = json.loads(request.body)
+
+            if data["reaction"] == "like":
+                if request.user.profile in post.likes.all():
+                    post.likes.remove(request.user.profile)
+                    newStatus = False
+                else:
+                    post.likes.add(request.user.profile)
+                    newStatus = True
+
+            else:
+                if request.user.profile in post.dislikes.all():
+                    post.dislikes.remove(request.user.profile)
+                    newStatus = False
+                else:
+                    post.dislikes.add(request.user.profile)
+                    newStatus = True
+
+            newAmount = post.likes.all().count() + post.dislikes.all().count()
+
+            return JsonResponse({"message": "Reaction was updated successfully.", "newStatus": newStatus, "newAmount": newAmount}, status=201)
+
+        except Post.DoesNotExist:
+            return JsonResponse({"error": "Post matching query does not exist."}, status=400)
+
+    else:
+        return JsonResponse({"error": "POST request method required."}, status=400)
+

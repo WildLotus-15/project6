@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
 
     'crispy_forms',
+    'mathfilters',
 ]
 
 # django-crispy-forms

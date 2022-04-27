@@ -24,5 +24,6 @@ urlpatterns = [
     path("recent_searches", views.recent_searches, name="recent_searches"),
     path("edit_profile_picture/<uuid:profile_id>", views.edit_profile_picture, name="edit_profile_picture"),
     path("post/<uuid:post_id>/comments", views.comments, name="comments"),
-    path("post/<uuid:post_id>/comment", views.comment, name="comment")
+    path("post/<uuid:post_id>/comment", views.comment, name="comment"),
+    path("post/<uuid:post_id>/update_reaction", views.update_reaction, name="update_reaction")
 ]

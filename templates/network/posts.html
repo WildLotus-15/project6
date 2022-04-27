@@ -1,64 +1,162 @@
+{% load static %} {% load mathfilters %}
+
 {% if post.only_friends %}
-    {% if post.author.user in request.user.profile.friends.all or request.user in post.author.friends.all or post.author.user == request.user %}
-        <div class="card mb-2">
-            <div class="card-body">
-                <h5 class="card-title">
+{% if post.author.user in request.user.profile.friends.all or request.user in post.author.friends.all or post.author.user == request.user %}
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="d-flex align-items-center">
+            <div>
+                <a href="{% url 'profile' post.author.id %}">
+                    <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40"
+                    height="40" style="border-radius: 50%">
+                </a>
+            </div>
+            <div class="d-flex flex-column ml-1">
+                <div>
                     <a href="{% url 'profile' post.author.id %}">
-                        <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40px" height="40px"
-                            style="border-radius: 50%">
-                        {{ post.author.user.username }}
+                        <h5 class="card-title">
+                            {{ post.author.user.username }}
+                        </h5>
                     </a>
-                </h5>
-                <p class="card-text">{{ post.description }}</p>
-                <p class="card-text text-muted">{{ post.timestamp }}</p>
-                <p class="text-primary comments" data-post_id="{{ post.id }}" id="comments_amount_{{ post.id }}" style="cursor: pointer; display: inline;">{{ post.comments.all.count }} Comments</p>
-                <!-- By default comments are not displayed -->
-                <div id="comments_placeholder_{{ post.id }}" class="d-none">
-                    <div id="comments_{{ post.id }}">
-
-                    </div>
-
-                    <div class="d-flex">
-                        <div class="mr-1">
-                            <a href="{% url 'profile' request.user.profile.id %}">
-                                <img src="{{ request.user.profile.picture.url }}" alt="" height="32" width="32" class="rounded-circle">
-                            </a>
-                        </div>
-                        <div id="input_placeholder_{{ post.id }}">
-                            <input type="text" placeholder="Write a comment..." class="form-control" id="comment_input_{{ post.id }}">
-                        </div>
-                    </div>
+                </div>
+                <div>
+                    <small><p class="card-text text-muted">{{ post.timestamp }}</p></small>
                 </div>
             </div>
         </div>
-    {% endif %}
-{% endif %}
-{% if post.only_me and post.author.user == request.user %}
-    <div class="card mb-2">
-        <div class="card-body">
-            <h5 class="card-title">
-                <a href="{% url 'profile' post.author.id %}">
-                    <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40px" height="40px"
-                        style="border-radius: 50%">
-                    {{ post.author.user.username }}
-                </a>
-            </h5>
-            <p class="card-text">{{ post.description }}</p>
-            <p class="card-text text-muted">{{ post.timestamp }}</p>
-            <a class="card-link">{{ post.comments.all.count }} comments</a>
-            <button type="button" class="btn btn-link comments" data-post_id="{{ post.id }}">{{ post.comments.all.count }} Comments</button>
-            <div id="comments_placeholder_{{ post.id }}" class="d-none">
-                <div class="d-flex">
-                    <div id="picture_placeholder_{{ post.id }}">
-                        <a href="{% url 'profile' request.user.profile.id %}">
-                            <img src="{{ request.user.profile.picture.url }}" alt="" height="32" width="32">
-                        </a>
-                    </div>
-                    <div id="input_placeholder_{{ post.id }}">
-                        <input type="text" placeholder="Write a comment...">
-                    </div>
+
+        <span class="card-text">{{ post.description }}</span>
+
+        <div class="d-flex">
+            <div>
+                {% if request.user.profile in post.likes.all %}
+                <img src="{% static 'network/images/like_fill.png' %}" alt="" width="22" height="22" class="reaction"
+                    data-post_id="{{ post.id }}" data-reaction="like">
+                {% else %}
+                <img src="{% static 'network/images/like.png' %}" alt="" width="22" height="22" class="reaction"
+                    data-post_id="{{ post.id }}" data-reaction="like">
+                {% endif %}
+
+                {% if request.user.profile in post.dislikes.all %}
+                <img src="{% static 'network/images/dislike_fill.png' %}" alt="" width="22" height="22" class="reaction"
+                    data-post_id="{{ post.id }}" data-reaction="dislike">
+                {% else %}
+                <img src="{% static 'network/images/dislike.png' %}" alt="" width="22" height="22" class="reaction"
+                    data-post_id="{{ post.id }}" data-reaction="dislike">
+                {% endif %}
+
+                <span id="post_{{ post.id }}_reaction_amount" class="text-muted" style="cursor: pointer;">
+                    {% if post.likes.all.count|add:post.dislikes.all.count != 0 %}
+                    {{ post.likes.count|add:post.dislikes.count }}
+                    {% endif %}
+                </span>
+            </div>
+            <div class="ml-auto">
+                <span class="text-secondary comments" data-post_id="{{ post.id }}" id="comments_amount_{{ post.id }}">
+                    {{post.comments.all.count }} Comments
+                </span>
+            </div>
+        </div>
+
+        <!-- By default comments are not displayed -->
+        <div id="comments_placeholder_{{ post.id }}" class="d-none">
+            <div id="comments_{{ post.id }}">
+
+            </div>
+
+            <div class="d-flex">
+                <div class="mr-1">
+                    <a href="{% url 'profile' request.user.profile.id %}">
+                        <img src="{{ request.user.profile.picture.url }}" alt="" height="32" width="32"
+                            class="rounded-circle">
+                    </a>
+                </div>
+                <div id="input_placeholder_{{ post.id }}">
+                    <input type="text" placeholder="Write a comment..." class="form-control"
+                        id="comment_input_{{ post.id }}">
                 </div>
             </div>
         </div>
     </div>
+</div>
+{% endif %}
+{% endif %}
+{% if post.only_me and post.author.user == request.user %}
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="d-flex align-items-center">
+            <div>
+                <a href="{% url 'profile' post.author.id %}">
+                    <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40"
+                    height="40" style="border-radius: 50%">
+                </a>
+            </div>
+            <div class="d-flex flex-column ml-1">
+                <div>
+                    <a href="{% url 'profile' post.author.id %}">
+                        <h5 class="card-title">
+                            {{ post.author.user.username }}
+                        </h5>
+                    </a>
+                </div>
+                <div>
+                    <small><p class="card-text text-muted">{{ post.timestamp }}</p></small>
+                </div>
+            </div>
+        </div>
+
+        <span class="card-text">{{ post.description }}</span>
+
+        <div class="d-flex">
+            <div class="text-muted">
+                {% if request.user.profile in post.likes.all %}
+                <img src="{% static 'network/images/like_fill.png' %}" alt="" width="22" height="22" class="reaction"
+                    data-post_id="{{ post.id }}" data-reaction="like">
+                {% else %}
+                <img src="{% static 'network/images/like.png' %}" alt="" width="22" height="22" class="reaction"
+                    data-post_id="{{ post.id }}" data-reaction="like">
+                {% endif %}
+
+                {% if request.user.profile in post.dislikes.all %}
+                <img src="{% static 'network/images/dislike_fill.png' %}" alt="" width="22" height="22" class="reaction"
+                    data-post_id="{{ post.id }}" data-reaction="dislike">
+                {% else %}
+                <img src="{% static 'network/images/dislike.png' %}" alt="" width="22" height="22" class="reaction"
+                    data-post_id="{{ post.id }}" data-reaction="dislike">
+                {% endif %}
+
+                <span id="post_{{ post.id }}_reaction_amount" class="text-muted" style="cursor: pointer;">
+                    {% if post.likes.all.count|add:post.dislikes.all.count != 0 %}
+                    {{ post.likes.count|add:post.dislikes.count }}
+                    {% endif %}
+                </span>
+            </div>
+            <div class="ml-auto">
+                <span class="text-secondary comments" data-post_id="{{ post.id }}" id="comments_amount_{{ post.id }}">
+                    {{post.comments.all.count }} Comments
+                </span>
+            </div>
+        </div>
+
+        <!-- By default comments are not displayed -->
+        <div id="comments_placeholder_{{ post.id }}" class="d-none">
+            <div id="comments_{{ post.id }}">
+
+            </div>
+
+            <div class="d-flex">
+                <div class="mr-1">
+                    <a href="{% url 'profile' request.user.profile.id %}">
+                        <img src="{{ request.user.profile.picture.url }}" alt="" height="32" width="32"
+                            class="rounded-circle">
+                    </a>
+                </div>
+                <div id="input_placeholder_{{ post.id }}">
+                    <input type="text" placeholder="Write a comment..." class="form-control"
+                        id="comment_input_{{ post.id }}">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endif %}

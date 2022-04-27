@@ -93,6 +93,8 @@ class Post(models.Model):
     only_friends = models.BooleanField(default=False)
     only_me = models.BooleanField(default=False)
     timestamp = models.DateTimeField(default=timezone.now)
+    likes = models.ManyToManyField(UserProfile, blank=True, related_name="likes")
+    dislikes = models.ManyToManyField(UserProfile, blank=True, related_name="dislikes")
 
 
 class Comment(models.Model):
