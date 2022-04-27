@@ -25,5 +25,6 @@ urlpatterns = [
     path("edit_profile_picture/<uuid:profile_id>", views.edit_profile_picture, name="edit_profile_picture"),
     path("post/<uuid:post_id>/comments", views.comments, name="comments"),
     path("post/<uuid:post_id>/comment", views.comment, name="comment"),
-    path("post/<uuid:post_id>/update_reaction", views.update_reaction, name="update_reaction")
+    path("post/<uuid:post_id>/update_reaction", views.update_reaction, name="update_reaction"),
+    path("post/<uuid:post_id>/delete", views.delete_post, name="delete_post")
 ]

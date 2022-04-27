@@ -6,3 +6,7 @@
 a:hover {
     text-decoration: none;
 }
+
+.reaction:hover {
+    cursor: pointer;
+}

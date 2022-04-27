@@ -561,3 +561,23 @@ def update_reaction(request, post_id):
     else:
         return JsonResponse({"error": "POST request method required."}, status=400)
 
+
+def delete_post(request, post_id):
+    if request.method == "DELETE":
+
+        try:
+            post = Post.objects.get(id=post_id)
+
+            if post.author == request.user.profile:
+                post.delete()
+            
+            else:
+                return JsonResponse({"error": "You are not the author of the post matching query."}, status=403)
+            
+            return JsonResponse({"message": "Post was deleted successfully."}, status=201)
+
+        except Post.DoesNotExist:
+            return JsonResponse({"error": "Post matching query does not exist."}, status=400)
+
+    else:
+        return JsonResponse({"error": "DELETE request method required."}, status=400)

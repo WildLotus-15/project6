@@ -7,9 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
             update_reaction(post_id, reaction, event)
         }
 
-        reaction.onmouseover = (event) => {
+        // Using JS to change elements hover property
+
+        /* reaction.onmouseover = (event) => {
             event.target.style.cursor = "pointer"
-        }
+        } */
     })
 })
 
@@ -27,8 +29,8 @@ function update_reaction(post_id, reaction, event) {
         .then(response => {
             console.log(response.message)
 
+            // If a new reaction was being added to the post filled icon with a new amount will be displayed
             if (response.newStatus) {
-                // If a new reaction was being added to the post filled icon with a new amount will be displayed
                 if (reaction == "like") {
                     event.target.src = "/images/like_fill.png"
                 } else {

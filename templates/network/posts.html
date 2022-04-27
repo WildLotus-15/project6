@@ -2,16 +2,16 @@
 
 {% if post.only_friends %}
 {% if post.author.user in request.user.profile.friends.all or request.user in post.author.friends.all or post.author.user == request.user %}
-<div class="card mb-2">
+<div class="card mb-2" id="post_{{ post.id }}">
     <div class="card-body">
         <div class="d-flex align-items-center">
             <div>
                 <a href="{% url 'profile' post.author.id %}">
-                    <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40"
-                    height="40" style="border-radius: 50%">
+                    <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40" height="40"
+                        style="border-radius: 50%">
                 </a>
             </div>
-            <div class="d-flex flex-column ml-1">
+            <div class="flex-column ml-1">
                 <div>
                     <a href="{% url 'profile' post.author.id %}">
                         <h5 class="card-title">
@@ -20,7 +20,20 @@
                     </a>
                 </div>
                 <div>
-                    <small><p class="card-text text-muted">{{ post.timestamp }}</p></small>
+                    <small>
+                        <p class="card-text text-muted">{{ post.timestamp }}</p>
+                    </small>
+                </div>
+            </div>
+            <div class="ml-auto">
+                <div class="dropdown">
+                    <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                        <button class="dropdown-item"
+                            data-toggle="modal" data-target="#delete_post_modal_{{ post.id }}"
+                            style="cursor: pointer;">Delete</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -45,7 +58,7 @@
                     data-post_id="{{ post.id }}" data-reaction="dislike">
                 {% endif %}
 
-                <span id="post_{{ post.id }}_reaction_amount" class="text-muted" style="cursor: pointer;">
+                <span id="post_{{ post.id }}_reaction_amount" class="text-muted ml-1" style="cursor: pointer;">
                     {% if post.likes.all.count|add:post.dislikes.all.count != 0 %}
                     {{ post.likes.count|add:post.dislikes.count }}
                     {% endif %}
@@ -79,19 +92,43 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="delete_post_modal_{{ post.id }}">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Delete post?</h4>
+
+                <button type="button" class="close" data-dismiss="modal" id="close_modal_{{ post.id }}">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">Are you sure you want to delete specified post?</div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary delete_post_button"
+                    data-friend_request_id="{{ friend_request.id }}" data-post_id="{{ post.id }}">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endif %}
 {% endif %}
 {% if post.only_me and post.author.user == request.user %}
-<div class="card mb-2">
+<div class="card mb-2" id="post_{{ post.id }}">
     <div class="card-body">
         <div class="d-flex align-items-center">
             <div>
                 <a href="{% url 'profile' post.author.id %}">
-                    <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40"
-                    height="40" style="border-radius: 50%">
+                    <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40" height="40"
+                        style="border-radius: 50%">
                 </a>
             </div>
-            <div class="d-flex flex-column ml-1">
+            <div class="flex-column ml-1">
                 <div>
                     <a href="{% url 'profile' post.author.id %}">
                         <h5 class="card-title">
@@ -100,7 +137,20 @@
                     </a>
                 </div>
                 <div>
-                    <small><p class="card-text text-muted">{{ post.timestamp }}</p></small>
+                    <small>
+                        <p class="card-text text-muted">{{ post.timestamp }}</p>
+                    </small>
+                </div>
+            </div>
+            <div class="ml-auto">
+                <div class="dropdown">
+                    <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                        <button class="dropdown-item"
+                            data-toggle="modal" data-target="#delete_post_modal_{{ post.id }}"
+                            style="cursor: pointer;">Delete</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -108,7 +158,7 @@
         <span class="card-text">{{ post.description }}</span>
 
         <div class="d-flex">
-            <div class="text-muted">
+            <div>
                 {% if request.user.profile in post.likes.all %}
                 <img src="{% static 'network/images/like_fill.png' %}" alt="" width="22" height="22" class="reaction"
                     data-post_id="{{ post.id }}" data-reaction="like">
@@ -125,7 +175,7 @@
                     data-post_id="{{ post.id }}" data-reaction="dislike">
                 {% endif %}
 
-                <span id="post_{{ post.id }}_reaction_amount" class="text-muted" style="cursor: pointer;">
+                <span id="post_{{ post.id }}_reaction_amount" class="text-muted ml-1" style="cursor: pointer;">
                     {% if post.likes.all.count|add:post.dislikes.all.count != 0 %}
                     {{ post.likes.count|add:post.dislikes.count }}
                     {% endif %}
@@ -155,6 +205,30 @@
                     <input type="text" placeholder="Write a comment..." class="form-control"
                         id="comment_input_{{ post.id }}">
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="delete_post_modal_{{ post.id }}">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Delete post?</h4>
+
+                <button type="button" class="close" data-dismiss="modal" id="close_modal_{{ post.id }}">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">Are you sure you want to delete specified post?</div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary delete_post_button"
+                    data-friend_request_id="{{ friend_request.id }}" data-post_id="{{ post.id }}">Confirm</button>
             </div>
         </div>
     </div>
