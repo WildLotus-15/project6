@@ -95,6 +95,25 @@ class Post(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
 
 
+class Comment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    description = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(default=timezone.now)
+
+    def serialize(self):
+        return {
+            "post_id": self.post.id,
+            "id": self.id,
+            "author_id": self.author.id,
+            "author_picture": self.author.picture.url,
+            "author_username": self.author.user.username,
+            "description": self.description,
+            "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
+        }
+
+
 @receiver(post_save, sender=User)
 def create_user_profile(created, sender, instance, **kwargs):
     if created:

@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import Block, FriendRequest, Post, RecentSearch, User, UserProfile
+from .models import Block, FriendRequest, Post, RecentSearch, User, UserProfile, Comment
 
 # Create your views here.
 @login_required
@@ -486,3 +486,41 @@ def search_json(request):
     return JsonResponse({
         "query_list": query_list
     })
+
+
+@login_required
+def comments(request, post_id):
+    try:
+        post = Post.objects.get(id=post_id)
+
+        comments = post.comments.all()
+
+        return JsonResponse({
+            "comments": [comment.serialize() for comment in comments]
+        }, safe=False)
+
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post matching query does not exist."}, status=400)
+
+
+@login_required
+def comment(request, post_id):
+    if request.method == "POST":
+
+        try:
+            post = Post.objects.get(id=post_id)
+
+            data = json.loads(request.body)
+            description = data.get("comment")
+            comment = Comment(post=post, author=request.user.profile, description=description)
+            comment.save()
+
+            newAmount = post.comments.count()
+
+            return JsonResponse({"message": "Comment was added successfully.", "newAmount": newAmount}, status=201)
+
+        except Post.DoesNotExist:
+            return JsonResponse({"error": "Post matching query does not exist."}, status=400)
+
+    else:
+        return JsonResponse({"error": "POST request method required."}, status=400)

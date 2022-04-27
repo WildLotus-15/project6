@@ -344,6 +344,7 @@
     <script src="{% static 'network/js/cancel_friend_request.js' %}"></script>
     <script src="{% static 'network/js/decline_friend_request.js' %}"></script>
     <script src="{% static 'network/js/accept_friend_request.js' %}"></script>
+    <script src="{% static 'network/js/comments.js' %}"></script>
     {% if not profile.user in request.user.profile.blocked.all %}
         <script src="{% static 'network/js/block_profile.js' %}"></script>
     {% endif %}

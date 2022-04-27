@@ -3,13 +3,32 @@
         <div class="card mb-2">
             <div class="card-body">
                 <h5 class="card-title">
-                    <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40px" height="40px"
-                        style="border-radius: 50%" class="postAuthorPicture">
-                    <a href="{% url 'profile' post.author.id %}">{{ post.author.user.username }}</a>
+                    <a href="{% url 'profile' post.author.id %}">
+                        <img src="{{ post.author.picture.url }}" alt="Post Auhor Profile Picture" width="40px" height="40px"
+                            style="border-radius: 50%">
+                        {{ post.author.user.username }}
+                    </a>
                 </h5>
                 <p class="card-text">{{ post.description }}</p>
                 <p class="card-text text-muted">{{ post.timestamp }}</p>
-                <a href="#" class="card-link">TODO</a>
+                <p class="text-primary comments" data-post_id="{{ post.id }}" id="comments_amount_{{ post.id }}" style="cursor: pointer; display: inline;">{{ post.comments.all.count }} Comments</p>
+                <!-- By default comments are not displayed -->
+                <div id="comments_placeholder_{{ post.id }}" class="d-none">
+                    <div id="comments_{{ post.id }}">
+
+                    </div>
+
+                    <div class="d-flex">
+                        <div class="mr-1">
+                            <a href="{% url 'profile' request.user.profile.id %}">
+                                <img src="{{ request.user.profile.picture.url }}" alt="" height="32" width="32" class="rounded-circle">
+                            </a>
+                        </div>
+                        <div id="input_placeholder_{{ post.id }}">
+                            <input type="text" placeholder="Write a comment..." class="form-control" id="comment_input_{{ post.id }}">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     {% endif %}
@@ -26,7 +45,20 @@
             </h5>
             <p class="card-text">{{ post.description }}</p>
             <p class="card-text text-muted">{{ post.timestamp }}</p>
-            <a href="#" class="card-link">TODO</a>
+            <a class="card-link">{{ post.comments.all.count }} comments</a>
+            <button type="button" class="btn btn-link comments" data-post_id="{{ post.id }}">{{ post.comments.all.count }} Comments</button>
+            <div id="comments_placeholder_{{ post.id }}" class="d-none">
+                <div class="d-flex">
+                    <div id="picture_placeholder_{{ post.id }}">
+                        <a href="{% url 'profile' request.user.profile.id %}">
+                            <img src="{{ request.user.profile.picture.url }}" alt="" height="32" width="32">
+                        </a>
+                    </div>
+                    <div id="input_placeholder_{{ post.id }}">
+                        <input type="text" placeholder="Write a comment...">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endif %}

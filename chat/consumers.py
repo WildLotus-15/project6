@@ -47,7 +47,7 @@ class ChatConsumer(WebsocketConsumer):
             "author_id": message.author.id,
             "author_picture": message.author.profile.picture.url,
             "content": message.content,
-            "timestamp": message.timestamp.strftime("%b %d %Y, %I:%M, %p")
+            "timestamp": message.timestamp.strftime("%b %d %Y, %I:%M %p")
         }
 
     commands = {
