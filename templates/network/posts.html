@@ -208,23 +208,23 @@
 
             <!-- Modal body -->
             <div class="modal-body">
-                <form id="edit_post_radio_{{post.id}}" class="post_edit_form" data-post_id="{{post.id}}">
+                <form class="post_edit_form" id="post_edit_form__{{post.id}}" data-post_id="{{post.id}}" {% if post.only_friends %} data-default_visibility_default="only_friends" {% else %} data-default_visibility_default="only_me" {% endif %}>
                     <a href="{% url 'profile' request.user.profile.id %}">
                         <img src="{{ request.user.profile.picture.url }}" class="d-inline"
                             alt="Logged in Profile Picture" width="40px" height="40px" style="border-radius: 50%">
                     </a>
                     {{ request.user.username }}
-                    <div class="form-group" style="float: right;" id="post_{{ post.id }}_form_group" {% if post.only_friends %} data-default_visibility="{{ post.only_friends }}" {% else %} data-default_visibility="{{ post.only_friends }}" {% endif %}>
+                    <div class="form-group" style="float: right;" id="post_{{ post.id }}_form_group">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                id="edit_only_friends_{{post.id}}" {% if post.only_friends %} checked data-default_visibility="{{ post.only_friends }}"{% endif %} />
+                            <input class="form-check-input edit_post_radio_{{post.id}}" type="radio" name="flexRadioDefault" data-visibility="only_friends"
+                                id="edit_only_friends_{{post.id}}" {% if post.only_friends %} checked data-default_visibility_{{post.id}}="only_friends"{% endif %} />
                             <label class="form-check-label" for="flexRadioDefault1">
                                 Friends
                             </label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                id="edit_only_me_{{post.id}}" {% if post.only_me %} checked data-default_visibility="{{ post.only_me }}"{% endif %} />
+                            <input class="form-check-input edit_post_radio_{{post.id}}" type="radio" name="flexRadioDefault" data-visibility="only_me"
+                                id="edit_only_me_{{post.id}}" {% if post.only_me %} checked data-default_visibility_{{post.id}}="only_me"{% endif %} />
                             <label class="form-check-label" for="flexRadioDefault1">
                                 Only me
                             </label>
@@ -232,7 +232,13 @@
                     </div>
                     <div class="mt-3">
                         <textarea name="" id="edit_post_form_{{ post.id }}" class="form-control"
-                            data-default_value="{{post.description}}">{{ post.description }}</textarea>
+                            {% if post.only_me %}
+                            data-default_visibility="only_me"
+                            {% else %}
+                            data-default_visibility="only_friends"
+                            {% endif %}
+                            data-default_value="{{post.description}}" 
+                            >{{ post.description }}</textarea>
                     </div>
                 </form>
             </div>
