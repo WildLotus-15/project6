@@ -23,7 +23,7 @@
 				{% endfor %}
 			</div>
 			<div id="bottom-bar">
-				<button id="addcontact" style="height: 48px;" data-toggle="modal" data-target="#chatRoomsModal">Manage Chat Rooms</button>
+				<button id="addcontact" style="height: 49px; background-color: #F5F5F5" data-toggle="modal" data-target="#chatRoomsModal" class="border-top">Manage Chat Rooms</button>
 			</div>
 		</div>
 		<div class="content">
@@ -32,8 +32,6 @@
 					style="cursor: pointer;">{{ group.users.all.count }} Members</a>
 				</h5>
 			</div>
-
-			
 
 			{% if request.user in group.users.all %}
 			<div class="messages border-left">
@@ -44,8 +42,8 @@
 
 			<div class="message-input">
 				<div class="wrap">
-					<input id="chat-message-input" type="text" placeholder="Write your message..." />
-					<button id="chat-message-submit" class="submit">
+					<input id="chat-message-input" type="text" placeholder="Write your message..." class="border border-bottom-0"/>
+					<button id="chat-message-submit" class="submit border-top">
 						<img src="{% static 'network/images/send.svg' %}" alt="">
 					</button>
 				</div>
@@ -157,8 +155,8 @@
 			contentTag.append(inlineTag)
 
 			var timestampTag = document.createElement('div');
-			timestampTag.className = "d-inline ml-1"
-			timestampTag.textContent = `on ${data["timestamp"]}`
+			timestampTag.className = "d-inline ml-1 text-muted"
+			timestampTag.innerHTML = `<small>${data["timestamp"]}</small>`
 
 			inlineTag.append(author)
 			inlineTag.append(timestampTag)

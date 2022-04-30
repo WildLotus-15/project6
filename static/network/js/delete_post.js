@@ -19,7 +19,7 @@ function delete_post(post_id) {
     .then(response => {
         document.querySelector(`#post_${post_id}`).remove()
 
-        document.querySelector(`#close_modal_${post_id}`).click()
+        document.querySelector(`#close_delete_post_modal_${post_id}`).click()
 
         console.log(response.message)
     })

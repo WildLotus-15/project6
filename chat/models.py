@@ -8,7 +8,7 @@ User = get_user_model()
 
 class Group(models.Model):
     name = models.CharField(max_length=64)
-    picture = models.ImageField(null=True, default="messenger.png")
+    # picture = models.ImageField(null=True, default="messenger.png")
     users = models.ManyToManyField(User, related_name="joined_groups", blank=True)
 
 

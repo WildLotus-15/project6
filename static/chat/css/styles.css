@@ -33,6 +33,8 @@
     overflow: hidden;
     position: relative;
     font-size: 18px;
+    background-color: #FFFFFF;
+
 }
 
 @media screen and (max-width: 735px) {
@@ -467,6 +469,7 @@
     position: absolute;
     width: 100%;
     bottom: 0;
+    background-color: #F5F5F5;
 }
 
 #frame #sidepanel #bottom-bar button {
@@ -522,6 +525,7 @@
     height: 100%;
     overflow: hidden;
     position: relative;
+    background-color: #FFFFFF;
 }
 
 @media screen and (max-width: 735px) {
@@ -578,6 +582,7 @@
     overflow-y: scroll;
     overflow-x: hidden;
     width: 100%;
+    background-color: #FFFFFF;
 }
 
 @media screen and (max-width: 735px) {
@@ -701,6 +706,7 @@
     width: 50px;
     padding: 12px 0;
     cursor: pointer;
+    background-color: #F5F5F5;
 }
 
 @media screen and (max-width: 735px) {

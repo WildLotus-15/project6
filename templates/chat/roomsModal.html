@@ -48,7 +48,7 @@
             <div class="modal-body">
                 {% for member in group.users.all %}
                 <div class="d-flex flex-column">
-                    <a href="{% url 'profile' member.id %}">
+                    <a href="{% url 'profile' member.profile.id %}">
                         <div class="p-2">
                             <img src="{{ member.profile.picture.url }}" alt="" width="42" height="42" class="rounded-circle">
                             {{ member.username }}

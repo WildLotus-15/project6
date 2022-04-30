@@ -76,10 +76,6 @@
 
         <!-- By default comments are not displayed -->
         <div id="comments_placeholder_{{ post.id }}" class="d-none">
-            <div id="comments_{{ post.id }}">
-
-            </div>
-
             <div class="d-flex">
                 <div class="mr-1">
                     <a href="{% url 'profile' request.user.profile.id %}">
@@ -87,10 +83,14 @@
                             class="rounded-circle">
                     </a>
                 </div>
-                <div id="input_placeholder_{{ post.id }}">
+                <div id="input_placeholder_{{ post.id }}" style="width: 450px;">
                     <input type="text" placeholder="Write a comment..." class="form-control"
                         id="comment_input_{{ post.id }}">
                 </div>
+            </div>
+
+            <div id="comments_{{ post.id }}">
+
             </div>
         </div>
     </div>
@@ -203,42 +203,41 @@
             <div class="modal-header text-center">
                 <h4 class="modal-title w-100">Edit post</h4>
 
-                <button type="button" class="close" data-dismiss="modal" id="close_modal_{{ post.id }}">&times;</button>
+                <button type="button" class="close" data-dismiss="modal" id="close_edit_post_modal_{{ post.id }}">&times;</button>
             </div>
 
             <!-- Modal body -->
             <div class="modal-body">
-                <form class="post_edit_form" id="post_edit_form__{{post.id}}" data-post_id="{{post.id}}" {% if post.only_friends %} data-default_visibility_default="only_friends" {% else %} data-default_visibility_default="only_me" {% endif %}>
+                <form id="edit_post_form_{{ post.id }}" data-default_description="{{post.description}}"
+                    {% if post.only_me %} 
+                        data-default_visibility="only_me"
+                    {% else %}
+                        data-default_visibility="only_friends" 
+                    {% endif %}>
                     <a href="{% url 'profile' request.user.profile.id %}">
                         <img src="{{ request.user.profile.picture.url }}" class="d-inline"
                             alt="Logged in Profile Picture" width="40px" height="40px" style="border-radius: 50%">
                     </a>
                     {{ request.user.username }}
-                    <div class="form-group" style="float: right;" id="post_{{ post.id }}_form_group">
+                    <div class="form-group" style="float: right;" id="post_form_group_{{post.id}}">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input edit_post_radio_{{post.id}}" type="radio" name="flexRadioDefault" data-visibility="only_friends"
-                                id="edit_only_friends_{{post.id}}" {% if post.only_friends %} checked data-default_visibility_{{post.id}}="only_friends"{% endif %} />
+                            <input class="form-check-input" type="radio" id="edit_only_friends_{{post.id}}"
+                                name="flexRadioDefault" data-visibility="only_friends" {% if post.only_friends %} checked {% endif %} />
                             <label class="form-check-label" for="flexRadioDefault1">
                                 Friends
                             </label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input edit_post_radio_{{post.id}}" type="radio" name="flexRadioDefault" data-visibility="only_me"
-                                id="edit_only_me_{{post.id}}" {% if post.only_me %} checked data-default_visibility_{{post.id}}="only_me"{% endif %} />
+                            <input class="form-check-input" type="radio" id="edit_only_me_{{post.id}}"
+                                name="flexRadioDefault" data-visibility="only_me" {% if post.only_me %} checked {% endif %} />
                             <label class="form-check-label" for="flexRadioDefault1">
                                 Only me
                             </label>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <textarea name="" id="edit_post_form_{{ post.id }}" class="form-control"
-                            {% if post.only_me %}
-                            data-default_visibility="only_me"
-                            {% else %}
-                            data-default_visibility="only_friends"
-                            {% endif %}
-                            data-default_value="{{post.description}}" 
-                            >{{ post.description }}</textarea>
+                        <textarea name="" id="edit_post_input_{{post.id}}"
+                            class="form-control">{{ post.description }}</textarea>
                     </div>
                 </form>
             </div>
@@ -260,7 +259,7 @@
             <div class="modal-header">
                 <h4 class="modal-title">Delete post?</h4>
 
-                <button type="button" class="close" data-dismiss="modal" id="close_modal_{{ post.id }}">&times;</button>
+                <button type="button" class="close" data-dismiss="modal" id="close_delete_post_modal_{{ post.id }}">&times;</button>
             </div>
 
             <!-- Modal body -->

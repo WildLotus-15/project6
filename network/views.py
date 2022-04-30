@@ -493,7 +493,7 @@ def comments(request, post_id):
     try:
         post = Post.objects.get(id=post_id)
 
-        comments = post.comments.all()
+        comments = post.comments.all().order_by('-timestamp')
 
         return JsonResponse({
             "comments": [comment.serialize() for comment in comments]

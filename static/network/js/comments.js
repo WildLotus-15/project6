@@ -85,26 +85,32 @@ function build_comment(comment, post_id) {
     commentWrapper.append(picturePlaceholder)
 
     const content = document.createElement('div')
+    content.style.width = "400px"
     content.className = "d-flex flex-column"
+
     commentWrapper.append(content)
 
-    const author_link = document.createElement('a')
-    author_link.href = `/profile/${comment.author_id}`
-    author_link.innerHTML = comment.author_username
-
     const author_username = document.createElement('div')
+
+    const author_link = document.createElement('span')
+    author_link.innerHTML = `<a href=/profile/${comment.author_id}>${comment.author_username }</a>`
     author_username.append(author_link)
+
+    const timestamp = document.createElement('span')
+    timestamp.className = 'text-muted'
+    timestamp.style.float = "right"
+    timestamp.innerHTML = `<small>${comment.timestamp}</small>`
+    author_username.append(timestamp)
 
     content.append(author_username)
 
     const description = document.createElement('div')
     description.innerHTML = comment.description
-    content.append(description)
+    description.style.padding = "10px 15px"
+    description.style.backgroundColor = "#F5F5F5"
+    description.style.borderRadius = "10px"
 
-    const timestamp = document.createElement('div')
-    timestamp.className = 'text-muted ml-1'
-    timestamp.innerHTML = `<small>${comment.timestamp}</small>`
-    commentWrapper.append(timestamp)
+    content.append(description)
 
     comments.append(commentWrapper)
 }
