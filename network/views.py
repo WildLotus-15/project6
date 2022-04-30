@@ -595,11 +595,16 @@ def edit_post(request, post_id):
                 post.only_me = data["only_me"]
                 post.only_friends = data["only_friends"]
                 post.save()
+
+                if post.only_friends:
+                    newVisibility = "only_friends"
+                else:
+                    newVisibility = "only_me"
             
             else:
                 return JsonResponse({"error": "You are not the author of the post matching query."}, status=403)
             
-            return JsonResponse({"message": "Post was updated successfully."}, status=201)
+            return JsonResponse({"message": "Post was updated successfully.", "newVisibility": newVisibility}, status=201)
 
         except Post.DoesNotExist:
             return JsonResponse({"error": "Post matching query does not exist."}, status=400)

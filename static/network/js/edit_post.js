@@ -23,13 +23,11 @@ function manage_post_edit(post_id) {
     last_selected_radio.type = "hidden"
     last_selected_radio.id = `hidden_input_${post_id}`
     last_selected_radio.dataset.by_default_visibility = by_default_visibility
-    console.log(last_selected_radio)
 
     form_group.onchange = (e) => {
         last_selected_radio.dataset.by_default_visibility = e.target.dataset.visibility
-        console.log(last_selected_radio)
 
-        if (!(by_default_visibility == e.target.dataset.visibility) || edit_input.value !== edit_input.dataset.default_value) {
+        if (by_default_visibility !== e.target.dataset.visibility || edit_input.value !== edit_input.dataset.default_value) {
             if (edit_input.value.length > 0) {
                 save_button.disabled = false
             }
@@ -68,7 +66,6 @@ function manage_post_update(event, save_button, default_value, post_id, edit_inp
         }
     }) */
 
-    console.log((new_value !== default_value || last_selected_radio.dataset.by_default_visibility !== by_default_visibility) && new_value.length > 0)
     if ((new_value !== default_value || last_selected_radio.dataset.by_default_visibility !== by_default_visibility) && new_value.length > 0) {
         save_button.disabled = false
     } else {
@@ -109,6 +106,9 @@ function save_changes(post_id, description) {
         .then(response => {
             console.log(response.message)
 
-            window.location.reload()
+            document.querySelector(`#post_edit_form__${post_id}`).dataset.default_visibility_default = response.newVisibility
+            document.querySelector(`#edit_post_form_${post_id}`).dataset.default_value = description
+            document.querySelector(`#post_description_${post_id}`).innerHTML = description
+            document.querySelector(`#close_modal_${post_id}`).click()
         })
 }
