@@ -1,3 +1,4 @@
+from multiprocessing.synchronize import Barrier
 from django.urls import path
 
 from . import views
@@ -26,5 +27,6 @@ urlpatterns = [
     path("post/<uuid:post_id>/comments", views.comments, name="comments"),
     path("post/<uuid:post_id>/comment", views.comment, name="comment"),
     path("post/<uuid:post_id>/update_reaction", views.update_reaction, name="update_reaction"),
-    path("post/<uuid:post_id>/delete", views.delete_post, name="delete_post")
+    path("post/<uuid:post_id>/delete", views.delete_post, name="delete_post"),
+    path("post/<uuid:post_id>/edit", views.edit_post, name="edit_post")
 ]

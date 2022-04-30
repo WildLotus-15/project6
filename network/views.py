@@ -581,3 +581,28 @@ def delete_post(request, post_id):
 
     else:
         return JsonResponse({"error": "DELETE request method required."}, status=400)
+    
+
+def edit_post(request, post_id):
+    if request.method == "PUT":
+
+        try:
+            post = Post.objects.get(id=post_id)
+
+            if post.author == request.user.profile:
+                data = json.loads(request.body)
+                post.description = data["description"]
+                post.only_me = data["only_me"]
+                post.only_friends = data["only_friends"]
+                post.save()
+            
+            else:
+                return JsonResponse({"error": "You are not the author of the post matching query."}, status=403)
+            
+            return JsonResponse({"message": "Post was updated successfully."}, status=201)
+
+        except Post.DoesNotExist:
+            return JsonResponse({"error": "Post matching query does not exist."}, status=400)
+
+    else:
+        return JsonResponse({"error": "PUT request method required."}, status=400)

@@ -208,6 +208,10 @@ function edit_profile_bio(profile_id) {
     save_button.innerHTML = "Save"
     buttons_row.append(save_button)
 
+    if (document.querySelector("#default_profile_bio").innerHTML = "No Bio...") {
+        save_button.disabled = true
+    }
+
     new_bio_form.onkeydown = aleko
     new_bio_form.onkeyup = aleko
     new_bio_form.addEventListener('paste', (event) => {
@@ -271,7 +275,7 @@ function aleko(event) {
     const button = document.querySelector('#bio_save_btn')
     const new_bio = event.target.value
 
-    if (101 - new_bio.length <= 0 && new_bio.length === 0 || new_bio.includes(' ')) {
+    if (101 - new_bio.length <= 0 && (new_bio.length === 0 && document.querySelector("#default_profile_bio").innerHTML === "No Bio...") || new_bio.includes(' ')) {
         button.disabled = true
     } else {
         button.disabled = false

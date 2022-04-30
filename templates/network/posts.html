@@ -27,18 +27,21 @@
             </div>
             <div class="ml-auto">
                 <div class="dropdown">
-                    <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenuButton"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                    <button type="button" class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">More</button>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                        <button class="dropdown-item"
-                            data-toggle="modal" data-target="#delete_post_modal_{{ post.id }}"
+                        <button class="dropdown-item post_edit_button" data-toggle="modal"
+                            data-target="#edit_post_modal_{{ post.id }}" style="cursor: pointer;"
+                            data-post_id="{{post.id}}">Edit</button>
+
+                        <button class="dropdown-item" data-toggle="modal" data-target="#delete_post_modal_{{ post.id }}"
                             style="cursor: pointer;">Delete</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <span class="card-text">{{ post.description }}</span>
+        <span class="card-text" id="post_description_{{ post.id }}">{{ post.description }}</span>
 
         <div class="d-flex">
             <div>
@@ -93,29 +96,6 @@
     </div>
 </div>
 
-<div class="modal fade" id="delete_post_modal_{{ post.id }}">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title">Delete post?</h4>
-
-                <button type="button" class="close" data-dismiss="modal" id="close_modal_{{ post.id }}">&times;</button>
-            </div>
-
-            <!-- Modal body -->
-            <div class="modal-body">Are you sure you want to delete specified post?</div>
-
-            <!-- Modal footer -->
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary delete_post_button"
-                    data-friend_request_id="{{ friend_request.id }}" data-post_id="{{ post.id }}">Confirm</button>
-            </div>
-        </div>
-    </div>
-</div>
 {% endif %}
 {% endif %}
 {% if post.only_me and post.author.user == request.user %}
@@ -144,18 +124,21 @@
             </div>
             <div class="ml-auto">
                 <div class="dropdown">
-                    <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenuButton"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                    <button type="button" class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">More</button>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                        <button class="dropdown-item"
-                            data-toggle="modal" data-target="#delete_post_modal_{{ post.id }}"
+                        <button class="dropdown-item post_edit_button" data-toggle="modal"
+                            data-target="#edit_post_modal_{{ post.id }}" style="cursor: pointer;"
+                            data-post_id="{{post.id}}">Edit</button>
+
+                        <button class="dropdown-item" data-toggle="modal" data-target="#delete_post_modal_{{ post.id }}"
                             style="cursor: pointer;">Delete</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <span class="card-text">{{ post.description }}</span>
+        <span class="card-text" id="post_description_{{ post.id }}">{{ post.description }}</span>
 
         <div class="d-flex">
             <div>
@@ -210,6 +193,59 @@
     </div>
 </div>
 
+{% endif %}
+
+<div class="modal fade" id="edit_post_modal_{{ post.id }}">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100">Edit post</h4>
+
+                <button type="button" class="close" data-dismiss="modal" id="close_modal_{{ post.id }}">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form id="edit_post_radio_{{post.id}}" class="post_edit_form" data-post_id="{{post.id}}">
+                    <a href="{% url 'profile' request.user.profile.id %}">
+                        <img src="{{ request.user.profile.picture.url }}" class="d-inline"
+                            alt="Logged in Profile Picture" width="40px" height="40px" style="border-radius: 50%">
+                    </a>
+                    {{ request.user.username }}
+                    <div class="form-group" style="float: right;" id="post_{{ post.id }}_form_group" {% if post.only_friends %} data-default_visibility="{{ post.only_friends }}" {% else %} data-default_visibility="{{ post.only_friends }}" {% endif %}>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                id="edit_only_friends_{{post.id}}" {% if post.only_friends %} checked data-default_visibility="{{ post.only_friends }}"{% endif %} />
+                            <label class="form-check-label" for="flexRadioDefault1">
+                                Friends
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                id="edit_only_me_{{post.id}}" {% if post.only_me %} checked data-default_visibility="{{ post.only_me }}"{% endif %} />
+                            <label class="form-check-label" for="flexRadioDefault1">
+                                Only me
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <textarea name="" id="edit_post_form_{{ post.id }}" class="form-control"
+                            data-default_value="{{post.description}}">{{ post.description }}</textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer text-center">
+                <button type="button" class="btn btn-primary w-100" data-post_id="{{ post.id }}"
+                    id="post_save_button_{{post.id}}">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="delete_post_modal_{{ post.id }}">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -233,4 +269,3 @@
         </div>
     </div>
 </div>
-{% endif %}
