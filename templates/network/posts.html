@@ -1,7 +1,7 @@
 {% load static %} {% load mathfilters %}
 
 {% if post.only_friends %}
-{% if post.author.user in request.user.profile.friends.all or request.user in post.author.friends.all or post.author.user == request.user %}
+{% if post.author in request.user.profile.friends.all or request.user.profile in post.author.friends.all or post.author == request.user.profile %}
 <div class="card mb-2" id="post_{{ post.id }}">
     <div class="card-body">
         <div class="d-flex align-items-center">
@@ -25,6 +25,7 @@
                     </small>
                 </div>
             </div>
+            {% if request.user.profile == post.author %}
             <div class="ml-auto">
                 <div class="dropdown">
                     <button type="button" class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton"
@@ -39,6 +40,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div>
 
         <span class="card-text" id="post_description_{{ post.id }}">{{ post.description }}</span>

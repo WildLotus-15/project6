@@ -27,6 +27,7 @@ def ignore_blocked_users_posts(profile):
     posts = Post.objects.filter(
         ~Q(author__in=blocked_profiles)
     ).order_by('-timestamp')
+    print(posts)
     return posts
 
 
